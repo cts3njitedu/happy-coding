@@ -8,7 +8,7 @@ public class SumOfConsecutiveSquares implements HappyCoding {
     public void execute() {
         long s = System.nanoTime();
 //        execute(10000000, 2, true);
-        execute(new BigInteger("10000000"), 2, true);
+        execute(new BigInteger("1000"), 2, true);
         long e = System.nanoTime();
         System.out.printf("Time taken: %s", (e - s) * Math.pow(10, -9));
     }
