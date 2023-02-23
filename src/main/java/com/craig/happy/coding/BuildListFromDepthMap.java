@@ -1,8 +1,7 @@
+package com.craig.happy.coding;
+
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class BuildListFromDepthMap implements HappyCoding {
     @Override

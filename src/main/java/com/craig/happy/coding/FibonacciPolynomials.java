@@ -1,5 +1,6 @@
+package com.craig.happy.coding;
+
 import java.math.BigInteger;
-import java.util.Map;
 import java.util.Objects;
 
 public class FibonacciPolynomials implements HappyCoding {

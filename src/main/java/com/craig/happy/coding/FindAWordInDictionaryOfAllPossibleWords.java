@@ -1,6 +1,7 @@
+package com.craig.happy.coding;
+
 import java.math.BigInteger;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class FindAWordInDictionaryOfAllPossibleWords implements HappyCoding {
     @Override

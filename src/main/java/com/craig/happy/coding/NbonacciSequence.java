@@ -1,4 +1,4 @@
-import java.util.Arrays;
+package com.craig.happy.coding;
 
 public class NbonacciSequence implements HappyCoding {
 

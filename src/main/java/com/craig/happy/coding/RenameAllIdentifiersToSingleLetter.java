@@ -1,8 +1,7 @@
-import java.nio.CharBuffer;
+package com.craig.happy.coding;
+
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class RenameAllIdentifiersToSingleLetter implements HappyCoding {
     @Override

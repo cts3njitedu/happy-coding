@@ -1,3 +1,5 @@
+package com.craig.happy.coding;
+
 import java.util.Arrays;
 
 public class ZigzagifyAMatrix implements HappyCoding {

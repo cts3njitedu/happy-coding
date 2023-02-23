@@ -1,6 +1,6 @@
-import java.math.BigDecimal;
+package com.craig.happy.coding;
+
 import java.math.BigInteger;
-import java.util.stream.IntStream;
 
 public class SumOfBinarySubstrings implements HappyCoding {
 

@@ -1,3 +1,5 @@
+package com.craig.happy.coding;
+
 public class TelescopicParenthesis implements HappyCoding {
 
     @Override
