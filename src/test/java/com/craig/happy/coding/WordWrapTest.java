@@ -29,8 +29,6 @@ public class WordWrapTest {
     @ParameterizedTest
     @MethodSource("wordWrapCases")
     void testWordWrap(String word, int column, String expectedWordWrap) {
-        String actualWordWrap = wordWrap.execute(word, column);
-        System.out.println(actualWordWrap);
-        assertEquals(expectedWordWrap, actualWordWrap);
+        assertEquals(expectedWordWrap, wordWrap.execute(word, column));
     }
 }
