@@ -34,13 +34,13 @@ public class ListUtilTest {
                         ofList(ofList(ofItem(1), ofItem(2), ofList(ofItem(3), ofItem(4),
                                 ofList(ofItem(5)), ofList(ofItem(6), ofItem(7), ofList(ofItem(8), ofItem(9), ofItem(10)),
                                         ofItem(11)))), ofItem(12), ofItem(13), ofList(ofItem(14)))
+                ),
+                Arguments.of(
+                        List.of(1, List.of(2, List.of(3, List.of(4, List.of(5, List.of(4,
+                                List.of(3, List.of(2, List.of(1))))))))),
+                        ofList(ofItem(1), ofList(ofItem(2), ofList(ofItem(3), ofList(ofItem(4), ofList(ofItem(5),
+                                ofList(ofItem(4), ofList(ofItem(3), ofList(ofItem(2), ofList(ofItem(1))))))))))
                 )
-//                Arguments.of(
-//                        List.of(1, List.of(2, List.of(3, List.of(4, List.of(5, List.of(4,
-//                                List.of(3, List.of(2, List.of(1))))))))),
-//                        ofList(ofItem(1), ofList(ofItem(2), ofList(ofItem(3), ofList(ofItem(4), ofList(5, ofList(ofItem(4),
-//                                ofList(ofItem(3), ofList(ofItem(2), ofList(ofItem(1))))))))))
-//                )
 
         );
     }
