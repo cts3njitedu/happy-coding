@@ -53,8 +53,12 @@ public class ZipRaggedListsTest {
                         List.of(1, List.of(6, 7)),
                         null,
                         "[]"
+                ),
+                Arguments.of(
+                        List.of(),
+                        List.of(),
+                        "[]"
                 )
-
         );
     }
 
@@ -62,6 +66,14 @@ public class ZipRaggedListsTest {
     @MethodSource("zipRaggedListsCases")
     void testZipRaggedLists(Object object1, Object object2, String expectedZipRaggedLists) {
         List<Object> actualZipRaggedLists = zipRaggedLists.zippedRaggedList(object1, object2);
+        Assertions.assertEquals(expectedZipRaggedLists.replaceAll("\\s", ""),
+                actualZipRaggedLists.toString().replaceAll("\\s", ""));
+    }
+
+    @ParameterizedTest
+    @MethodSource("zipRaggedListsCases")
+    void testZipRaggedListsEither(Object object1, Object object2, String expectedZipRaggedLists) {
+        List<Object> actualZipRaggedLists = zipRaggedLists.zippedRaggedListEither(object1, object2);
         Assertions.assertEquals(expectedZipRaggedLists.replaceAll("\\s", ""),
                 actualZipRaggedLists.toString().replaceAll("\\s", ""));
     }

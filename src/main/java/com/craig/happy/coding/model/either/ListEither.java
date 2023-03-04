@@ -55,7 +55,7 @@ public class ListEither<L extends List<ListEither<? extends List<?>, ?>>, R>
     }
 
     public boolean isEmpty() {
-        return Objects.isNull(super.getLeft())
+        return (Objects.isNull(super.getLeft()) || super.getLeft().isEmpty())
                 && Objects.isNull(super.getRight());
     }
 

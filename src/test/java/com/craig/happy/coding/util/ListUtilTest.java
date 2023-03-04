@@ -40,6 +40,10 @@ public class ListUtilTest {
                                 List.of(3, List.of(2, List.of(1))))))))),
                         ofList(ofItem(1), ofList(ofItem(2), ofList(ofItem(3), ofList(ofItem(4), ofList(ofItem(5),
                                 ofList(ofItem(4), ofList(ofItem(3), ofList(ofItem(2), ofList(ofItem(1))))))))))
+                ),
+                Arguments.of(
+                        List.of(),
+                        ofList(List.of())
                 )
 
         );
