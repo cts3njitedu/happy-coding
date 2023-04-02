@@ -1,19 +1,18 @@
 package com.craig.happy.coding.util;
 
-import com.craig.happy.coding.model.either.ListEither2;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import static com.craig.happy.coding.model.either.ListEither2.ofItem;
 import static com.craig.happy.coding.model.either.ListEither2.ofList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import com.craig.happy.coding.model.either.ListEither2;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 public class ListUtil2Test {
 
@@ -62,7 +61,7 @@ public class ListUtil2Test {
 
     @Test
     void testConvertException() {
-        assertThrows(IllegalArgumentException.class, () -> ListUtil.convert(List.of(Map.of())));
+        assertThrows(IllegalArgumentException.class, () -> ListUtil2.convert(List.of(Map.of())));
     }
 
 
