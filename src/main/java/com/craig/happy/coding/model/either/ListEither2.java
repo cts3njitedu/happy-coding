@@ -6,25 +6,32 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@Deprecated
-public class ListEither<L extends List<ListEither<? extends List<?>, ?>>, R>
-        extends Either<L, R> {
+public class ListEither2<R>
+        extends Either<List<ListEither2<R>>, R> {
 
     private static final Set<Class<?>> validItems = Set.of(Number.class, Character.class, String.class);
 
-    public ListEither(L l, R r) {
-        super(l, r);
+    public ListEither2(List<ListEither2<R>> l) {
+        super(l, null);
     }
 
-    public static <C extends List<ListEither<? extends List<?>, ?>>, G> ListEither<C, G> of() {
-        return new ListEither<>(null, null);
+    public ListEither2(R r) {
+        super(null, r);
     }
 
-    public static <C extends List<ListEither<? extends List<?>, ?>>, G> ListEither<C, G> ofItem(G g) {
+    public ListEither2() {
+        super(null, null);
+    }
+
+    public static <G> ListEither2<G> of() {
+        return new ListEither2<>();
+    }
+
+    public static <G> ListEither2<G> ofItem(G g) {
         boolean isValid = validItems.stream()
                 .anyMatch(cls -> cls.isInstance(g));
         if (isValid) {
-            return new ListEither<>(null, g);
+            return new ListEither2<>(g);
         } else {
             throw new IllegalArgumentException(String.format("Element must be one of these class types %s, " +
                     "but element has a class type of %s", validItems.stream()
@@ -34,17 +41,16 @@ public class ListEither<L extends List<ListEither<? extends List<?>, ?>>, R>
 
     }
 
-    public static <C extends List<ListEither<? extends List<?>, ?>>, G> ListEither<C, G> ofList(C c) {
-        return new ListEither<>(c, null);
+    public static <G> ListEither2<G> ofList(List<ListEither2<G>> l) {
+        return new ListEither2<>(l);
     }
 
     @SafeVarargs
-    public static <C extends List<ListEither<? extends List<?>, ?>>, G> ListEither<C, G>
-    ofList(ListEither<? extends List<?>, ?> g, ListEither<? extends List<?>, ?>... v) {
-        List<ListEither<? extends List<?>, ?>> c = new ArrayList<>();
+    public static <G> ListEither2<G> ofList(ListEither2<G> g, ListEither2<G>... v) {
+        List<ListEither2<G>> c = new ArrayList<>();
         c.add(g);
         c.addAll(List.of(v));
-        return new ListEither<>((C) c, null);
+        return new ListEither2<>(c);
     }
 
     public boolean isList() {
@@ -60,15 +66,15 @@ public class ListEither<L extends List<ListEither<? extends List<?>, ?>>, R>
                 && Objects.isNull(super.getRight());
     }
 
-    public ListEither<L, R> getListEither() {
+    public ListEither2<R> getListEither() {
         return this;
     }
 
-    public L getList() {
+    public List<ListEither2<R>> getList() {
         return super.getLeft();
     }
 
-    public R getItem() {
+    public Object getItem() {
         return super.getRight();
     }
 }

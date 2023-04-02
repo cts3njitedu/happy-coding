@@ -5,6 +5,7 @@ import com.craig.happy.coding.model.either.ListEither;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class ListUtil {
 
     public static ListEither<List<ListEither<? extends List<?>, ?>>, Object> convert(Object object) {
