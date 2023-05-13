@@ -14,32 +14,42 @@ public class MatrixUtil {
   public static final Integer MAX_TRANSFORMATIONS = 8;
 
   public static boolean isCongruent(boolean[][] matrix1, boolean[][] matrix2) {
-    boolean isMatrixSizeEqual = (matrix1.length == matrix2.length)
-        && (matrix1[0].length == matrix2[0].length);
-    boolean isMatrixRotateEqual = (matrix1.length == matrix2[0].length)
-        && (matrix1[0].length == matrix2.length);
-    if (isMatrixSizeEqual || isMatrixRotateEqual) {
-      boolean[] transformations = new boolean[MAX_TRANSFORMATIONS];
-      initializeTransformations(isMatrixSizeEqual, isMatrixRotateEqual, transformations);
+    boolean[] transformations = getTransformations(matrix1, matrix2);
+    if (hasCongruentTransformation(transformations)) {
       for (int i = 0; i < matrix1.length; i++) {
         for (int j = 0; j < matrix1[0].length; j++) {
           checkTransformations(matrix1, matrix2, transformations, i, j);
         }
       }
-      for (boolean b : transformations) {
-        if (b) {
-          return true;
-        }
-      }
+      return hasCongruentTransformation(transformations);
     }
     return false;
   }
 
-  private static void initializeTransformations(boolean isMatrixSizeEqual,
-      boolean isMatrixRotateEqual,
-      boolean[] transformations) {
-    transformations[ZERO_DEGREE] = transformations[ZERO_REFLECT_DEGREE] = transformations[ONE_EIGHTY_DEGREE] = transformations[ONE_EIGHTY_REFLECT_DEGREE] = isMatrixSizeEqual;
-    transformations[NINETY_DEGREE] = transformations[NINETY_REFLECT_DEGREE] = transformations[TWO_SEVENTY_DEGREE] = transformations[TWO_SEVENTY_REFLECT_DEGREE] = isMatrixRotateEqual;
+  private static boolean[] getTransformations(boolean[][] matrix1, boolean[][] matrix2) {
+    boolean isMatrixSizeEqual = (matrix1.length == matrix2.length)
+        && (matrix1[0].length == matrix2[0].length);
+    boolean isMatrixRotateEqual = (matrix1.length == matrix2[0].length)
+        && (matrix1[0].length == matrix2.length);
+    boolean[] transformations = new boolean[MAX_TRANSFORMATIONS];
+    transformations[ZERO_DEGREE] = isMatrixSizeEqual;
+    transformations[ZERO_REFLECT_DEGREE] = isMatrixSizeEqual;
+    transformations[ONE_EIGHTY_DEGREE] = isMatrixSizeEqual;
+    transformations[ONE_EIGHTY_REFLECT_DEGREE] = isMatrixSizeEqual;
+    transformations[NINETY_DEGREE] = isMatrixRotateEqual;
+    transformations[NINETY_REFLECT_DEGREE] = isMatrixRotateEqual;
+    transformations[TWO_SEVENTY_DEGREE] = isMatrixRotateEqual;
+    transformations[TWO_SEVENTY_REFLECT_DEGREE] = isMatrixRotateEqual;
+    return transformations;
+  }
+
+  private static boolean hasCongruentTransformation(boolean[] transformations) {
+    for (boolean b : transformations) {
+      if (b) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private static void checkTransformations(boolean[][] matrix1, boolean[][] matrix2,
