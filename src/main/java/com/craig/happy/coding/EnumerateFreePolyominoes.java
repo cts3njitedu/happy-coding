@@ -13,42 +13,42 @@ public class EnumerateFreePolyominoes {
   }
 
   public List<boolean[][]> enumerate(int n) {
-    LinkedList<boolean[][]> matrices = new LinkedList<>();
+    LinkedList<boolean[][]> freePolyominoes = new LinkedList<>();
     if (n < 1) {
-      matrices.add(new boolean[][]{});
-      return matrices;
+      freePolyominoes.add(new boolean[][]{});
+      return freePolyominoes;
     }
     boolean[][] a = new boolean[3][3];
     a[1][1] = true;
-    matrices.add(a);
+    freePolyominoes.add(a);
     for (int i = 2; i <= n; i++) {
-      LinkedList<boolean[][]> expandedMatrices = new LinkedList<>();
-      while (!matrices.isEmpty()) {
-        boolean[][] oldMatrix = matrices.poll();
-        for (int r = 0; r < oldMatrix.length; r++) {
-          for (int c = 0; c < oldMatrix[0].length; c++) {
-            if (oldMatrix[r][c]) {
-              enumerate(expandedMatrices, oldMatrix, r - 1, c);
-              enumerate(expandedMatrices, oldMatrix, r, c + 1);
-              enumerate(expandedMatrices, oldMatrix, r + 1, c);
-              enumerate(expandedMatrices, oldMatrix, r, c - 1);
+      LinkedList<boolean[][]> newFreePolyominoes = new LinkedList<>();
+      while (!freePolyominoes.isEmpty()) {
+        boolean[][] polyomino = freePolyominoes.poll();
+        for (int r = 0; r < polyomino.length; r++) {
+          for (int c = 0; c < polyomino[0].length; c++) {
+            if (polyomino[r][c]) {
+              enumerate(newFreePolyominoes, polyomino, r - 1, c);
+              enumerate(newFreePolyominoes, polyomino, r, c + 1);
+              enumerate(newFreePolyominoes, polyomino, r + 1, c);
+              enumerate(newFreePolyominoes, polyomino, r, c - 1);
             }
           }
         }
       }
-      matrices.addAll(expandedMatrices);
+      freePolyominoes.addAll(newFreePolyominoes);
     }
-    return matrices;
+    return freePolyominoes;
   }
 
-  private void enumerate(List<boolean[][]> expandedMatrices, boolean[][] matrix, int r, int c) {
+  private void enumerate(List<boolean[][]> freePolyominoes, boolean[][] matrix, int r, int c) {
     if (!matrix[r][c]) {
       matrix[r][c] = true;
-      boolean[][] expandedMatrix = getExpandedMatrix(matrix);
+      boolean[][] polyomino = getExpandedMatrix(matrix);
       matrix[r][c] = false;
-      boolean isExist = isExist(expandedMatrices, expandedMatrix);
+      boolean isExist = isExist(freePolyominoes, polyomino);
       if (!isExist) {
-        expandedMatrices.add(expandedMatrix);
+        freePolyominoes.add(polyomino);
       }
     }
   }
