@@ -1,56 +1,77 @@
 package com.craig.happy.coding.util;
 
-import java.util.Arrays;
-
 public class MatrixUtil {
 
-  public static boolean isCongruent(boolean[][] matrix, boolean[][] newMatrix) {
-    boolean[] isEqual = new boolean[8];
-    Arrays.fill(isEqual, true);
-    boolean isMatrixSizeEqual = (matrix.length == newMatrix.length)
-        && (matrix[0].length == newMatrix[0].length);
-    boolean isMatrixRotateEqual = (matrix.length == newMatrix[0].length)
-        && (matrix[0].length == newMatrix.length);
-    isEqual[0] = isEqual[1] = isEqual[4] = isEqual[5] = isMatrixSizeEqual;
-    isEqual[2] = isEqual[3] = isEqual[6] = isEqual[7] = isMatrixRotateEqual;
+  public static final Integer ZERO_DEGREE = 0;
+  public static final Integer ZERO_REFLECT_DEGREE = 1;
+  public static final Integer NINETY_DEGREE = 2;
+  public static final Integer NINETY_REFLECT_DEGREE = 3;
+  public static final Integer ONE_EIGHTY_DEGREE = 4;
+  public static final Integer ONE_EIGHTY_REFLECT_DEGREE = 5;
+  public static final Integer TWO_SEVENTY_DEGREE = 6;
+  public static final Integer TWO_SEVENTY_REFLECT_DEGREE = 7;
+
+  public static final Integer MAX_TRANSFORMATIONS = 8;
+
+  public static boolean isCongruent(boolean[][] matrix1, boolean[][] matrix2) {
+    boolean isMatrixSizeEqual = (matrix1.length == matrix2.length)
+        && (matrix1[0].length == matrix2[0].length);
+    boolean isMatrixRotateEqual = (matrix1.length == matrix2[0].length)
+        && (matrix1[0].length == matrix2.length);
     if (isMatrixSizeEqual || isMatrixRotateEqual) {
-      for (int i = 0; i < matrix.length; i++) {
-        for (int j = 0; j < matrix[0].length; j++) {
-          if (isEqual[0]) {
-            isEqual[0] = matrix[i][j] == newMatrix[i][j];
-          }
-          if (isEqual[1]) {
-            isEqual[1] = matrix[i][j] == newMatrix[i][newMatrix[0].length - 1 - j];
-          }
-          if (isEqual[2]) {
-            isEqual[2] = matrix[i][j] == newMatrix[j][newMatrix[0].length - 1 - i];
-          }
-          if (isEqual[3]) {
-            isEqual[3] =
-                matrix[i][j] == newMatrix[newMatrix.length - 1 - j][newMatrix[0].length - 1 - i];
-          }
-          if (isEqual[4]) {
-            isEqual[4] = matrix[i][j] == newMatrix[newMatrix.length - 1 - i][j];
-          }
-          if (isEqual[5]) {
-            isEqual[5] =
-                matrix[i][j] == newMatrix[newMatrix.length - 1 - i][newMatrix[0].length - 1 - j];
-          }
-          if (isEqual[6]) {
-            isEqual[6] = matrix[i][j] == newMatrix[j][i];
-          }
-          if (isEqual[7]) {
-            isEqual[7] = matrix[i][j] == newMatrix[newMatrix.length - 1 - j][i];
-          }
+      boolean[] transformations = new boolean[MAX_TRANSFORMATIONS];
+      initializeTransformations(isMatrixSizeEqual, isMatrixRotateEqual, transformations);
+      for (int i = 0; i < matrix1.length; i++) {
+        for (int j = 0; j < matrix1[0].length; j++) {
+          checkTransformations(matrix1, matrix2, transformations, i, j);
         }
       }
-      for (boolean b : isEqual) {
+      for (boolean b : transformations) {
         if (b) {
           return true;
         }
       }
     }
     return false;
+  }
+
+  private static void initializeTransformations(boolean isMatrixSizeEqual,
+      boolean isMatrixRotateEqual,
+      boolean[] transformations) {
+    transformations[ZERO_DEGREE] = transformations[ZERO_REFLECT_DEGREE] = transformations[ONE_EIGHTY_DEGREE] = transformations[ONE_EIGHTY_REFLECT_DEGREE] = isMatrixSizeEqual;
+    transformations[NINETY_DEGREE] = transformations[NINETY_REFLECT_DEGREE] = transformations[TWO_SEVENTY_DEGREE] = transformations[TWO_SEVENTY_REFLECT_DEGREE] = isMatrixRotateEqual;
+  }
+
+  private static void checkTransformations(boolean[][] matrix1, boolean[][] matrix2,
+      boolean[] transformations, int i, int j) {
+    if (transformations[ZERO_DEGREE]) {
+      transformations[ZERO_DEGREE] = matrix1[i][j] == matrix2[i][j];
+    }
+    if (transformations[ZERO_REFLECT_DEGREE]) {
+      transformations[ZERO_REFLECT_DEGREE] = matrix1[i][j] == matrix2[i][
+          matrix2[0].length - 1 - j];
+    }
+    if (transformations[NINETY_DEGREE]) {
+      transformations[NINETY_DEGREE] = matrix1[i][j] == matrix2[j][matrix2[0].length - 1 - i];
+    }
+    if (transformations[NINETY_REFLECT_DEGREE]) {
+      transformations[NINETY_REFLECT_DEGREE] =
+          matrix1[i][j] == matrix2[matrix2.length - 1 - j][matrix2[0].length - 1 - i];
+    }
+    if (transformations[ONE_EIGHTY_DEGREE]) {
+      transformations[ONE_EIGHTY_DEGREE] = matrix1[i][j] == matrix2[matrix2.length - 1 - i][j];
+    }
+    if (transformations[ONE_EIGHTY_REFLECT_DEGREE]) {
+      transformations[ONE_EIGHTY_REFLECT_DEGREE] =
+          matrix1[i][j] == matrix2[matrix2.length - 1 - i][matrix2[0].length - 1 - j];
+    }
+    if (transformations[TWO_SEVENTY_DEGREE]) {
+      transformations[TWO_SEVENTY_DEGREE] = matrix1[i][j] == matrix2[j][i];
+    }
+    if (transformations[TWO_SEVENTY_REFLECT_DEGREE]) {
+      transformations[TWO_SEVENTY_REFLECT_DEGREE] = matrix1[i][j] == matrix2[
+          matrix2.length - 1 - j][i];
+    }
   }
 
 
