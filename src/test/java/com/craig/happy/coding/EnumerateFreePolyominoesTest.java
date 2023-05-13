@@ -45,7 +45,7 @@ public class EnumerateFreePolyominoesTest {
   @Test
   void testEnumerateFreePolyominoes() {
     int n = 4;
-    List<boolean[][]> freePolyominoes = enumerateFreePolyominoes.enumerate(n);
+    List<boolean[][]> freePolyominoes = enumerateFreePolyominoes.enumerateFreePolyominoes(n);
     System.out.printf("Number: %d, Count: %d%n\n", n, freePolyominoes.size());
     System.out.println("--------------");
     freePolyominoes
