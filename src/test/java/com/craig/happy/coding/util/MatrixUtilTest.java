@@ -1,5 +1,7 @@
 package com.craig.happy.coding.util;
 
+import static com.craig.happy.coding.util.MatrixUtil.getExpandedMatrix;
+import static com.craig.happy.coding.util.MatrixUtil.isCongruent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Stream;
@@ -167,7 +169,7 @@ public class MatrixUtilTest {
   @ParameterizedTest
   @MethodSource("getExpandedMatrixCases")
   void testGetExpandedMatrix(boolean[][] matrix, boolean[][] expectedExpandedMatrix) {
-    boolean[][] actualExpandedMatrix = MatrixUtil.getExpandedMatrix(matrix);
+    boolean[][] actualExpandedMatrix = getExpandedMatrix(matrix);
     assertEquals(actualExpandedMatrix.length, expectedExpandedMatrix.length);
     assertEquals(actualExpandedMatrix[0].length, expectedExpandedMatrix[0].length);
     for (int i = 0; i < expectedExpandedMatrix.length; i++) {
@@ -176,4 +178,93 @@ public class MatrixUtilTest {
       }
     }
   }
+
+  private static Stream<Arguments> isCongruentCases() {
+    return Stream.of(
+        Arguments.of(
+            new boolean[][]{
+                {false, false, false},
+                {false, true, false},
+                {false, true, false},
+                {false, false, false},
+            },
+            new boolean[][]{
+                {false, false, false},
+                {false, true, false},
+                {false, true, false},
+                {false, false, false},
+            },
+            true
+        ),
+        Arguments.of(
+            new boolean[][]{
+                {false, false, false, false},
+                {false, true, true, false},
+                {false, false, false, false},
+            },
+            new boolean[][]{
+                {false, false, false},
+                {false, true, false},
+                {false, true, false},
+                {false, false, false},
+            },
+            true
+        ),
+        Arguments.of(
+            new boolean[][]{
+                {false, false, false, false, false},
+                {false, true, true, false, false},
+                {false, false, true, true, false},
+                {false, false, false, false, false},
+            },
+            new boolean[][]{
+                {false, false, false, false},
+                {false, true, false, false},
+                {false, true, true, false},
+                {false, false, true, false},
+                {false, false, false, false},
+            },
+            true
+        ),
+        Arguments.of(
+            new boolean[][]{
+                {false, false, false, false, false},
+                {false, true, true, false, false},
+                {false, false, true, true, false},
+                {false, false, false, false, false},
+            },
+            new boolean[][]{
+                {false, false, false, false},
+                {false, true, true, false},
+                {false, false, true, false},
+                {false, false, true, false},
+                {false, false, false, false},
+            },
+            false
+        ),
+        Arguments.of(
+            new boolean[][]{
+                {false, false, false, false, false, false},
+                {false, true, true, true, true, false},
+                {false, false, false, false, false, false},
+            },
+            new boolean[][]{
+                {false, false, false},
+                {false, true, false},
+                {false, true, false},
+                {false, true, false},
+                {false, true, false},
+                {false, false, false},
+            },
+            true
+        )
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("isCongruentCases")
+  void testIsCongruent(boolean[][] matrix1, boolean[][] matrix2, boolean isCongruent) {
+    assertEquals(isCongruent, isCongruent(matrix1, matrix2));
+  }
+
 }
