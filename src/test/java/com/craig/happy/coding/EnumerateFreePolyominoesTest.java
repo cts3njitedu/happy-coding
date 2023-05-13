@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class EnumerateFreePolyominoesTest {
 
-  private EnumerateFreePolyominoes enumerateFreePolyominoes = new EnumerateFreePolyominoes();
+  private final EnumerateFreePolyominoes enumerateFreePolyominoes = new EnumerateFreePolyominoes();
 
   private static Stream<Arguments> enumerateFreePolyominoesCases() {
     return Stream.of(
