@@ -44,19 +44,19 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    int n = 4;
+    int n = 6;
     List<boolean[][]> freePolyominoes = enumerateFreePolyominoes.enumerateFreePolyominoes(n);
     System.out.printf("Number: %d, Count: %d%n\n", n, freePolyominoes.size());
-    System.out.println("--------------");
+    System.out.println("**************");
     freePolyominoes
         .forEach(freePolyomino -> {
           for (int i = 0; i < freePolyomino.length; i++) {
             for (int j = 0; j < freePolyomino[0].length; j++) {
-              System.out.print((freePolyomino[i][j] ? "*" : "_") + " ");
+              System.out.print((freePolyomino[i][j] ? "[]" : "  ") + "");
             }
             System.out.println();
           }
-          System.out.println("--------------");
+          System.out.println("**************");
         });
   }
 }
