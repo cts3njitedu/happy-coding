@@ -23,25 +23,30 @@ public class MatrixUtil {
             isEqual[1] = matrix[i][j] == newMatrix[i][newMatrix[0].length - 1 - j];
           }
           if (isEqual[2]) {
-            isEqual[2] = matrix[i][j] == newMatrix[j][newMatrix[0].length - 1];
+            isEqual[2] = matrix[i][j] == newMatrix[j][newMatrix[0].length - 1 - i];
           }
           if (isEqual[3]) {
             isEqual[3] =
-                matrix[i][j] == newMatrix[newMatrix.length - 1 - j][newMatrix[0].length - 1];
+                matrix[i][j] == newMatrix[newMatrix.length - 1 - j][newMatrix[0].length - 1 - i];
           }
           if (isEqual[4]) {
-            isEqual[4] = matrix[i][j] == newMatrix[newMatrix.length - 1][j];
+            isEqual[4] = matrix[i][j] == newMatrix[newMatrix.length - 1 - i][j];
           }
           if (isEqual[5]) {
             isEqual[5] =
-                matrix[i][j] == newMatrix[newMatrix.length - 1][newMatrix[0].length - 1 - j];
+                matrix[i][j] == newMatrix[newMatrix.length - 1 - i][newMatrix[0].length - 1 - j];
           }
           if (isEqual[6]) {
-            isEqual[6] = matrix[i][j] == newMatrix[j][0];
+            isEqual[6] = matrix[i][j] == newMatrix[j][i];
           }
           if (isEqual[7]) {
-            isEqual[7] = matrix[i][j] == newMatrix[newMatrix.length - 1 - j][0];
+            isEqual[7] = matrix[i][j] == newMatrix[newMatrix.length - 1 - j][i];
           }
+        }
+      }
+      for (boolean b : isEqual) {
+        if (b) {
+          return true;
         }
       }
     }
