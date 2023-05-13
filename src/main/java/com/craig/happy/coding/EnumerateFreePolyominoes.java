@@ -8,7 +8,7 @@ import java.util.List;
 
 public class EnumerateFreePolyominoes {
 
-  public int getNumberOfPolyominoes(int n) {
+  public int getNumberOfFreePolyominoes(int n) {
     return enumerateFreePolyominoes(n).size();
   }
 

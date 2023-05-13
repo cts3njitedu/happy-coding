@@ -39,7 +39,7 @@ public class EnumerateFreePolyominoesTest {
   @ParameterizedTest
   @MethodSource("enumerateFreePolyominoesCases")
   void testGetNumberOfFreePolyominoes(int n, int expectedCount) {
-    assertEquals(expectedCount, enumerateFreePolyominoes.getNumberOfPolyominoes(n));
+    assertEquals(expectedCount, enumerateFreePolyominoes.getNumberOfFreePolyominoes(n));
   }
 
   @Test
