@@ -134,7 +134,7 @@ public class MatrixUtil {
         .forEach(matrix -> {
           for (int i = 0; i < matrix.length; i++) {
             for (int j = 0; j < matrix[0].length; j++) {
-              System.out.print((matrix[i][j] ? trueFlag : "".repeat(trueFlag.length())) + "");
+              System.out.print((matrix[i][j] ? trueFlag : " ".repeat(trueFlag.length())) + "");
             }
             System.out.println();
           }
