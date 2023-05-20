@@ -87,8 +87,7 @@ public class MatrixUtil {
     }
   }
 
-
-  public static boolean[][] getExpandedMatrix(boolean[][] matrix) {
+  public static boolean[][] centerMatrix(boolean[][] matrix) {
     int rows = matrix.length;
     int columns = matrix[0].length;
     boolean startRowFromZero = true;
