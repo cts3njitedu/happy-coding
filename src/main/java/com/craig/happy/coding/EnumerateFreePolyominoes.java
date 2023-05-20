@@ -54,14 +54,19 @@ public class EnumerateFreePolyominoes {
 
   private void enumerateFreePolyominoes(List<boolean[][]> polyominoes,
       boolean[][] polyomino, int row, int column) {
-    if (row == -1 || column == -1 || row == polyomino.length || column == polyomino[0].length
-        || !polyomino[row][column]) {
+    if (isValidCell(polyomino, row, column)) {
       boolean[][] newPolyomino = getNewPolyomino(polyomino, row, column);
-      boolean isExist = isExist(polyominoes, newPolyomino);
+      boolean isExist = polyominoes.stream()
+          .anyMatch(existingPolyomino -> isCongruent(existingPolyomino, newPolyomino));
       if (!isExist) {
         polyominoes.add(newPolyomino);
       }
     }
+  }
+
+  private boolean isValidCell(boolean[][] polyomino, int row, int column) {
+    return row == -1 || column == -1 || row == polyomino.length || column == polyomino[0].length
+        || !polyomino[row][column];
   }
 
   private boolean[][] getNewPolyomino(boolean[][] polyomino, int row, int column) {
@@ -77,11 +82,6 @@ public class EnumerateFreePolyominoes {
     }
     newPolyomino[row == -1 ? 0 : row][column == -1 ? 0 : column] = true;
     return newPolyomino;
-  }
-
-  private boolean isExist(List<boolean[][]> newFreePolyominoes, boolean[][] polyomino) {
-    return newFreePolyominoes.stream()
-        .anyMatch(newPolyomino -> isCongruent(polyomino, newPolyomino));
   }
 
 }

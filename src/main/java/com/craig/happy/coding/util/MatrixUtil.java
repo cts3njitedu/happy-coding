@@ -129,7 +129,7 @@ public class MatrixUtil {
 
   public static void print(int n, List<boolean[][]> matrices, String trueFlag) {
     System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
-    System.out.println("############");
+    System.out.println("START");
     matrices
         .forEach(matrix -> {
           for (int i = 0; i < matrix.length; i++) {
@@ -138,8 +138,8 @@ public class MatrixUtil {
             }
             System.out.println();
           }
-          System.out.println("**************");
+          System.out.println("__________________");
         });
-    System.out.println("############");
+    System.out.println("FINISH");
   }
 }
