@@ -1,6 +1,5 @@
 package com.craig.happy.coding;
 
-import static com.craig.happy.coding.util.MatrixUtil.getExpandedMatrix;
 import static com.craig.happy.coding.util.MatrixUtil.isCongruent;
 
 import java.util.LinkedList;
@@ -13,15 +12,22 @@ public class EnumerateFreePolyominoes {
   }
 
   public List<boolean[][]> enumerateFreePolyominoes(int n) {
+    return enumerateFreePolyominoes(n, false);
+  }
+
+  public List<boolean[][]> enumerateFreePolyominoes(int n, boolean isPrint) {
     LinkedList<boolean[][]> freePolyominoes = new LinkedList<>();
     if (n < 1) {
       freePolyominoes.add(new boolean[][]{});
       return freePolyominoes;
     }
-    boolean[][] a = new boolean[3][3];
-    a[1][1] = true;
-    freePolyominoes.add(a);
+    boolean[][] polyomino = new boolean[1][1];
+    polyomino[0][0] = true;
+    freePolyominoes.add(polyomino);
     for (int i = 2; i <= n; i++) {
+      if (isPrint) {
+        print(i - 1, freePolyominoes);
+      }
       LinkedList<boolean[][]> newFreePolyominoes = new LinkedList<>();
       while (!freePolyominoes.isEmpty()) {
         boolean[][] freePolyomino = freePolyominoes.poll();
@@ -38,25 +44,59 @@ public class EnumerateFreePolyominoes {
       }
       freePolyominoes.addAll(newFreePolyominoes);
     }
+    if (isPrint) {
+      print(n, freePolyominoes);
+    }
+
     return freePolyominoes;
   }
 
-  private void enumerateFreePolyominoes(List<boolean[][]> freePolyominoes,
-      boolean[][] freePolyomino, int row, int column) {
-    if (!freePolyomino[row][column]) {
-      freePolyomino[row][column] = true;
-      boolean[][] newPolyomino = getExpandedMatrix(freePolyomino);
-      freePolyomino[row][column] = false;
-      boolean isExist = isExist(freePolyominoes, newPolyomino);
+  private void enumerateFreePolyominoes(List<boolean[][]> polyominoes,
+      boolean[][] polyomino, int row, int column) {
+    if (row == -1 || column == -1 || row == polyomino.length || column == polyomino[0].length
+        || !polyomino[row][column]) {
+      boolean[][] newPolyomino = getNewPolyomino(polyomino, row, column);
+      boolean isExist = isExist(polyominoes, newPolyomino);
       if (!isExist) {
-        freePolyominoes.add(newPolyomino);
+        polyominoes.add(newPolyomino);
       }
     }
   }
 
-  private boolean isExist(List<boolean[][]> polyominoes, boolean[][] polyomino) {
-    return polyominoes.stream()
+  private boolean[][] getNewPolyomino(boolean[][] polyomino, int row, int column) {
+    boolean[][] newPolyomino = new boolean[(row == -1 || row == polyomino.length) ?
+        polyomino.length + 1 : polyomino.length][(column == -1 || column == polyomino[0].length) ?
+        polyomino[0].length + 1 : polyomino[0].length];
+    int firstRow = row == -1 ? 1 : 0;
+    int firstColumn = column == -1 ? 1 : 0;
+    for (int i = 0; i < polyomino.length; i++) {
+      for (int j = 0; j < polyomino[0].length; j++) {
+        newPolyomino[firstRow == 1 ? i + 1 : i][firstColumn == 1 ? j + 1 : j] = polyomino[i][j];
+      }
+    }
+    newPolyomino[row == -1 ? 0 : row][column == -1 ? 0 : column] = true;
+    return newPolyomino;
+  }
+
+  private boolean isExist(List<boolean[][]> newFreePolyominoes, boolean[][] polyomino) {
+    return newFreePolyominoes.stream()
         .anyMatch(newPolyomino -> isCongruent(polyomino, newPolyomino));
+  }
+
+  private void print(int n, List<boolean[][]> freePolyominoes) {
+    System.out.printf("Number: %d, Count: %d%n\n", n, freePolyominoes.size());
+    System.out.println("############");
+    freePolyominoes
+        .forEach(freePolyomino -> {
+          for (int i = 0; i < freePolyomino.length; i++) {
+            for (int j = 0; j < freePolyomino[0].length; j++) {
+              System.out.print((freePolyomino[i][j] ? "[]" : "  ") + "");
+            }
+            System.out.println();
+          }
+          System.out.println("**************");
+        });
+    System.out.println("############");
   }
 
 }
