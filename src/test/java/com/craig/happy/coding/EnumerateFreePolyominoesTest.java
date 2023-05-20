@@ -3,60 +3,45 @@ package com.craig.happy.coding;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 public class EnumerateFreePolyominoesTest {
 
   private final EnumerateFreePolyominoes enumerateFreePolyominoes = new EnumerateFreePolyominoes();
 
-  private static Stream<Arguments> enumerateFreePolyominoesCases() {
-    return Stream.of(
-        Arguments.of(
-            0, 1
-        ),
-        Arguments.of(
-            1, 1
-        ),
-        Arguments.of(
-            2, 1
-        ),
-        Arguments.of(
-            3, 2
-        ),
-        Arguments.of(
-            4, 5
-        ),
-        Arguments.of(
-            5, 12
-        )
-    );
+  private static class EnumerateFreePolyominoesArgument {
+
+    int n;
+    int expectedCount;
+
+    public EnumerateFreePolyominoesArgument(int n, int expectedCount) {
+      this.n = n;
+      this.expectedCount = expectedCount;
+    }
   }
 
-  @ParameterizedTest
-  @MethodSource("enumerateFreePolyominoesCases")
-  void testGetNumberOfFreePolyominoes(int n, int expectedCount) {
-    assertEquals(expectedCount, enumerateFreePolyominoes.getNumberOfFreePolyominoes(n));
+  @Test
+  void testGetNumberOfFreePolyominoes() {
+    List<EnumerateFreePolyominoesArgument> arguments = List.of(
+        new EnumerateFreePolyominoesArgument(0, 1),
+        new EnumerateFreePolyominoesArgument(1, 1),
+        new EnumerateFreePolyominoesArgument(2, 1),
+        new EnumerateFreePolyominoesArgument(3, 2),
+        new EnumerateFreePolyominoesArgument(4, 5),
+        new EnumerateFreePolyominoesArgument(5, 12),
+        new EnumerateFreePolyominoesArgument(6, 35),
+        new EnumerateFreePolyominoesArgument(7, 108),
+        new EnumerateFreePolyominoesArgument(8, 369),
+        new EnumerateFreePolyominoesArgument(9, 1285),
+        new EnumerateFreePolyominoesArgument(10, 4655)
+    );
+    arguments.forEach(argument -> assertEquals(argument.expectedCount,
+        enumerateFreePolyominoes.getNumberOfFreePolyominoes(argument.n)));
   }
 
   @Test
   void testEnumerateFreePolyominoes() {
-    int n = 6;
-    List<boolean[][]> freePolyominoes = enumerateFreePolyominoes.enumerateFreePolyominoes(n);
-    System.out.printf("Number: %d, Count: %d%n\n", n, freePolyominoes.size());
-    System.out.println("**************");
-    freePolyominoes
-        .forEach(freePolyomino -> {
-          for (int i = 0; i < freePolyomino.length; i++) {
-            for (int j = 0; j < freePolyomino[0].length; j++) {
-              System.out.print((freePolyomino[i][j] ? "[]" : "  ") + "");
-            }
-            System.out.println();
-          }
-          System.out.println("**************");
-        });
+    enumerateFreePolyominoes.enumerateFreePolyominoes(10, true);
+
   }
 }
