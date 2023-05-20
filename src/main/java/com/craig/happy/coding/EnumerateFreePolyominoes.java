@@ -1,6 +1,7 @@
 package com.craig.happy.coding;
 
 import static com.craig.happy.coding.util.MatrixUtil.isCongruent;
+import static com.craig.happy.coding.util.MatrixUtil.print;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class EnumerateFreePolyominoes {
     freePolyominoes.add(polyomino);
     for (int i = 2; i <= n; i++) {
       if (isPrint) {
-        print(i - 1, freePolyominoes);
+        print(i - 1, freePolyominoes, "[]");
       }
       LinkedList<boolean[][]> newFreePolyominoes = new LinkedList<>();
       while (!freePolyominoes.isEmpty()) {
@@ -45,7 +46,7 @@ public class EnumerateFreePolyominoes {
       freePolyominoes.addAll(newFreePolyominoes);
     }
     if (isPrint) {
-      print(n, freePolyominoes);
+      print(n, freePolyominoes, "[]");
     }
 
     return freePolyominoes;
@@ -81,22 +82,6 @@ public class EnumerateFreePolyominoes {
   private boolean isExist(List<boolean[][]> newFreePolyominoes, boolean[][] polyomino) {
     return newFreePolyominoes.stream()
         .anyMatch(newPolyomino -> isCongruent(polyomino, newPolyomino));
-  }
-
-  private void print(int n, List<boolean[][]> freePolyominoes) {
-    System.out.printf("Number: %d, Count: %d%n\n", n, freePolyominoes.size());
-    System.out.println("############");
-    freePolyominoes
-        .forEach(freePolyomino -> {
-          for (int i = 0; i < freePolyomino.length; i++) {
-            for (int j = 0; j < freePolyomino[0].length; j++) {
-              System.out.print((freePolyomino[i][j] ? "[]" : "  ") + "");
-            }
-            System.out.println();
-          }
-          System.out.println("**************");
-        });
-    System.out.println("############");
   }
 
 }

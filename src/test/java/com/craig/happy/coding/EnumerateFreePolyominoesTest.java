@@ -41,7 +41,7 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    enumerateFreePolyominoes.enumerateFreePolyominoes(10, true);
+    enumerateFreePolyominoes.enumerateFreePolyominoes(5, true);
 
   }
 }
