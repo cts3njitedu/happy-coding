@@ -1,6 +1,6 @@
 package com.craig.happy.coding.util;
 
-import static com.craig.happy.coding.util.MatrixUtil.getExpandedMatrix;
+import static com.craig.happy.coding.util.MatrixUtil.centerMatrix;
 import static com.craig.happy.coding.util.MatrixUtil.isCongruent;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,7 +11,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class MatrixUtilTest {
 
-  private static Stream<Arguments> getExpandedMatrixCases() {
+  private static Stream<Arguments> getCenteredMatrixCases() {
     return Stream.of(
         Arguments.of(
             new boolean[][]{
@@ -167,14 +167,14 @@ public class MatrixUtilTest {
   }
 
   @ParameterizedTest
-  @MethodSource("getExpandedMatrixCases")
-  void testGetExpandedMatrix(boolean[][] matrix, boolean[][] expectedExpandedMatrix) {
-    boolean[][] actualExpandedMatrix = getExpandedMatrix(matrix);
-    assertEquals(actualExpandedMatrix.length, expectedExpandedMatrix.length);
-    assertEquals(actualExpandedMatrix[0].length, expectedExpandedMatrix[0].length);
-    for (int i = 0; i < expectedExpandedMatrix.length; i++) {
-      for (int j = 0; j < expectedExpandedMatrix[0].length; j++) {
-        assertEquals(expectedExpandedMatrix[i][j], actualExpandedMatrix[i][j]);
+  @MethodSource("getCenteredMatrixCases")
+  void testGetExpandedMatrix(boolean[][] matrix, boolean[][] expectedCenteredMatrix) {
+    boolean[][] actualCenteredMatrix = centerMatrix(matrix);
+    assertEquals(actualCenteredMatrix.length, expectedCenteredMatrix.length);
+    assertEquals(actualCenteredMatrix[0].length, expectedCenteredMatrix[0].length);
+    for (int i = 0; i < expectedCenteredMatrix.length; i++) {
+      for (int j = 0; j < expectedCenteredMatrix[0].length; j++) {
+        assertEquals(expectedCenteredMatrix[i][j], actualCenteredMatrix[i][j]);
       }
     }
   }
@@ -255,6 +255,27 @@ public class MatrixUtilTest {
                 {false, true, false},
                 {false, true, false},
                 {false, false, false},
+            },
+            true
+        ),
+        Arguments.of(
+            new boolean[][]{
+                {true},
+                {true}
+            },
+            new boolean[][]{
+                {true, true}
+            },
+            true
+        ),
+        Arguments.of(
+            new boolean[][]{
+                {true, false},
+                {true, true}
+            },
+            new boolean[][]{
+                {true, true},
+                {false, true}
             },
             true
         )
