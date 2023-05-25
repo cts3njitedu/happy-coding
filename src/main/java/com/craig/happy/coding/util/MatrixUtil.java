@@ -29,15 +29,15 @@ public class MatrixUtil {
   }
 
   private static boolean[] getCongruentTransformations(boolean[][] matrix1, boolean[][] matrix2) {
-    boolean areMatricesSimiliar = (matrix1.length == matrix2.length)
+    boolean areMatricesSimilar = (matrix1.length == matrix2.length)
         && (matrix1[0].length == matrix2[0].length);
     boolean areMatricesRotated = (matrix1.length == matrix2[0].length)
         && (matrix1[0].length == matrix2.length);
     boolean[] transformations = new boolean[MAX_TRANSFORMATIONS];
-    transformations[ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT] = areMatricesSimiliar;
-    transformations[ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT] = areMatricesSimiliar;
-    transformations[ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT] = areMatricesSimiliar;
-    transformations[ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT] = areMatricesSimiliar;
+    transformations[ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT] = areMatricesSimilar;
+    transformations[ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT] = areMatricesSimilar;
+    transformations[ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT] = areMatricesSimilar;
+    transformations[ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT] = areMatricesSimilar;
     transformations[NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT] = areMatricesRotated;
     transformations[NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT] = areMatricesRotated;
     transformations[TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT] = areMatricesRotated;
@@ -106,13 +106,13 @@ public class MatrixUtil {
         break;
       }
     }
-    for (int i = 0; i < matrix.length; i++) {
-      if (matrix[i][0] || matrix[i][matrix[0].length - 1]) {
-        if (matrix[i][0]) {
+    for (boolean[] booleans : matrix) {
+      if (booleans[0] || booleans[matrix[0].length - 1]) {
+        if (booleans[0]) {
           columns++;
           startColumnFromZero = false;
         }
-        if (matrix[i][matrix[0].length - 1]) {
+        if (booleans[matrix[0].length - 1]) {
           columns++;
         }
         break;
@@ -132,14 +132,55 @@ public class MatrixUtil {
     System.out.println("START");
     matrices
         .forEach(matrix -> {
-          for (int i = 0; i < matrix.length; i++) {
+          for (boolean[] booleans : matrix) {
             for (int j = 0; j < matrix[0].length; j++) {
-              System.out.print((matrix[i][j] ? trueFlag : " ".repeat(trueFlag.length())) + "");
+              System.out.print(booleans[j] ? trueFlag : " ".repeat(trueFlag.length()));
             }
             System.out.println();
           }
           System.out.println("__________________");
         });
     System.out.println("FINISH");
+    System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
   }
+
+//  public static void printImage(int n, List<boolean[][]> matrices) {
+//    System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
+//    System.out.println("START");
+//    BufferedImage image = new BufferedImage(n*100, n*100, BufferedImage.TYPE_INT_RGB);
+//    matrices
+//        .forEach(matrix -> {
+//          Graphics2D g2d = image.createGraphics();
+//          for (int i = 0; i < matrix.length; i++) {
+//            for (int j = 0; j < matrix[0].length; j++) {
+//              if (matrix[i][j]) {
+//                g2d.setColor(Color.BLUE);
+//              } else {
+//                g2d.setColor(Color.BLACK);
+//              }
+//              g2d.fillRect(100*j, 100*i, 100, 100);
+//            }
+//            System.out.println();
+//          }
+//          g2d.dispose();
+//          printImage(image);
+//
+//          System.out.println("__________________");
+//        });
+//    System.out.println("FINISH");
+//    System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
+//  }
+
+//  private static void printImage(BufferedImage image) {
+//    ImageIcon icon=new ImageIcon(image);
+//    JFrame frame=new JFrame();
+//    frame.setBackground(Color.GREEN);
+//    frame.setLayout(new FlowLayout());
+//    frame.setSize(500,500);
+//    JLabel lbl=new JLabel();
+//    lbl.setIcon(icon);
+//    frame.add(lbl);
+//    frame.setVisible(true);
+//    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//  }
 }
