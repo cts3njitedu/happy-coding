@@ -11,10 +11,9 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
 
-  <groupId>com.craig.happy.coding</groupId>
-  <artifactId>happy-coding</artifactId>
+  <groupId>com.craig.scholar</groupId>
+  <artifactId>happy</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-
   <name>happy-coding</name>
 
   <properties>
