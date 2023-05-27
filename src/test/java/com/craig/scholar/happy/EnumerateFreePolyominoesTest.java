@@ -56,7 +56,7 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    System.out.println(enumerateFreePolyominoes.enumerateFreePolyominoes(2).size());
+    enumerateFreePolyominoes.enumerateFreePolyominoes(2, true);
 
   }
 }

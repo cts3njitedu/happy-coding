@@ -1,11 +1,14 @@
 package com.craig.scholar.happy.service.codeexchange;
 
+import org.springframework.stereotype.Service;
+
 import java.util.*;
 import java.util.stream.Stream;
 
 import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
 import static com.craig.scholar.happy.util.MatrixUtil.print;
 
+@Service
 public class EnumerateFreePolyominoes {
 
   public static final String TRUE_FLAG = "[]";
@@ -49,7 +52,7 @@ public class EnumerateFreePolyominoes {
       }
       freePolyominoes.addAll(newFreePolyominoes);
     }
-//    print(n, freePolyominoes, TRUE_FLAG);
+    print(n, freePolyominoes, TRUE_FLAG);
 
     return freePolyominoes;
   }
