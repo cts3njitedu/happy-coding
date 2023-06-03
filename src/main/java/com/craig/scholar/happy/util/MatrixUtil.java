@@ -1,5 +1,6 @@
 package com.craig.scholar.happy.util;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MatrixUtil {
@@ -14,6 +15,58 @@ public class MatrixUtil {
   public static final Integer TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT = 7;
 
   public static final Integer MAX_TRANSFORMATIONS = 8;
+
+  public static Integer collapseMatrix(boolean[][] matrix) {
+    StringBuilder builder = new StringBuilder();
+    for (boolean[] row : matrix) {
+      for (int j = 0; j < matrix[0].length; j++) {
+        builder.append(row[j] ? 1 : 0);
+      }
+      builder.append(2);
+    }
+    return Integer.parseInt(builder.toString(), 3);
+  }
+
+  public static List<boolean[][]> getRotateMatrices(boolean[][] matrix) {
+    List<boolean[][]> matrices = new ArrayList<>(MAX_TRANSFORMATIONS);
+    int rows = matrix.length;
+    int columns = matrix[0].length;
+    matrices.add(ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT, new boolean[rows][columns]);
+    matrices.add(ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT, new boolean[rows][columns]);
+    matrices.add(NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT, new boolean[columns][rows]);
+    matrices.add(NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT, new boolean[columns][rows]);
+    matrices.add(ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT, new boolean[rows][columns]);
+    matrices.add(ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT, new boolean[rows][columns]);
+    matrices.add(TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT, new boolean[columns][rows]);
+    matrices.add(TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT, new boolean[columns][rows]);
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = 0; j < matrix[0].length; j++) {
+        for (int t = 0; t < MAX_TRANSFORMATIONS; t++) {
+          boolean[][] rotatedMatrix = matrices.get(t);
+          if (ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT == t) {
+            rotatedMatrix[i][j] = matrix[i][j];
+          } else if (ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT == t) {
+            rotatedMatrix[i][rotatedMatrix[0].length - 1 - j] = matrix[i][j];
+          } else if (NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT == t) {
+            rotatedMatrix[j][rotatedMatrix[0].length - 1 - i] = matrix[i][j];
+          } else if (NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT == t) {
+            rotatedMatrix[rotatedMatrix.length - 1 - j][rotatedMatrix[0].length - 1
+                - i] = matrix[i][j];
+          } else if (ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT == t) {
+            rotatedMatrix[rotatedMatrix.length - 1 - i][j] = matrix[i][j];
+          } else if (ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT == t) {
+            rotatedMatrix[rotatedMatrix.length - 1 - i][rotatedMatrix[0].length - 1
+                - j] = matrix[i][j];
+          } else if (TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT == t) {
+            rotatedMatrix[j][i] = matrix[i][j];
+          } else if (TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT == t) {
+            rotatedMatrix[rotatedMatrix.length - 1 - j][i] = matrix[i][j];
+          }
+        }
+      }
+    }
+    return matrices;
+  }
 
   public static boolean isCongruent(boolean[][] matrix1, boolean[][] matrix2) {
     boolean[] transformations = getCongruentTransformations(matrix1, matrix2);
