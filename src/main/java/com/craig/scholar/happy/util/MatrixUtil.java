@@ -1,5 +1,6 @@
 package com.craig.scholar.happy.util;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class MatrixUtil {
 
   public static final Integer MAX_TRANSFORMATIONS = 8;
 
-  public static Integer collapseMatrix(boolean[][] matrix) {
+  public static BigInteger collapseMatrix(boolean[][] matrix) {
     StringBuilder builder = new StringBuilder();
     for (boolean[] row : matrix) {
       for (int j = 0; j < matrix[0].length; j++) {
@@ -24,10 +25,10 @@ public class MatrixUtil {
       }
       builder.append(2);
     }
-    return Integer.parseInt(builder.toString(), 3);
+    return new BigInteger(builder.toString(), 3);
   }
 
-  public static List<boolean[][]> getRotateMatrices(boolean[][] matrix) {
+  public static List<boolean[][]> getTransformations(boolean[][] matrix) {
     List<boolean[][]> matrices = new ArrayList<>(MAX_TRANSFORMATIONS);
     int rows = matrix.length;
     int columns = matrix[0].length;
