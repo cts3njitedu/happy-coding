@@ -1,12 +1,21 @@
 package com.craig.scholar.happy.service.codeexchange;
 
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Stream;
-
+import static com.craig.scholar.happy.util.MatrixUtil.collapseMatrix;
+import static com.craig.scholar.happy.util.MatrixUtil.getTransformations;
 import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
-import static com.craig.scholar.happy.util.MatrixUtil.print;
+
+import com.craig.scholar.happy.util.MatrixUtil;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Stream;
+import org.springframework.stereotype.Service;
 
 @Service
 public class EnumerateFreePolyominoes {
@@ -18,10 +27,6 @@ public class EnumerateFreePolyominoes {
   }
 
   public List<boolean[][]> enumerateFreePolyominoes(int n) {
-    return enumerateFreePolyominoes(n, false);
-  }
-
-  public List<boolean[][]> enumerateFreePolyominoes(int n, boolean isPrint) {
     LinkedList<boolean[][]> freePolyominoes = new LinkedList<>();
     if (n < 1) {
       freePolyominoes.add(new boolean[][]{{}});
@@ -29,9 +34,6 @@ public class EnumerateFreePolyominoes {
     }
     freePolyominoes.add(new boolean[][]{{true}});
     for (int i = 2; i <= n; i++) {
-      if (isPrint) {
-        print(i - 1, freePolyominoes, TRUE_FLAG);
-      }
       LinkedList<boolean[][]> newFreePolyominoes = new LinkedList<>();
       while (!freePolyominoes.isEmpty()) {
         boolean[][] freePolyomino = freePolyominoes.poll();
@@ -52,8 +54,40 @@ public class EnumerateFreePolyominoes {
       }
       freePolyominoes.addAll(newFreePolyominoes);
     }
-    print(n, freePolyominoes, TRUE_FLAG);
+    return freePolyominoes;
+  }
 
+  public List<boolean[][]> enumerateFreePolyominoesV3(int n) {
+    LinkedList<boolean[][]> freePolyominoes = new LinkedList<>();
+    if (n < 1) {
+      freePolyominoes.add(new boolean[][]{{}});
+      return freePolyominoes;
+    }
+    boolean[][] rootMatrix = new boolean[][]{{true}};
+    freePolyominoes.add(rootMatrix);
+    Set<BigInteger> polyMemory = new HashSet<>();
+    polyMemory.add(collapseMatrix(rootMatrix));
+    for (int i = 2; i <= n; i++) {
+      int size = freePolyominoes.size();
+      while (size > 0) {
+        boolean[][] freePolyomino = freePolyominoes.poll();
+        for (int r = 0; r < freePolyomino.length; r++) {
+          for (int c = 0; c < freePolyomino[0].length; c++) {
+            if (freePolyomino[r][c]) {
+              Stream.of(new int[]{r - 1, c},
+                      new int[]{r, c + 1},
+                      new int[]{r + 1, c},
+                      new int[]{r, c - 1})
+                  .filter(expansion -> isValidCell(freePolyomino, expansion[0], expansion[1]))
+                  .map(expansion -> getNewPolyomino(freePolyomino, expansion[0], expansion[1]))
+                  .filter(newPolyomino -> !isExist(polyMemory, newPolyomino))
+                  .forEach(freePolyominoes::add);
+            }
+          }
+        }
+        size--;
+      }
+    }
     return freePolyominoes;
   }
 
@@ -97,8 +131,20 @@ public class EnumerateFreePolyominoes {
   private static boolean isExist(List<boolean[][]> polyominoes, boolean[][] newPolyomino) {
     return Optional.ofNullable(polyominoes)
         .orElse(List.of())
-        .stream()
+        .parallelStream()
         .anyMatch(existingPolyomino -> isCongruent(existingPolyomino, newPolyomino));
+  }
+
+  private static boolean isExist(Set<BigInteger> polyMemory, boolean[][] newPoly) {
+    List<BigInteger> transformations = getTransformations(newPoly).stream()
+        .map(MatrixUtil::collapseMatrix)
+        .toList();
+    boolean isExist = transformations.stream()
+        .anyMatch(polyMemory::contains);
+    if (!isExist) {
+      polyMemory.addAll(transformations);
+    }
+    return isExist;
   }
 
   private boolean isValidCell(boolean[][] polyomino, int row, int column) {
@@ -120,5 +166,4 @@ public class EnumerateFreePolyominoes {
     newPolyomino[row == -1 ? 0 : row][column == -1 ? 0 : column] = true;
     return newPolyomino;
   }
-
 }
