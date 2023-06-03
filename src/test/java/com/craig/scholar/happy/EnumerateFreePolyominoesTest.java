@@ -1,12 +1,11 @@
 package com.craig.scholar.happy;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.craig.scholar.happy.service.codeexchange.EnumerateFreePolyominoes;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
-
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EnumerateFreePolyominoesTest {
 
@@ -37,6 +36,13 @@ public class EnumerateFreePolyominoesTest {
         enumerateFreePolyominoes.enumerateFreePolyominoesV2(argument.n)));
   }
 
+  @Test
+  void testGetNumberOfFreePolyominoesV3() {
+    List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
+    arguments.forEach(argument -> assertEquals(argument.expectedCount,
+        enumerateFreePolyominoes.enumerateFreePolyominoesV3(argument.n).size()));
+  }
+
   @NotNull
   private static List<EnumerateFreePolyominoesArgument> getEnumerateFreePolyominoesArguments() {
     return List.of(
@@ -56,7 +62,9 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    enumerateFreePolyominoes.enumerateFreePolyominoes(2, true);
-
+    int n = 12;
+    List<boolean[][]> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV3(n);
+    System.out.println(polys.size());
+//    MatrixUtil.print(n, polys, "[]");
   }
 }

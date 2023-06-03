@@ -1,13 +1,15 @@
 package com.craig.scholar.happy.util;
 
 import static com.craig.scholar.happy.util.MatrixUtil.centerMatrix;
-import static com.craig.scholar.happy.util.MatrixUtil.getRotateMatrices;
+import static com.craig.scholar.happy.util.MatrixUtil.getTransformations;
 import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -291,7 +293,7 @@ public class MatrixUtilTest {
     assertEquals(isCongruent, isCongruent(matrix1, matrix2));
   }
 
-  private static Stream<Arguments> rotatedMatricesCases() {
+  private static Stream<Arguments> transformationCases() {
     return Stream.of(
         Arguments.of(
             new boolean[][]{
@@ -402,12 +404,26 @@ public class MatrixUtilTest {
   }
 
   @ParameterizedTest
-  @MethodSource("rotatedMatricesCases")
-  void testGetRotatedMatrices(boolean[][] matrix, List<boolean[][]> expectedRotatedMatrices) {
-    List<boolean[][]> rotateMatrices = getRotateMatrices(matrix);
+  @MethodSource("transformationCases")
+  void testGetTransformations(boolean[][] matrix, List<boolean[][]> expectedRotatedMatrices) {
+    List<boolean[][]> rotateMatrices = getTransformations(matrix);
     assertEquals(expectedRotatedMatrices.size(), rotateMatrices.size());
     for (int i = 0; i < expectedRotatedMatrices.size(); i++) {
       assertArrayEquals(expectedRotatedMatrices.get(i), rotateMatrices.get(i), "Unequal " + i);
     }
+  }
+
+  @Test
+  void testCollapseMatrix() {
+//    boolean[][] matrix = new boolean[][]{
+//        {true, false, false, false},
+//        {true, true, true, false},
+//        {true, false, true, true}
+//    };
+//    new BigInteger().
+//    List<boolean[][]> transformations = getTransformations(matrix);
+//    assertEquals();
+    BigInteger bigInteger = new BigInteger("100021110210112", 3);
+    System.out.println(bigInteger);
   }
 }
