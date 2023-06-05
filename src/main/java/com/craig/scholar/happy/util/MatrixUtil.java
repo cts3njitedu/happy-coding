@@ -28,6 +28,17 @@ public class MatrixUtil {
     return new BigInteger(builder.toString(), 3);
   }
 
+  public static String collapseMatrixV2(boolean[][] matrix) {
+    StringBuilder builder = new StringBuilder();
+    for (boolean[] row : matrix) {
+      for (int j = 0; j < matrix[0].length; j++) {
+        builder.append(row[j] ? 1 : 0);
+      }
+      builder.append(2);
+    }
+    return builder.toString();
+  }
+
   public static List<boolean[][]> getTransformations(boolean[][] matrix) {
     List<boolean[][]> matrices = new ArrayList<>(MAX_TRANSFORMATIONS);
     int rows = matrix.length;
