@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class BinaryTrieTest {
+public class MatrixTrieTest {
 
-  BinaryTrie binaryTrie = new BinaryTrie();
+  MatrixTrie matrixTrie = new MatrixTrie();
 
   @Test
   void testAddMatrix() {
@@ -23,8 +23,12 @@ public class BinaryTrieTest {
         {true, true, true, true},
         {false, false, false, true}
     });
-    matrices.forEach(binaryTrie::add);
-    assertTrue(matrices.stream().allMatch(binaryTrie::find));
+    matrices.add(new boolean[][]{
+        {true, true},
+        {false, true}
+    });
+    matrices.forEach(matrixTrie::add);
+    assertTrue(matrices.stream().allMatch(matrixTrie::find));
   }
 
 }
