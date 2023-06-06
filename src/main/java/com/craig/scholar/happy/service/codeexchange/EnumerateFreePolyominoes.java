@@ -4,6 +4,7 @@ import static com.craig.scholar.happy.util.MatrixUtil.collapseMatrix;
 import static com.craig.scholar.happy.util.MatrixUtil.getTransformations;
 import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
 
+import com.craig.scholar.happy.trie.MatrixTrie;
 import com.craig.scholar.happy.util.MatrixUtil;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -91,6 +92,40 @@ public class EnumerateFreePolyominoes {
     return freePolyominoes;
   }
 
+  public List<boolean[][]> enumerateFreePolyominoesV4(int n) {
+    LinkedList<boolean[][]> freePolyominoes = new LinkedList<>();
+    if (n < 1) {
+      freePolyominoes.add(new boolean[][]{{}});
+      return freePolyominoes;
+    }
+    boolean[][] rootMatrix = new boolean[][]{{true}};
+    freePolyominoes.add(rootMatrix);
+    MatrixTrie matrixTrie = new MatrixTrie();
+    matrixTrie.add(rootMatrix);
+    for (int i = 2; i <= n; i++) {
+      int size = freePolyominoes.size();
+      while (size > 0) {
+        boolean[][] freePolyomino = freePolyominoes.poll();
+        for (int r = 0; r < freePolyomino.length; r++) {
+          for (int c = 0; c < freePolyomino[0].length; c++) {
+            if (freePolyomino[r][c]) {
+              Stream.of(new int[]{r - 1, c},
+                      new int[]{r, c + 1},
+                      new int[]{r + 1, c},
+                      new int[]{r, c - 1})
+                  .filter(expansion -> isValidCell(freePolyomino, expansion[0], expansion[1]))
+                  .map(expansion -> getNewPolyomino(freePolyomino, expansion[0], expansion[1]))
+                  .filter(newPolyomino -> !isExist(matrixTrie, newPolyomino))
+                  .forEach(freePolyominoes::add);
+            }
+          }
+        }
+        size--;
+      }
+    }
+    return freePolyominoes;
+  }
+
   public long enumerateFreePolyominoesV2(int n) {
     boolean[][] polyomino = new boolean[1][1];
     polyomino[0][0] = true;
@@ -143,6 +178,20 @@ public class EnumerateFreePolyominoes {
         .anyMatch(polyMemory::contains);
     if (!isExist) {
       polyMemory.addAll(transformations);
+    }
+    return isExist;
+  }
+
+  private static boolean isExist(MatrixTrie matrixTrie, boolean[][] newPoly) {
+    if (matrixTrie.find(newPoly)) {
+      return true;
+    }
+    List<boolean[][]> transformations = getTransformations(newPoly);
+    boolean isExist = transformations.stream()
+        .anyMatch(matrixTrie::find);
+    if (!isExist) {
+      transformations
+          .forEach(matrixTrie::add);
     }
     return isExist;
   }

@@ -43,6 +43,13 @@ public class EnumerateFreePolyominoesTest {
         enumerateFreePolyominoes.enumerateFreePolyominoesV3(argument.n).size()));
   }
 
+  @Test
+  void testGetNumberOfFreePolyominoesV4() {
+    List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
+    arguments.forEach(argument -> assertEquals(argument.expectedCount,
+        enumerateFreePolyominoes.enumerateFreePolyominoesV4(argument.n).size()));
+  }
+
   @NotNull
   private static List<EnumerateFreePolyominoesArgument> getEnumerateFreePolyominoesArguments() {
     return List.of(
@@ -62,8 +69,8 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    int n = 12;
-    List<boolean[][]> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV3(n);
+    int n = 14;
+    List<boolean[][]> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV4(n);
     System.out.println(polys.size());
 //    MatrixUtil.print(n, polys, "[]");
   }
