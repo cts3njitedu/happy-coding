@@ -6,8 +6,9 @@ import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
 
 import com.craig.scholar.happy.trie.MatrixTrie;
 import com.craig.scholar.happy.util.MatrixUtil;
-import java.math.BigInteger;
+import com.craig.scholar.happy.util.TransformationUtil;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -66,7 +67,7 @@ public class EnumerateFreePolyominoes {
     }
     boolean[][] rootMatrix = new boolean[][]{{true}};
     freePolyominoes.add(rootMatrix);
-    Set<BigInteger> polyMemory = new HashSet<>();
+    Set<String> polyMemory = new HashSet<>();
     polyMemory.add(collapseMatrix(rootMatrix));
     for (int i = 2; i <= n; i++) {
       int size = freePolyominoes.size();
@@ -126,6 +127,104 @@ public class EnumerateFreePolyominoes {
     return freePolyominoes;
   }
 
+  public List<int[]> enumerateFreePolyominoesV5(int n) {
+    LinkedList<int[]> polys = new LinkedList<>();
+    if (n < 1) {
+      polys.add(new int[]{});
+      return polys;
+    }
+    int[] poly = {1};
+    polys.add(poly);
+    Set<String> polyMemory = new HashSet<>();
+    polyMemory.add(Arrays.toString(poly));
+    for (int i = 2; i <= n; i++) {
+      int size = polys.size();
+      while (size > 0) {
+        poly = polys.poll();
+        for (int r = 0; r < poly.length; r++) {
+          int columns = Integer.SIZE - Integer.numberOfLeadingZeros(poly[r]);
+          for (int c = columns - 1; c >= 0; c--) {
+            int b = (poly[r] & (1 << c)) != 0 ? 1 : 0;
+            if (b == 1) {
+              Stream.of(
+                      newPolyUp(poly, r, c),
+                      newPolyRight(poly, r, c),
+                      newPolyDown(poly, r, c),
+                      newPolyLeft(poly, r, columns, c))
+                  .filter(p -> p.length > 0)
+                  .filter(p -> !isExist(polyMemory, p))
+                  .forEach(polys::add);
+            }
+          }
+        }
+        size--;
+      }
+    }
+    return polys;
+  }
+
+  private static int[] newPolyLeft(int[] poly, int r, int columns, int c) {
+    int leftBit = (c + 1 == columns) ? 0 : (poly[r] & (1 << (c + 1))) != 0 ? 1 : 0;
+    if (leftBit == 0) {
+      int[] newPolyLeft = new int[poly.length];
+      for (int j = 0; j < poly.length; j++) {
+        if (j == r) {
+          newPolyLeft[j] = (poly[j] | (1 << (c + 1)));
+        } else {
+          newPolyLeft[j] = poly[j];
+        }
+      }
+      return newPolyLeft;
+    }
+    return new int[0];
+  }
+
+  private static int[] newPolyDown(int[] poly, int r, int c) {
+    int downBit = (r + 1 == poly.length) ? 0 : (poly[r + 1] & (1 << c)) != 0 ? 1 : 0;
+    if (downBit == 0) {
+      int[] newPolyDown = new int[r == poly.length - 1 ? poly.length + 1 : poly.length];
+      newPolyDown[r == poly.length - 1 ? poly.length : r + 1] = (1 << c);
+      for (int j = 0; j < poly.length; j++) {
+        newPolyDown[j] |= poly[j];
+      }
+      return newPolyDown;
+    }
+    return new int[0];
+  }
+
+  private static int[] newPolyRight(int[] poly, int r, int c) {
+    int rightBit = (c == 0) ? 0 : (poly[r] & (1 << (c - 1))) != 0 ? 1 : 0;
+    if (rightBit == 0) {
+      int[] newPolyRight = new int[poly.length];
+      for (int j = 0; j < poly.length; j++) {
+        if (c == 0) {
+          newPolyRight[j] = (poly[j] * 2) | ((j == r) ? 1 : 0);
+        } else {
+          if (j == r) {
+            newPolyRight[j] = poly[j] | (1 << (c - 1));
+          } else {
+            newPolyRight[j] = poly[j];
+          }
+        }
+      }
+      return newPolyRight;
+    }
+    return new int[0];
+  }
+
+  private static int[] newPolyUp(int[] poly, int r, int c) {
+    int upBit = r == 0 ? 0 : (poly[r - 1] & (1 << c)) != 0 ? 1 : 0;
+    if (upBit == 0) {
+      int[] newPolyUp = new int[r == 0 ? poly.length + 1 : poly.length];
+      newPolyUp[r == 0 ? 0 : r - 1] |= (1 << c);
+      for (int j = 0; j < poly.length; j++) {
+        newPolyUp[r == 0 ? j + 1 : j] |= poly[j];
+      }
+      return newPolyUp;
+    }
+    return new int[0];
+  }
+
   public long enumerateFreePolyominoesV2(int n) {
     boolean[][] polyomino = new boolean[1][1];
     polyomino[0][0] = true;
@@ -170,8 +269,11 @@ public class EnumerateFreePolyominoes {
         .anyMatch(existingPolyomino -> isCongruent(existingPolyomino, newPolyomino));
   }
 
-  private static boolean isExist(Set<BigInteger> polyMemory, boolean[][] newPoly) {
-    List<BigInteger> transformations = getTransformations(newPoly).stream()
+  private static boolean isExist(Set<String> polyMemory, boolean[][] newPoly) {
+    if (polyMemory.contains(collapseMatrix(newPoly))) {
+      return true;
+    }
+    List<String> transformations = getTransformations(newPoly).stream()
         .map(MatrixUtil::collapseMatrix)
         .toList();
     boolean isExist = transformations.stream()
@@ -192,6 +294,20 @@ public class EnumerateFreePolyominoes {
     if (!isExist) {
       transformations
           .forEach(matrixTrie::add);
+    }
+    return isExist;
+  }
+
+  private static boolean isExist(Set<String> polyMem, int[] newPoly) {
+    String polyStr = Arrays.toString(newPoly);
+    if (polyMem.contains(polyStr)) {
+      return true;
+    }
+    List<String> transformations = TransformationUtil.getTransformations(newPoly);
+    boolean isExist = transformations.stream()
+        .anyMatch(polyMem::contains);
+    if (!isExist) {
+      polyMem.addAll(transformations);
     }
     return isExist;
   }

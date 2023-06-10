@@ -1,11 +1,12 @@
-package com.craig.scholar.happy.model;
+package com.craig.scholar.happy.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public record Matrix(int[] rows, int columns) {
+public final class TransformationUtil {
 
   public static final Integer ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT = 0;
   public static final Integer ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT = 1;
@@ -17,8 +18,15 @@ public record Matrix(int[] rows, int columns) {
   public static final Integer TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT = 6;
   public static final Integer TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT = 7;
 
-  public List<Matrix> getTransformations() {
-    Map<Integer, int[]> matrices = new HashMap<>(8);
+  public static final Integer MAX_TRANSFORMATIONS = 8;
+  public static final int MAX_NUMBER_OF_BITS = 32;
+
+  public static List<String> getTransformations(int[] rows) {
+    int columns = 0;
+    for (int row : rows) {
+      columns = Math.max(columns, MAX_NUMBER_OF_BITS - Integer.numberOfLeadingZeros(row));
+    }
+    Map<Integer, int[]> matrices = new HashMap<>(MAX_TRANSFORMATIONS);
     matrices.put(ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT, rows);
     matrices.put(ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT, new int[rows.length]);
     matrices.put(NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT, new int[columns]);
@@ -45,7 +53,8 @@ public record Matrix(int[] rows, int columns) {
       }
     }
     return matrices.values().stream()
-        .map(m -> new Matrix(m, m.length == rows.length ? columns : rows.length))
+        .map(Arrays::toString)
         .collect(Collectors.toList());
   }
+
 }
