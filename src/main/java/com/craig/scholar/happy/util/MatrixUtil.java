@@ -1,23 +1,22 @@
 package com.craig.scholar.happy.util;
 
+import static com.craig.scholar.happy.util.TransformationUtil.MAX_TRANSFORMATIONS;
+import static com.craig.scholar.happy.util.TransformationUtil.NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT;
+import static com.craig.scholar.happy.util.TransformationUtil.NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT;
+import static com.craig.scholar.happy.util.TransformationUtil.ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT;
+import static com.craig.scholar.happy.util.TransformationUtil.ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT;
+import static com.craig.scholar.happy.util.TransformationUtil.TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT;
+import static com.craig.scholar.happy.util.TransformationUtil.TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT;
+import static com.craig.scholar.happy.util.TransformationUtil.ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT;
+import static com.craig.scholar.happy.util.TransformationUtil.ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MatrixUtil {
 
-  public static final Integer ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT = 0;
-  public static final Integer ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT = 1;
-  public static final Integer NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT = 2;
-  public static final Integer NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT = 3;
-  public static final Integer ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT = 4;
-  public static final Integer ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT = 5;
-  public static final Integer TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT = 6;
-  public static final Integer TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT = 7;
-
-  public static final Integer MAX_TRANSFORMATIONS = 8;
-
-  public static BigInteger collapseMatrix(boolean[][] matrix) {
+  public static String collapseMatrix(boolean[][] matrix) {
     StringBuilder builder = new StringBuilder();
     for (boolean[] row : matrix) {
       for (int j = 0; j < matrix[0].length; j++) {
@@ -25,18 +24,7 @@ public class MatrixUtil {
       }
       builder.append(2);
     }
-    return new BigInteger(builder.toString(), 3);
-  }
-
-  public static String collapseMatrixV2(boolean[][] matrix) {
-    StringBuilder builder = new StringBuilder();
-    for (boolean[] row : matrix) {
-      for (int j = 0; j < matrix[0].length; j++) {
-        builder.append(row[j] ? 1 : 0);
-      }
-      builder.append(2);
-    }
-    return builder.toString();
+    return new BigInteger(builder.toString(), 3).toString(36);
   }
 
   public static List<boolean[][]> getTransformations(boolean[][] matrix) {
