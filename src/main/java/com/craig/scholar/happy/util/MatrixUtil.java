@@ -181,40 +181,38 @@ public class MatrixUtil {
     return largerMatrix;
   }
 
-  public static void print(int n, List<boolean[][]> images, String trueFlag) {
-    printImage(n, images, matrices -> matrices
-        .forEach(matrix -> {
-          for (boolean[] booleans : matrix) {
-            for (int j = 0; j < matrix[0].length; j++) {
-              System.out.print(booleans[j] ? trueFlag : " ".repeat(trueFlag.length()));
-            }
-            System.out.println();
-          }
-          System.out.println("__________________");
-        }));
+  public static void print(int n, List<boolean[][]> matrices, String trueFlag) {
+    printImage(n, matrices, matrix -> {
+      for (boolean[] booleans : matrix) {
+        for (int j = 0; j < matrix[0].length; j++) {
+          System.out.print(booleans[j] ? trueFlag : " ".repeat(trueFlag.length()));
+        }
+        System.out.println();
+      }
+      System.out.println("__________________");
+    });
   }
 
-  public static void print2(int n, List<int[]> images, String trueFlag) {
-    printImage(n, images, matrices -> matrices
-        .forEach(matrix -> {
-          int columns = 0;
-          for (int row : matrix) {
-            columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
-          }
-          for (int r : matrix) {
-            for (int c = columns - 1; c >= 0; c--) {
-              System.out.print((r & (1 << c)) != 0 ? trueFlag : " ".repeat(trueFlag.length()));
-            }
-            System.out.println();
-          }
-          System.out.println("_________________");
-        }));
+  public static void print2(int n, List<int[]> matrices, String trueFlag) {
+    printImage(n, matrices, matrix -> {
+      int columns = 0;
+      for (int row : matrix) {
+        columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
+      }
+      for (int r : matrix) {
+        for (int c = columns - 1; c >= 0; c--) {
+          System.out.print((r & (1 << c)) != 0 ? trueFlag : " ".repeat(trueFlag.length()));
+        }
+        System.out.println();
+      }
+      System.out.println("_________________");
+    });
   }
 
-  private static <T> void printImage(int n, List<T> matrices, Consumer<List<T>> func) {
+  private static <T> void printImage(int n, List<T> matrices, Consumer<T> func) {
     System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
     System.out.println("START");
-    func.accept(matrices);
+    matrices.forEach(func);
     System.out.println("FINISH");
     System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
 
