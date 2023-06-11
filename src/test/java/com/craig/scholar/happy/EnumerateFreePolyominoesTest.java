@@ -3,6 +3,7 @@ package com.craig.scholar.happy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.craig.scholar.happy.service.codeexchange.EnumerateFreePolyominoes;
+import java.util.Collection;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,13 @@ public class EnumerateFreePolyominoesTest {
         enumerateFreePolyominoes.enumerateFreePolyominoesV4(argument.n).size()));
   }
 
+  @Test
+  void testGetNumberOfFreePolyominoesV5() {
+    List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
+    arguments.forEach(argument -> assertEquals(argument.expectedCount,
+        enumerateFreePolyominoes.enumerateFreePolyominoesV5(argument.n).size()));
+  }
+
   @NotNull
   private static List<EnumerateFreePolyominoesArgument> getEnumerateFreePolyominoesArguments() {
     return List.of(
@@ -69,8 +77,8 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    int n = 14;
-    List<boolean[][]> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV4(n);
+    int n = 10;
+    Collection<?> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV5(n);
     System.out.println(polys.size());
 //    MatrixUtil.print(n, polys, "[]");
   }
