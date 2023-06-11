@@ -146,19 +146,29 @@ public class EnumerateFreePolyominoes {
           for (int c = columns - 1; c >= 0; c--) {
             int b = (poly[r] & (1 << c)) != 0 ? 1 : 0;
             if (b == 1) {
-              Stream.of(
-                      newPolyUp(poly, r, c),
-                      newPolyRight(poly, r, c),
-                      newPolyDown(poly, r, c),
-                      newPolyLeft(poly, r, columns, c))
-                  .filter(p -> p.length > 0)
-                  .filter(p -> !isExist(polyMemory, p))
-                  .forEach(polys::add);
+              int[] newPoly;
+              newPoly = newPolyUp(poly, r, c);
+              if (newPoly.length > 0 && !isExist(polyMemory, newPoly)) {
+                polys.add(newPoly);
+              }
+              newPoly = newPolyRight(poly, r, c);
+              if (newPoly.length > 0 && !isExist(polyMemory, newPoly)) {
+                polys.add(newPoly);
+              }
+              newPoly = newPolyDown(poly, r, c);
+              if (newPoly.length > 0 && !isExist(polyMemory, newPoly)) {
+                polys.add(newPoly);
+              }
+              newPoly = newPolyLeft(poly, r, columns, c);
+              if (newPoly.length > 0 && !isExist(polyMemory, newPoly)) {
+                polys.add(newPoly);
+              }
             }
           }
         }
         size--;
       }
+      polyMemory.clear();
     }
     return polys;
   }
