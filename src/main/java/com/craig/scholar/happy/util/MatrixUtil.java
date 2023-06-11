@@ -13,6 +13,7 @@ import static com.craig.scholar.happy.util.TransformationUtil.ZERO_DEGREE_ROTATI
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MatrixUtil {
 
@@ -180,10 +181,8 @@ public class MatrixUtil {
     return largerMatrix;
   }
 
-  public static void print(int n, List<boolean[][]> matrices, String trueFlag) {
-    System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
-    System.out.println("START");
-    matrices
+  public static void print(int n, List<boolean[][]> images, String trueFlag) {
+    printImage(n, images, matrices -> matrices
         .forEach(matrix -> {
           for (boolean[] booleans : matrix) {
             for (int j = 0; j < matrix[0].length; j++) {
@@ -192,9 +191,33 @@ public class MatrixUtil {
             System.out.println();
           }
           System.out.println("__________________");
-        });
+        }));
+  }
+
+  public static void print2(int n, List<int[]> images, String trueFlag) {
+    printImage(n, images, matrices -> matrices
+        .forEach(matrix -> {
+          int columns = 0;
+          for (int row : matrix) {
+            columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
+          }
+          for (int r : matrix) {
+            for (int c = columns - 1; c >= 0; c--) {
+              System.out.print((r & (1 << c)) != 0 ? trueFlag : " ".repeat(trueFlag.length()));
+            }
+            System.out.println();
+          }
+          System.out.println("_________________");
+        }));
+  }
+
+  private static <T> void printImage(int n, List<T> matrices, Consumer<List<T>> func) {
+    System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
+    System.out.println("START");
+    func.accept(matrices);
     System.out.println("FINISH");
     System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
+
   }
 
 //  public static void printImage(int n, List<boolean[][]> matrices) {
