@@ -3,10 +3,12 @@ package com.craig.scholar.happy.service.codeexchange;
 import static com.craig.scholar.happy.util.MatrixUtil.collapseMatrix;
 import static com.craig.scholar.happy.util.MatrixUtil.getTransformations;
 import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
+import static com.craig.scholar.happy.util.TransformationUtil.flip;
+import static com.craig.scholar.happy.util.TransformationUtil.reflect;
+import static com.craig.scholar.happy.util.TransformationUtil.rotate;
 
 import com.craig.scholar.happy.trie.MatrixTrie;
 import com.craig.scholar.happy.util.MatrixUtil;
-import com.craig.scholar.happy.util.TransformationUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -21,8 +24,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class EnumerateFreePolyominoes {
-
-  public static final String TRUE_FLAG = "[]";
 
   public int getNumberOfFreePolyominoes(int n) {
     return enumerateFreePolyominoes(n).size();
@@ -148,19 +149,19 @@ public class EnumerateFreePolyominoes {
             if (b == 1) {
               int[] newPoly;
               newPoly = newPolyUp(poly, r, c);
-              if (newPoly.length > 0 && !isExist(polyMemory, newPoly)) {
+              if (Objects.nonNull(newPoly) && isMissing(polyMemory, newPoly)) {
                 polys.add(newPoly);
               }
               newPoly = newPolyRight(poly, r, c);
-              if (newPoly.length > 0 && !isExist(polyMemory, newPoly)) {
+              if (Objects.nonNull(newPoly) && isMissing(polyMemory, newPoly)) {
                 polys.add(newPoly);
               }
               newPoly = newPolyDown(poly, r, c);
-              if (newPoly.length > 0 && !isExist(polyMemory, newPoly)) {
+              if (Objects.nonNull(newPoly) && isMissing(polyMemory, newPoly)) {
                 polys.add(newPoly);
               }
               newPoly = newPolyLeft(poly, r, columns, c);
-              if (newPoly.length > 0 && !isExist(polyMemory, newPoly)) {
+              if (Objects.nonNull(newPoly) && isMissing(polyMemory, newPoly)) {
                 polys.add(newPoly);
               }
             }
@@ -186,7 +187,7 @@ public class EnumerateFreePolyominoes {
       }
       return newPolyLeft;
     }
-    return new int[0];
+    return null;
   }
 
   private static int[] newPolyDown(int[] poly, int r, int c) {
@@ -199,7 +200,7 @@ public class EnumerateFreePolyominoes {
       }
       return newPolyDown;
     }
-    return new int[0];
+    return null;
   }
 
   private static int[] newPolyRight(int[] poly, int r, int c) {
@@ -219,7 +220,7 @@ public class EnumerateFreePolyominoes {
       }
       return newPolyRight;
     }
-    return new int[0];
+    return null;
   }
 
   private static int[] newPolyUp(int[] poly, int r, int c) {
@@ -232,7 +233,7 @@ public class EnumerateFreePolyominoes {
       }
       return newPolyUp;
     }
-    return new int[0];
+    return null;
   }
 
   public long enumerateFreePolyominoesV2(int n) {
@@ -308,18 +309,27 @@ public class EnumerateFreePolyominoes {
     return isExist;
   }
 
-  private static boolean isExist(Set<String> polyMem, int[] newPoly) {
+  private static boolean isMissing(Set<String> polyMem, int[] newPoly) {
     String polyStr = Arrays.toString(newPoly);
     if (polyMem.contains(polyStr)) {
-      return true;
+      return false;
     }
-    List<String> transformations = TransformationUtil.getTransformations(newPoly);
-    boolean isExist = transformations.stream()
-        .anyMatch(polyMem::contains);
-    if (!isExist) {
-      polyMem.addAll(transformations);
-    }
-    return isExist;
+    polyMem.add(polyStr);
+    newPoly = flip(newPoly);
+    polyMem.add(Arrays.toString(newPoly));
+    newPoly = reflect(newPoly);
+    polyMem.add(Arrays.toString(newPoly));
+    newPoly = flip(newPoly);
+    polyMem.add(Arrays.toString(newPoly));
+    newPoly = rotate(newPoly);
+    polyMem.add(Arrays.toString(newPoly));
+    newPoly = flip(newPoly);
+    polyMem.add(Arrays.toString(newPoly));
+    newPoly = reflect(newPoly);
+    polyMem.add(Arrays.toString(newPoly));
+    newPoly = flip(newPoly);
+    polyMem.add(Arrays.toString(newPoly));
+    return true;
   }
 
   private boolean isValidCell(boolean[][] polyomino, int row, int column) {
