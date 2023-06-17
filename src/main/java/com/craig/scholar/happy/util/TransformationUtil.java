@@ -19,13 +19,41 @@ public final class TransformationUtil {
   public static final Integer TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT = 7;
 
   public static final Integer MAX_TRANSFORMATIONS = 8;
-  public static final int MAX_NUMBER_OF_BITS = 32;
+
+  public static int[] flip(int[] rows) {
+    int[] flip = new int[rows.length];
+    for (int i = 0; i < rows.length; i++) {
+      flip[rows.length - 1 - i] = rows[i];
+    }
+    return flip;
+  }
+
+  public static int[] reflect(int[] rows) {
+    int columns = getColumns(rows);
+    int[] reflect = new int[rows.length];
+    for (int i = 0; i < rows.length; i++) {
+      for (int j = columns - 1; j >= 0; j--) {
+        int b = (rows[i] & (1 << j)) != 0 ? 1 : 0;
+        reflect[i] |= (b << (columns - 1 - j));
+      }
+    }
+    return reflect;
+  }
+
+  public static int[] rotate(int[] rows) {
+    int columns = getColumns(rows);
+    int[] rotate = new int[columns];
+    for (int i = 0; i < rows.length; i++) {
+      for (int j = columns - 1; j >= 0; j--) {
+        int b = (rows[i] & (1 << j)) != 0 ? 1 : 0;
+        rotate[columns - 1 - j] |= (b << i);
+      }
+    }
+    return rotate;
+  }
 
   public static List<String> getTransformations(int[] rows) {
-    int columns = 0;
-    for (int row : rows) {
-      columns = Math.max(columns, MAX_NUMBER_OF_BITS - Integer.numberOfLeadingZeros(row));
-    }
+    int columns = getColumns(rows);
     Map<Integer, int[]> matrices = new HashMap<>(MAX_TRANSFORMATIONS);
     matrices.put(ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT, rows);
     matrices.put(ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT, new int[rows.length]);
@@ -55,6 +83,14 @@ public final class TransformationUtil {
     return matrices.values().stream()
         .map(Arrays::toString)
         .collect(Collectors.toList());
+  }
+
+  private static int getColumns(int[] rows) {
+    int columns = 0;
+    for (int row : rows) {
+      columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
+    }
+    return columns;
   }
 
 }

@@ -1,10 +1,15 @@
 package com.craig.scholar.happy.util;
 
+import static com.craig.scholar.happy.util.TransformationUtil.flip;
+import static com.craig.scholar.happy.util.TransformationUtil.getTransformations;
+import static com.craig.scholar.happy.util.TransformationUtil.reflect;
+import static com.craig.scholar.happy.util.TransformationUtil.rotate;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -46,7 +51,7 @@ public class TransformationUtilTest {
   @ParameterizedTest
   @MethodSource("transformationCases")
   void testTransformations(int[] rows, List<int[]> expectedTransformations) {
-    List<String> actualTransformations = TransformationUtil.getTransformations(rows);
+    List<String> actualTransformations = getTransformations(rows);
     assertThat(expectedTransformations.size()).isEqualTo(actualTransformations.size());
     List<String> expected = expectedTransformations.stream()
         .map(Arrays::toString)
@@ -56,5 +61,26 @@ public class TransformationUtilTest {
         .sorted()
         .toList();
     assertThat(expected).isEqualTo(actual);
+  }
+
+  @Test
+  void testFlipped() {
+    int[] rows = {4, 6, 2, 7};
+    int[] expected = {7, 2, 6, 4};
+    assertThat(expected).isEqualTo(flip(rows));
+  }
+
+  @Test
+  void testReflected() {
+    int[] rows = {4, 6, 2, 7};
+    int[] expected = {1, 3, 2, 7};
+    assertThat(expected).isEqualTo(reflect(rows));
+  }
+
+  @Test
+  void testRotated() {
+    int[] rows = {8, 14, 11};
+    int[] expected = {7, 2, 6, 4};
+    assertThat(expected).isEqualTo(rotate(rows));
   }
 }
