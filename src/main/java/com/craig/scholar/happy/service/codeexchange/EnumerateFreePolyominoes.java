@@ -130,7 +130,7 @@ public class EnumerateFreePolyominoes {
     return freePolyominoes;
   }
 
-  public Collection<?> enumerateFreePolyominoesV5(int n) {
+  public Collection<int[]> enumerateFreePolyominoesV5(int n) {
     if (n < 0 || n > 15) {
       throw new IllegalArgumentException(String.format("Number %d is greater than 15."
           + " Please pass in positive number less than or equal to 15.", n));
