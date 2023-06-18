@@ -1,6 +1,7 @@
 package com.craig.scholar.happy;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.craig.scholar.happy.service.codeexchange.EnumerateFreePolyominoes;
 import java.util.Collection;
@@ -10,6 +11,10 @@ import org.junit.jupiter.api.Test;
 
 public class EnumerateFreePolyominoesTest {
 
+  // 1, 1, 1, 2, 5, 12, 35, 108, 369, 1285, 4655, 17073, 63600,
+  // 238591, 901971, 3426576, 13079255, 50107909, 192622052, 742624232, 2870671950,
+  // 11123060678, 43191857688, 168047007728, 654999700403, 2557227044764,
+  // 9999088822075, 39153010938487, 153511100594603
   private final EnumerateFreePolyominoes enumerateFreePolyominoes = new EnumerateFreePolyominoes();
 
   private static class EnumerateFreePolyominoesArgument {
@@ -26,36 +31,36 @@ public class EnumerateFreePolyominoesTest {
   @Test
   void testGetNumberOfFreePolyominoes() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
-    arguments.forEach(argument -> assertEquals(argument.expectedCount,
+    arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
         enumerateFreePolyominoes.getNumberOfFreePolyominoes(argument.n)));
   }
 
   @Test
   void testGetNumberOfFreePolyominoesV2() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
-    arguments.forEach(argument -> assertEquals(argument.expectedCount,
+    arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
         enumerateFreePolyominoes.enumerateFreePolyominoesV2(argument.n)));
   }
 
   @Test
   void testGetNumberOfFreePolyominoesV3() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
-    arguments.forEach(argument -> assertEquals(argument.expectedCount,
-        enumerateFreePolyominoes.enumerateFreePolyominoesV3(argument.n).size()));
+    arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
+        enumerateFreePolyominoes.enumerateFreePolyominoesV3(argument.n)));
   }
 
   @Test
   void testGetNumberOfFreePolyominoesV4() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
-    arguments.forEach(argument -> assertEquals(argument.expectedCount,
-        enumerateFreePolyominoes.enumerateFreePolyominoesV4(argument.n).size()));
+    arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
+        enumerateFreePolyominoes.enumerateFreePolyominoesV4(argument.n)));
   }
 
   @Test
   void testGetNumberOfFreePolyominoesV5() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
-    arguments.forEach(argument -> assertEquals(argument.expectedCount,
-        enumerateFreePolyominoes.enumerateFreePolyominoesV5(argument.n).size()));
+    arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
+        enumerateFreePolyominoes.enumerateFreePolyominoesV5(argument.n)));
   }
 
   @NotNull
@@ -77,9 +82,25 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    int n = 10;
+    int n = 16;
     Collection<?> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV5(n);
     System.out.println(polys.size());
-//    MatrixUtil.print(n, polys, "[]");
+//    MatrixUtil.print2(n, polys, "<>");
+  }
+
+  @Test
+  void enumerateFreePolyominoes_NumberGreaterThan15_Exception() {
+    assertThatThrownBy(() -> enumerateFreePolyominoes.enumerateFreePolyominoesV5(16))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Please pass in positive number less than or equal")
+        .hasMessageContaining("16");
+  }
+
+  @Test
+  void enumerateFreePolyominoes_NegativeNumber_Exception() {
+    assertThatThrownBy(() -> enumerateFreePolyominoes.enumerateFreePolyominoesV5(-1))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Please pass in positive number less than or equal")
+        .hasMessageContaining("-1");
   }
 }
