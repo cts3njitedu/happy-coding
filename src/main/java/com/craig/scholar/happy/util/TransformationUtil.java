@@ -1,5 +1,6 @@
 package com.craig.scholar.happy.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -83,6 +84,47 @@ public final class TransformationUtil {
     return matrices.values().stream()
         .map(Arrays::toString)
         .collect(Collectors.toList());
+  }
+
+  public static List<boolean[][]> getTransformations(boolean[][] matrix) {
+    List<boolean[][]> matrices = new ArrayList<>(MAX_TRANSFORMATIONS);
+    int rows = matrix.length;
+    int columns = matrix[0].length;
+    matrices.add(ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT, new boolean[rows][columns]);
+    matrices.add(ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT, new boolean[rows][columns]);
+    matrices.add(NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT, new boolean[columns][rows]);
+    matrices.add(NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT, new boolean[columns][rows]);
+    matrices.add(ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT, new boolean[rows][columns]);
+    matrices.add(ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT, new boolean[rows][columns]);
+    matrices.add(TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT, new boolean[columns][rows]);
+    matrices.add(TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT, new boolean[columns][rows]);
+    for (int i = 0; i < matrix.length; i++) {
+      for (int j = 0; j < matrix[0].length; j++) {
+        for (int t = 0; t < MAX_TRANSFORMATIONS; t++) {
+          boolean[][] rotatedMatrix = matrices.get(t);
+          if (ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT == t) {
+            rotatedMatrix[i][j] = matrix[i][j];
+          } else if (ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT == t) {
+            rotatedMatrix[i][rotatedMatrix[0].length - 1 - j] = matrix[i][j];
+          } else if (NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT == t) {
+            rotatedMatrix[j][rotatedMatrix[0].length - 1 - i] = matrix[i][j];
+          } else if (NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT == t) {
+            rotatedMatrix[rotatedMatrix.length - 1 - j][rotatedMatrix[0].length - 1
+                - i] = matrix[i][j];
+          } else if (ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT == t) {
+            rotatedMatrix[rotatedMatrix.length - 1 - i][j] = matrix[i][j];
+          } else if (ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT == t) {
+            rotatedMatrix[rotatedMatrix.length - 1 - i][rotatedMatrix[0].length - 1
+                - j] = matrix[i][j];
+          } else if (TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT == t) {
+            rotatedMatrix[j][i] = matrix[i][j];
+          } else if (TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT == t) {
+            rotatedMatrix[rotatedMatrix.length - 1 - j][i] = matrix[i][j];
+          }
+        }
+      }
+    }
+    return matrices;
   }
 
   private static int getColumns(int[] rows) {

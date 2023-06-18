@@ -1,15 +1,14 @@
 package com.craig.scholar.happy.service.codeexchange;
 
 import static com.craig.scholar.happy.util.MatrixUtil.collapseMatrix;
-import static com.craig.scholar.happy.util.MatrixUtil.getTransformations;
 import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
 import static com.craig.scholar.happy.util.TransformationUtil.flip;
+import static com.craig.scholar.happy.util.TransformationUtil.getTransformations;
 import static com.craig.scholar.happy.util.TransformationUtil.reflect;
 import static com.craig.scholar.happy.util.TransformationUtil.rotate;
 
 import com.craig.scholar.happy.trie.MatrixTrie;
 import com.craig.scholar.happy.util.MatrixUtil;
-import com.craig.scholar.happy.util.TransformationUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -312,7 +311,7 @@ public class EnumerateFreePolyominoes {
     if (polyMem.contains(polyStr)) {
       return;
     }
-    boolean isExist = TransformationUtil.getTransformations(newPoly)
+    boolean isExist = getTransformations(newPoly)
         .stream()
         .anyMatch(polyMem::contains);
     if (!isExist) {

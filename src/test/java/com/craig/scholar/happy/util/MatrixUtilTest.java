@@ -1,13 +1,10 @@
 package com.craig.scholar.happy.util;
 
 import static com.craig.scholar.happy.util.MatrixUtil.centerMatrix;
-import static com.craig.scholar.happy.util.MatrixUtil.getTransformations;
 import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -291,126 +288,6 @@ public class MatrixUtilTest {
   @MethodSource("isCongruentCases")
   void testIsCongruent(boolean[][] matrix1, boolean[][] matrix2, boolean isCongruent) {
     assertEquals(isCongruent, isCongruent(matrix1, matrix2));
-  }
-
-  private static Stream<Arguments> transformationCases() {
-    return Stream.of(
-        Arguments.of(
-            new boolean[][]{
-                {true, true, true},
-                {false, true, false},
-                {false, true, true}
-
-            },
-            List.of(
-                new boolean[][]{
-                    {true, true, true},
-                    {false, true, false},
-                    {false, true, true}
-                },
-                new boolean[][]{
-                    {true, true, true},
-                    {false, true, false},
-                    {true, true, false}
-                },
-                new boolean[][]{
-                    {false, false, true},
-                    {true, true, true},
-                    {true, false, true}
-                },
-                new boolean[][]{
-                    {true, false, true},
-                    {true, true, true},
-                    {false, false, true}
-                },
-                new boolean[][]{
-                    {false, true, true},
-                    {false, true, false},
-                    {true, true, true}
-                },
-                new boolean[][]{
-                    {true, true, false},
-                    {false, true, false},
-                    {true, true, true}
-                },
-                new boolean[][]{
-                    {true, false, false},
-                    {true, true, true},
-                    {true, false, true}
-                },
-                new boolean[][]{
-                    {true, false, true},
-                    {true, true, true},
-                    {true, false, false}
-                }
-            )
-        ),
-        Arguments.of(
-            new boolean[][]{
-                {true, false, false, false},
-                {true, true, true, false},
-                {true, false, true, true}
-            },
-            List.of(
-                new boolean[][]{
-                    {true, false, false, false},
-                    {true, true, true, false},
-                    {true, false, true, true}
-                },
-                new boolean[][]{
-                    {false, false, false, true},
-                    {false, true, true, true},
-                    {true, true, false, true}
-                },
-                new boolean[][]{
-                    {true, true, true},
-                    {false, true, false},
-                    {true, true, false},
-                    {true, false, false}
-                },
-                new boolean[][]{
-                    {true, false, false},
-                    {true, true, false},
-                    {false, true, false},
-                    {true, true, true}
-                },
-                new boolean[][]{
-                    {true, false, true, true},
-                    {true, true, true, false},
-                    {true, false, false, false}
-                },
-                new boolean[][]{
-                    {true, true, false, true},
-                    {false, true, true, true},
-                    {false, false, false, true}
-                },
-                new boolean[][]{
-                    {true, true, true},
-                    {false, true, false},
-                    {false, true, true},
-                    {false, false, true}
-                },
-                new boolean[][]{
-                    {false, false, true},
-                    {false, true, true},
-                    {false, true, false},
-                    {true, true, true}
-                }
-
-            )
-        )
-    );
-
-  }
-
-  @ParameterizedTest
-  @MethodSource("transformationCases")
-  void testGetTransformations(boolean[][] matrix, List<boolean[][]> expectedRotatedMatrices) {
-    List<boolean[][]> rotateMatrices = getTransformations(matrix);
-    assertEquals(expectedRotatedMatrices.size(), rotateMatrices.size());
-    for (int i = 0; i < expectedRotatedMatrices.size(); i++) {
-      assertArrayEquals(expectedRotatedMatrices.get(i), rotateMatrices.get(i), "Unequal " + i);
-    }
   }
 
   @Test
