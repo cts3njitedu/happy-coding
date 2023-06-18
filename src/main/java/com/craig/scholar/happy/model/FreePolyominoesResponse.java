@@ -1,15 +1,19 @@
 package com.craig.scholar.happy.model;
 
-import lombok.*;
+import java.util.Collection;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Builder
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @Getter
 public class FreePolyominoesResponse {
+
     @NonNull
-    List<boolean[][]> enumeratedPolyominoes;
+    Collection<?> polys;
 }
