@@ -2,10 +2,7 @@ package com.craig.scholar.happy.service.codeexchange;
 
 import static com.craig.scholar.happy.util.MatrixUtil.collapseMatrix;
 import static com.craig.scholar.happy.util.MatrixUtil.isCongruent;
-import static com.craig.scholar.happy.util.TransformationUtil.flip;
 import static com.craig.scholar.happy.util.TransformationUtil.getTransformations;
-import static com.craig.scholar.happy.util.TransformationUtil.reflect;
-import static com.craig.scholar.happy.util.TransformationUtil.rotate;
 
 import com.craig.scholar.happy.trie.MatrixTrie;
 import com.craig.scholar.happy.util.MatrixUtil;
@@ -172,31 +169,15 @@ public class EnumerateFreePolyominoes {
     return polys;
   }
 
-  private static int[] newPolyLeft(int[] poly, int r, int columns, int c) {
-    int leftBit = (c + 1 == columns) ? 0 : (poly[r] & (1 << (c + 1))) != 0 ? 1 : 0;
-    if (leftBit == 0) {
-      int[] newPolyLeft = new int[poly.length];
+  private static int[] newPolyUp(int[] poly, int r, int c) {
+    int upBit = r == 0 ? 0 : (poly[r - 1] & (1 << c)) != 0 ? 1 : 0;
+    if (upBit == 0) {
+      int[] newPolyUp = new int[r == 0 ? poly.length + 1 : poly.length];
+      newPolyUp[r == 0 ? 0 : r - 1] |= (1 << c);
       for (int j = 0; j < poly.length; j++) {
-        if (j == r) {
-          newPolyLeft[j] = (poly[j] | (1 << (c + 1)));
-        } else {
-          newPolyLeft[j] = poly[j];
-        }
+        newPolyUp[r == 0 ? j + 1 : j] |= poly[j];
       }
-      return newPolyLeft;
-    }
-    return null;
-  }
-
-  private static int[] newPolyDown(int[] poly, int r, int c) {
-    int downBit = (r + 1 == poly.length) ? 0 : (poly[r + 1] & (1 << c)) != 0 ? 1 : 0;
-    if (downBit == 0) {
-      int[] newPolyDown = new int[r == poly.length - 1 ? poly.length + 1 : poly.length];
-      newPolyDown[r == poly.length - 1 ? poly.length : r + 1] = (1 << c);
-      for (int j = 0; j < poly.length; j++) {
-        newPolyDown[j] |= poly[j];
-      }
-      return newPolyDown;
+      return newPolyUp;
     }
     return null;
   }
@@ -221,15 +202,31 @@ public class EnumerateFreePolyominoes {
     return null;
   }
 
-  private static int[] newPolyUp(int[] poly, int r, int c) {
-    int upBit = r == 0 ? 0 : (poly[r - 1] & (1 << c)) != 0 ? 1 : 0;
-    if (upBit == 0) {
-      int[] newPolyUp = new int[r == 0 ? poly.length + 1 : poly.length];
-      newPolyUp[r == 0 ? 0 : r - 1] |= (1 << c);
+  private static int[] newPolyDown(int[] poly, int r, int c) {
+    int downBit = (r + 1 == poly.length) ? 0 : (poly[r + 1] & (1 << c)) != 0 ? 1 : 0;
+    if (downBit == 0) {
+      int[] newPolyDown = new int[r == poly.length - 1 ? poly.length + 1 : poly.length];
+      newPolyDown[r == poly.length - 1 ? poly.length : r + 1] = (1 << c);
       for (int j = 0; j < poly.length; j++) {
-        newPolyUp[r == 0 ? j + 1 : j] |= poly[j];
+        newPolyDown[j] |= poly[j];
       }
-      return newPolyUp;
+      return newPolyDown;
+    }
+    return null;
+  }
+
+  private static int[] newPolyLeft(int[] poly, int r, int columns, int c) {
+    int leftBit = (c + 1 == columns) ? 0 : (poly[r] & (1 << (c + 1))) != 0 ? 1 : 0;
+    if (leftBit == 0) {
+      int[] newPolyLeft = new int[poly.length];
+      for (int j = 0; j < poly.length; j++) {
+        if (j == r) {
+          newPolyLeft[j] = (poly[j] | (1 << (c + 1)));
+        } else {
+          newPolyLeft[j] = poly[j];
+        }
+      }
+      return newPolyLeft;
     }
     return null;
   }
@@ -322,33 +319,6 @@ public class EnumerateFreePolyominoes {
       polyMem.add(polyStr);
       polys.add(newPoly);
     }
-  }
-
-  private static boolean populateMem(Map<String, int[]> polyMem, Set<String> duplicates,
-      int[] newPoly) {
-    if (Objects.isNull(newPoly)) {
-      return false;
-    }
-    String polyStr = Arrays.toString(newPoly);
-    if (duplicates.contains(polyStr) || polyMem.containsKey(polyStr)) {
-      return false;
-    }
-    polyMem.put(polyStr, newPoly);
-    newPoly = flip(newPoly);
-    duplicates.add(Arrays.toString(newPoly));
-    newPoly = reflect(newPoly);
-    duplicates.add(Arrays.toString(newPoly));
-    newPoly = flip(newPoly);
-    duplicates.add(Arrays.toString(newPoly));
-    newPoly = rotate(newPoly);
-    duplicates.add(Arrays.toString(newPoly));
-    newPoly = flip(newPoly);
-    duplicates.add(Arrays.toString(newPoly));
-    newPoly = reflect(newPoly);
-    duplicates.add(Arrays.toString(newPoly));
-    newPoly = flip(newPoly);
-    duplicates.add(Arrays.toString(newPoly));
-    return true;
   }
 
   private boolean isValidCell(boolean[][] polyomino, int row, int column) {
