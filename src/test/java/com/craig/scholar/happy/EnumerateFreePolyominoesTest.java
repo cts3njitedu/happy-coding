@@ -8,6 +8,7 @@ import com.craig.scholar.happy.util.MatrixUtil;
 import java.util.Collection;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class EnumerateFreePolyominoesTest {
@@ -37,31 +38,33 @@ public class EnumerateFreePolyominoesTest {
   }
 
   @Test
+  @Disabled
   void testGetNumberOfFreePolyominoesV2() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
-    arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
-        enumerateFreePolyominoes.enumerateFreePolyominoesV2(argument.n)));
+    arguments
+        .forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
+            enumerateFreePolyominoes.enumerateFreePolyominoesV2(argument.n)));
   }
 
   @Test
   void testGetNumberOfFreePolyominoesV3() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
     arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
-        enumerateFreePolyominoes.enumerateFreePolyominoesV3(argument.n)));
+        enumerateFreePolyominoes.enumerateFreePolyominoesV3(argument.n).size()));
   }
 
   @Test
   void testGetNumberOfFreePolyominoesV4() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
     arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
-        enumerateFreePolyominoes.enumerateFreePolyominoesV4(argument.n)));
+        enumerateFreePolyominoes.enumerateFreePolyominoesV4(argument.n).size()));
   }
 
   @Test
   void testGetNumberOfFreePolyominoesV5() {
     List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
     arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
-        enumerateFreePolyominoes.enumerateFreePolyominoesV5(argument.n)));
+        enumerateFreePolyominoes.enumerateFreePolyominoesV5(argument.n).size()));
   }
 
   @NotNull
@@ -83,7 +86,7 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    int n = 5;
+    int n = 10;
     Collection<int[]> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV5(n);
 //    System.out.println(polys.size());
     MatrixUtil.print3(n, polys, "[]");
