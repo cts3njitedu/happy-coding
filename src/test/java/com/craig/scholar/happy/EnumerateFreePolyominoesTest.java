@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.craig.scholar.happy.service.codeexchange.EnumerateFreePolyominoes;
-import com.craig.scholar.happy.util.MatrixUtil;
 import java.util.Collection;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -67,6 +66,13 @@ public class EnumerateFreePolyominoesTest {
         enumerateFreePolyominoes.enumerateFreePolyominoesV5(argument.n).size()));
   }
 
+  @Test
+  void testGetNumberOfFreePolyominoesV6() {
+    List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
+    arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
+        enumerateFreePolyominoes.enumerateFreePolyominoesV6(argument.n).size()));
+  }
+
   @NotNull
   private static List<EnumerateFreePolyominoesArgument> getEnumerateFreePolyominoesArguments() {
     return List.of(
@@ -88,8 +94,8 @@ public class EnumerateFreePolyominoesTest {
   void testEnumerateFreePolyominoes() {
     int n = 10;
     Collection<int[]> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV5(n);
-//    System.out.println(polys.size());
-    MatrixUtil.print3(n, polys, "[]");
+    System.out.println(polys.size());
+//    MatrixUtil.print3(n, polys, "[]");
   }
 
   @Test
