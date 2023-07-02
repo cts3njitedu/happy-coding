@@ -19,6 +19,8 @@ import java.util.Optional;
 import java.util.Queue;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 
@@ -288,6 +290,166 @@ public class EnumerateFreePolyominoes {
     RIGHT,
     DOWN,
     LEFT
+  }
+
+  public List<int[]> enumerateFreePolyominoesV7(int n) {
+    if (n < 1) {
+      return List.of(new int[]{});
+    }
+    int[] poly = new int[2 * n + 1];
+    poly[n] = 1;
+    return enumerateFreePolyominoesV7(poly, n, n, 1, n, new HashSet<>());
+  }
+
+  private List<int[]> enumerateFreePolyominoesV7(int[] poly, int s, int e, int o, int n,
+      Set<String> mem) {
+    int[] subPoly = Arrays.copyOfRange(poly, s, e + 1);
+    boolean isExist = getTransformations(subPoly)
+        .stream()
+        .anyMatch(mem::contains);
+    if (isExist) {
+      return List.of();
+    }
+    mem.add(Arrays.toString(subPoly));
+    if (o == n) {
+      return List.of(subPoly);
+    }
+    return IntStream.rangeClosed(s, e)
+        .mapToObj(r -> {
+          int columns = Integer.SIZE - Integer.numberOfLeadingZeros(poly[r]);
+          return IntStream.range(0, columns)
+              .mapToObj(c -> {
+                List<int[]> polys = new ArrayList<>();
+                int b = (poly[r] & (1 << c)) == 0 ? 0 : 1;
+                if (b == 1) {
+                  int nb = (r == 0 ? 1 : (poly[r - 1] & (1 << c)) == 0 ? 0 : 1);
+                  if (nb == 0) {
+                    int t = poly[r - 1];
+                    poly[r - 1] |= (1 << c);
+                    polys.addAll(
+                        enumerateFreePolyominoesV7(poly, t == 0 ? s - 1 : s, e, o + 1, n, mem));
+                    poly[r - 1] = t;
+                  }
+                  nb = (c == 0 ? 0 : (poly[r] & (1 << (c - 1))) == 0 ? 0 : 1);
+                  if (nb == 0) {
+                    if (c == 0) {
+                      for (int i = s; i <= e; i++) {
+                        poly[i] *= 2;
+                        if (i == r) {
+                          poly[i] += 1;
+                        }
+                      }
+                      polys.addAll(enumerateFreePolyominoesV7(poly, s, e, o + 1, n, mem));
+                      for (int i = s; i <= e; i++) {
+                        poly[i] >>= 1;
+                      }
+                    } else {
+                      int t = poly[r];
+                      poly[r] |= (1 << (c - 1));
+                      polys.addAll(enumerateFreePolyominoesV7(poly, s, e, o + 1, n, mem));
+                      poly[r] = t;
+                    }
+                  }
+                  nb = (r == poly.length - 1 ? 1 : (poly[r + 1] & (1 << c)) == 0 ? 0 : 1);
+                  if (nb == 0) {
+                    int t = poly[r + 1];
+                    poly[r + 1] |= (1 << c);
+                    polys.addAll(
+                        enumerateFreePolyominoesV7(poly, s, t == 0 ? e + 1 : e, o + 1, n, mem));
+                    poly[r + 1] = t;
+                  }
+                  nb = (c == (columns - 1) ? 0 : (poly[r] & (1 << (c + 1))) == 0 ? 0 : 1);
+                  if (nb == 0) {
+                    int t = poly[r];
+                    poly[r] |= (1 << (c + 1));
+                    polys.addAll(enumerateFreePolyominoesV7(poly, s, e, o + 1, n, mem));
+                    poly[r] = t;
+                  }
+                }
+                return polys;
+              })
+              .flatMap(List::stream)
+              .collect(Collectors.toList());
+        })
+        .flatMap(Collection::stream)
+        .collect(Collectors.toList());
+  }
+
+  public void enumerateFreePolyominoesV8(int n) {
+    if (n < 1) {
+      MatrixUtil.printMatrix(new int[]{}, "[]");
+      return;
+    }
+    int[] poly = new int[2 * n + 1];
+    poly[n] = 1;
+    enumerateFreePolyominoesV8(poly, n, n, 1, n, new HashSet<>());
+  }
+
+  private void enumerateFreePolyominoesV8(int[] poly, int s, int e, int o, int n,
+      Set<String> mem) {
+    int[] subPoly = Arrays.copyOfRange(poly, s, e + 1);
+    boolean isExist = getTransformations(subPoly)
+        .stream()
+        .anyMatch(mem::contains);
+    if (isExist) {
+      return;
+    }
+    mem.add(Arrays.toString(subPoly));
+    if (o == n) {
+      MatrixUtil.printMatrix(subPoly, "[]");
+      return;
+    }
+    IntStream.rangeClosed(s, e)
+        .forEach(r -> {
+          int columns = Integer.SIZE - Integer.numberOfLeadingZeros(poly[r]);
+          IntStream.range(0, columns)
+              .forEach(c -> {
+                int b = (poly[r] & (1 << c)) == 0 ? 0 : 1;
+                if (b == 1) {
+                  int nb = (r == 0 ? 1 : (poly[r - 1] & (1 << c)) == 0 ? 0 : 1);
+                  if (nb == 0) {
+                    int t = poly[r - 1];
+                    poly[r - 1] |= (1 << c);
+                    enumerateFreePolyominoesV8(poly, t == 0 ? s - 1 : s, e, o + 1, n, mem);
+                    poly[r - 1] = t;
+                  }
+                  nb = (c == 0 ? 0 : (poly[r] & (1 << (c - 1))) == 0 ? 0 : 1);
+                  if (nb == 0) {
+                    if (c == 0) {
+                      for (int i = s; i <= e; i++) {
+                        poly[i] *= 2;
+                        if (i == r) {
+                          poly[i] += 1;
+                        }
+                      }
+                      enumerateFreePolyominoesV8(poly, s, e, o + 1, n, mem);
+                      for (int i = s; i <= e; i++) {
+                        poly[i] >>= 1;
+                      }
+                    } else {
+                      int t = poly[r];
+                      poly[r] |= (1 << (c - 1));
+                      enumerateFreePolyominoesV8(poly, s, e, o + 1, n, mem);
+                      poly[r] = t;
+                    }
+                  }
+                  nb = (r == poly.length - 1 ? 1 : (poly[r + 1] & (1 << c)) == 0 ? 0 : 1);
+                  if (nb == 0) {
+                    int t = poly[r + 1];
+                    poly[r + 1] |= (1 << c);
+                    enumerateFreePolyominoesV8(poly, s, t == 0 ? e + 1 : e, o + 1, n, mem);
+                    poly[r + 1] = t;
+                  }
+                  nb = (c == (columns - 1) ? 0 : (poly[r] & (1 << (c + 1))) == 0 ? 0 : 1);
+                  if (nb == 0) {
+                    int t = poly[r];
+                    poly[r] |= (1 << (c + 1));
+                    enumerateFreePolyominoesV8(poly, s, e, o + 1, n, mem);
+                    poly[r] = t;
+                  }
+                }
+              });
+        });
   }
 
   public List<int[]> enumerateFreePolyominoesV6(int n) {
