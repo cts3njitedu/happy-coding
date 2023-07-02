@@ -184,6 +184,19 @@ public class MatrixUtil {
     });
   }
 
+  public static void printMatrix(int[] matrix, String trueFlag) {
+    int columns = 0;
+    for (int row : matrix) {
+      columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
+    }
+    for (int r : matrix) {
+      for (int c = columns - 1; c >= 0; c--) {
+        System.out.print((r & (1 << c)) != 0 ? trueFlag : " ".repeat(trueFlag.length()));
+      }
+      System.out.println();
+    }
+    System.out.println("_________________");
+  }
 
   private static <T> void printImage(int n, Collection<T> matrices, Consumer<T> func) {
     System.out.printf("Number: %d, Count: %d%n\n", n, matrices.size());
