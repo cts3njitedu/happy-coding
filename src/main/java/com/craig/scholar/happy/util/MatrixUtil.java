@@ -11,6 +11,7 @@ import static com.craig.scholar.happy.util.TransformationUtil.ZERO_DEGREE_ROTATI
 import static com.craig.scholar.happy.util.TransformationUtil.ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT;
 
 import java.math.BigInteger;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -175,6 +176,26 @@ public class MatrixUtil {
         columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
       }
       for (int r : matrix) {
+        for (int c = columns - 1; c >= 0; c--) {
+          System.out.print((r & (1 << c)) != 0 ? trueFlag : " ".repeat(trueFlag.length()));
+        }
+        System.out.println();
+      }
+      System.out.println("_________________");
+    });
+  }
+
+  public static void print4(int n, Collection<String> matrices, String trueFlag) {
+    printImage(n, matrices, matrix -> {
+      int columns = 0;
+      int[] rows = Arrays.stream(matrix.substring(1,
+              matrix.length() - 1).split(", "))
+          .mapToInt(Integer::parseInt)
+          .toArray();
+      for (int row : rows) {
+        columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
+      }
+      for (int r : rows) {
         for (int c = columns - 1; c >= 0; c--) {
           System.out.print((r & (1 << c)) != 0 ? trueFlag : " ".repeat(trueFlag.length()));
         }
