@@ -298,67 +298,61 @@ public class EnumerateFreePolyominoes {
 
   private static class PolyWrapper {
 
-    private final LinkedList<int[]> polys;
-    private int count = 0;
+    private final int targetOnesCount;
 
-    private final ReturnType returnType;
+    private final boolean print;
 
-    private final Set<String> cache = new HashSet<>();
+    private final Map<Integer, Set<String>> cache = new HashMap<>();
 
-    public PolyWrapper(ReturnType returnType) {
-      this.returnType = returnType;
-      if (returnType == ReturnType.LIST) {
-        this.polys = new LinkedList<>();
-      } else {
-        this.polys = null;
+    public PolyWrapper(int n, boolean print) {
+      this.targetOnesCount = n;
+      this.cache.put(0, Set.of("[]"));
+      for (int i = 1; i <= n; i++) {
+        this.cache.put(i, new HashSet<>());
       }
+      this.print = print;
     }
 
-    public LinkedList<int[]> getPolys() {
-      return polys;
+    public List<String> getPolys() {
+      return new ArrayList<>(cache.get(targetOnesCount));
     }
 
     public int getCount() {
-      return count;
+      return cache.get(targetOnesCount).size();
     }
 
-    public void handlePoly(int[] poly) {
-      if (ReturnType.LIST == this.returnType) {
-        polys.add(poly);
-      } else if (ReturnType.INT == this.returnType) {
-        count++;
-      } else {
+    private void handlePoly(int[] poly) {
+      if (this.print) {
         MatrixUtil.printMatrix(poly, "[]");
       }
     }
 
-    private boolean isExist(int[] poly) {
+    private boolean isExist(int[] poly, int onesCount) {
       return getTransformations(poly)
           .stream()
-          .anyMatch(cache::contains);
+          .anyMatch(s -> cache.get(onesCount).contains(s));
     }
 
-    private void cachePoly(int[] poly) {
-      cache.add(Arrays.toString(poly));
+    private void cachePoly(int[] poly, int onesCount) {
+      cache.get(onesCount).add(Arrays.toString(poly));
     }
   }
 
-  public List<int[]> enumerateFreePolyominoesV7(int n) {
-    return enumerateFreePolyominoesRecursion(n, ReturnType.LIST).getPolys();
+  public List<String> enumerateFreePolyominoesV7(int n) {
+    return enumerateFreePolyominoesRecursion(n, false).getPolys();
   }
 
   public int enumerateFreePolyominoesV8(int n) {
-    return enumerateFreePolyominoesRecursion(n, ReturnType.INT).getCount();
+    return enumerateFreePolyominoesRecursion(n, false).getCount();
   }
 
   public void enumerateFreePolyominoesV9(int n) {
-    enumerateFreePolyominoesRecursion(n, ReturnType.VOID);
+    enumerateFreePolyominoesRecursion(n, true);
   }
 
-  private PolyWrapper enumerateFreePolyominoesRecursion(int n, ReturnType returnType) {
-    PolyWrapper polyWrapper = new PolyWrapper(returnType);
+  private PolyWrapper enumerateFreePolyominoesRecursion(int n, boolean print) {
+    PolyWrapper polyWrapper = new PolyWrapper(n, print);
     if (n < 1) {
-      polyWrapper.handlePoly(new int[]{});
       return polyWrapper;
     }
     int[] poly = new int[2 * n - 1];
@@ -375,10 +369,10 @@ public class EnumerateFreePolyominoes {
     for (int i = 0; i < subPoly.length; i++) {
       subPoly[i] |= (poly[startRow + i] >> minimumNumberOfTrailingZeros);
     }
-    if (polyWrapper.isExist(subPoly)) {
+    if (polyWrapper.isExist(subPoly, currentOnesCount)) {
       return;
     }
-    polyWrapper.cachePoly(subPoly);
+    polyWrapper.cachePoly(subPoly, currentOnesCount);
     if (currentOnesCount == targetOnesCount) {
       polyWrapper.handlePoly(subPoly);
       return;
