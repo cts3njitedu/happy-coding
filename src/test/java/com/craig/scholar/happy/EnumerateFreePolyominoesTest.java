@@ -86,6 +86,11 @@ public class EnumerateFreePolyominoesTest {
         enumerateFreePolyominoes.enumerateFreePolyominoesV8(argument.n)));
   }
 
+  @Test
+  void testGetNumberOfFreePolyominoesV9() {
+    enumerateFreePolyominoes.enumerateFreePolyominoesV9(5);
+  }
+
   @NotNull
   private static List<EnumerateFreePolyominoesArgument> getEnumerateFreePolyominoesArguments() {
     return List.of(
@@ -105,7 +110,7 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void testEnumerateFreePolyominoes() {
-    int n = 7;
+    int n = 14;
     System.out.println(enumerateFreePolyominoes.enumerateFreePolyominoesV8(n));
 //    MatrixUtil.print3(n, polys, "[]");
   }

@@ -368,21 +368,22 @@ public class EnumerateFreePolyominoes {
     return polyWrapper;
   }
 
-  private void enumerateFreePolyominoesRecursion(int[] poly, int sr, int er,
-      int bs, int o, int n, PolyWrapper polyWrapper) {
-    int[] subPoly = new int[(er - sr) + 1];
+  private void enumerateFreePolyominoesRecursion(int[] poly, int startRow, int endRow,
+      int minimumNumberOfTrailingZeros, int currentOnesCount, int targetOnesCount,
+      PolyWrapper polyWrapper) {
+    int[] subPoly = new int[(endRow - startRow) + 1];
     for (int i = 0; i < subPoly.length; i++) {
-      subPoly[i] |= (poly[sr + i] >> bs);
+      subPoly[i] |= (poly[startRow + i] >> minimumNumberOfTrailingZeros);
     }
     if (polyWrapper.isExist(subPoly)) {
       return;
     }
     polyWrapper.cachePoly(subPoly);
-    if (o == n) {
+    if (currentOnesCount == targetOnesCount) {
       polyWrapper.handlePoly(subPoly);
       return;
     }
-    for (int r = sr; r <= er; r++) {
+    for (int r = startRow; r <= endRow; r++) {
       int columns = Integer.SIZE - Integer.numberOfLeadingZeros(poly[r]);
       for (int c = 0; c < columns; c++) {
         int b = (poly[r] & (1 << c)) == 0 ? 0 : 1;
@@ -391,7 +392,8 @@ public class EnumerateFreePolyominoes {
           if (nb == 0) {
             int t = poly[r - 1];
             poly[r - 1] |= (1 << c);
-            enumerateFreePolyominoesRecursion(poly, t == 0 ? sr - 1 : sr, er, bs, o + 1, n,
+            enumerateFreePolyominoesRecursion(poly, t == 0 ? startRow - 1 : startRow, endRow,
+                minimumNumberOfTrailingZeros, currentOnesCount + 1, targetOnesCount,
                 polyWrapper);
             poly[r - 1] = t;
           }
@@ -400,7 +402,8 @@ public class EnumerateFreePolyominoes {
             int t = poly[r];
             poly[r] |= (1 << (c - 1));
             int tbs = Integer.numberOfTrailingZeros(poly[r]);
-            enumerateFreePolyominoesRecursion(poly, sr, er, Math.min(bs, tbs), o + 1, n,
+            enumerateFreePolyominoesRecursion(poly, startRow, endRow,
+                Math.min(minimumNumberOfTrailingZeros, tbs), currentOnesCount + 1, targetOnesCount,
                 polyWrapper);
             poly[r] = t;
           }
@@ -408,7 +411,8 @@ public class EnumerateFreePolyominoes {
           if (nb == 0) {
             int t = poly[r + 1];
             poly[r + 1] |= (1 << c);
-            enumerateFreePolyominoesRecursion(poly, sr, t == 0 ? er + 1 : er, bs, o + 1, n,
+            enumerateFreePolyominoesRecursion(poly, startRow, t == 0 ? endRow + 1 : endRow,
+                minimumNumberOfTrailingZeros, currentOnesCount + 1, targetOnesCount,
                 polyWrapper);
             poly[r + 1] = t;
           }
@@ -416,7 +420,8 @@ public class EnumerateFreePolyominoes {
           if (nb == 0) {
             int t = poly[r];
             poly[r] |= (1 << (c + 1));
-            enumerateFreePolyominoesRecursion(poly, sr, er, bs, o + 1, n, polyWrapper);
+            enumerateFreePolyominoesRecursion(poly, startRow, endRow, minimumNumberOfTrailingZeros,
+                currentOnesCount + 1, targetOnesCount, polyWrapper);
             poly[r] = t;
           }
         }
