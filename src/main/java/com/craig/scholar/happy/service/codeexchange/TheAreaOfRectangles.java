@@ -12,9 +12,9 @@ public class TheAreaOfRectangles {
 
   public long area(List<Rectangle> rectangles) {
     return rectangles.stream()
-        .reduce(new HashMap<Integer, Set<Integer>>(), (m, rectangle) -> {
-          Point p1 = rectangle.p1();
-          Point p2 = rectangle.p2();
+        .reduce(new HashMap<Integer, Set<Integer>>(), (m, rect) -> {
+          Point p1 = rect.p1();
+          Point p2 = rect.p2();
           int lw = Math.min(p1.x(), p2.x());
           int uw = Math.max(p1.x(), p2.x());
           int lh = Math.min(p1.y(), p2.y());
