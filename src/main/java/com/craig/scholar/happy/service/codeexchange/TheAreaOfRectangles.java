@@ -15,12 +15,12 @@ public class TheAreaOfRectangles {
         .reduce(new HashMap<Integer, Set<Integer>>(), (m, rectangle) -> {
           Point p1 = rectangle.p1();
           Point p2 = rectangle.p2();
-          int lw = Math.min(p1.y(), p2.y());
-          int uw = Math.max(p1.y(), p2.y());
-          int lh = Math.min(p1.x(), p2.x());
-          int uh = Math.max(p1.x(), p2.x());
-          for (int h = lh; h <= uh; h++) {
-            for (int w = lw; w <= uw; w++) {
+          int lw = Math.min(p1.x(), p2.x());
+          int uw = Math.max(p1.x(), p2.x());
+          int lh = Math.min(p1.y(), p2.y());
+          int uh = Math.max(p1.y(), p2.y());
+          for (int h = lh; h < uh; h++) {
+            for (int w = lw; w < uw; w++) {
               Set<Integer> set = m.computeIfAbsent(h, k -> new HashSet<>());
               set.add(w);
             }
@@ -30,6 +30,7 @@ public class TheAreaOfRectangles {
         .values()
         .stream()
         .map(Set::size)
-        .count();
+        .mapToLong(Integer::longValue)
+        .sum();
   }
 }
