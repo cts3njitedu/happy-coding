@@ -1,5 +1,7 @@
 package com.craig.scholar.happy.service.codeexchange;
 
+import com.craig.scholar.happy.model.Point;
+import com.craig.scholar.happy.model.Rectangle;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,20 +9,16 @@ import java.util.Set;
 
 public class TheAreaOfRectangles {
 
-  record Point(int x, int y) {
 
-  }
-
-
-  public long area(List<List<Point>> rectangles) {
+  public long area(List<Rectangle> rectangles) {
     return rectangles.stream()
         .reduce(new HashMap<Integer, Set<Integer>>(), (m, rectangle) -> {
-          Point lc = rectangle.get(0);
-          Point rc = rectangle.get(1);
-          int lw = Math.min(lc.y, rc.y);
-          int uw = Math.max(lc.y, rc.y);
-          int lh = Math.min(lc.x, rc.x);
-          int uh = Math.max(lc.x, rc.x);
+          Point p1 = rectangle.p1();
+          Point p2 = rectangle.p2();
+          int lw = Math.min(p1.y(), p2.y());
+          int uw = Math.max(p1.y(), p2.y());
+          int lh = Math.min(p1.x(), p2.x());
+          int uh = Math.max(p1.x(), p2.x());
           for (int h = lh; h <= uh; h++) {
             for (int w = lw; w <= uw; w++) {
               Set<Integer> set = m.computeIfAbsent(h, k -> new HashSet<>());
