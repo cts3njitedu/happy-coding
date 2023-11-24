@@ -8,11 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class GetTheBibleVerse implements HappyCoding {
 
@@ -51,7 +48,12 @@ public class GetTheBibleVerse implements HappyCoding {
     BOOKS.put("Revelation", "The Revelation of Saint John the Divine");
   }
 
+  //(?<=2:20)(?<=[])?[\s\S]*?(?=\s\d+\:\d+|\z)
   private final Pattern pattern = Pattern.compile("(\\d+:\\d+)");
+
+  private final String testPattern = "((?<=\\s%s\\s)[\\s\\S]*?(?=\\s\\d+\\:\\d+|\\z)) | (?<=^%s\\s)[\\s\\S]*?(?=\\s\\d+\\:\\d+|\\z) | (?<=\\n%s\\s)[\\s\\S]*?(?=\\s\\d+\\:\\d+|\\z)";
+
+  private final String bookPattern = "(\\n{5}%s.*?\\n{5})";
   Map<String, String> ORDINAL_MAP = Map.of(
       "1", "First",
       "2", "Second",
@@ -59,97 +61,42 @@ public class GetTheBibleVerse implements HappyCoding {
   );
 
   public String getTheBibleVerse(String reference) {
+    Reference ref = getReference(reference);
+    String oldTestamentHeading = "The Old Testament of the King James Version of the Bible";
+    String newTestamentHeading = "The New Testament of the King James Bible";
     try {
-      Reference ref = getReference(reference);
-      String oldTestamentHeading = "The Old Testament of the King James Version of the Bible";
-      String endOfBible = "*** END OF THE PROJECT GUTENBERG EBOOK THE KING JAMES VERSION OF THE BIBLE ***";
-      AtomicInteger oldTestamentHeadingCount = new AtomicInteger(0);
-      try {
-        Map<String, Integer> books = new HashMap<>();
-        Path path = Paths.get(Objects.requireNonNull(GetTheBibleVerse.class.getClassLoader()
-                .getResource("pg10.txt"))
-            .toURI());
-        AtomicReference<String> bookName = new AtomicReference<>();
-        Pattern exactMatchPattern = Pattern.compile(ref.verse);
-        List<String> lines = Files.readAllLines(path);
-        String verses = lines.stream()
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .dropWhile(line -> {
-              if (line.contains(oldTestamentHeading)) {
-                return oldTestamentHeadingCount.incrementAndGet() != 2;
-              } else if (oldTestamentHeadingCount.get() == 1) {
-                books.put(line, 1);
-                if (ref.ordinal == null) {
-                  return !line.contains(ref.name);
-                }
-                return !line.contains(ref.name) || !line.contains(ORDINAL_MAP.get(ref.ordinal));
+      Path path = Paths.get(Objects.requireNonNull(GetTheBibleVerse.class.getClassLoader()
+              .getResource("pg10.txt"))
+          .toURI());
+      Pattern exactMatchPattern = Pattern.compile(
+          String.format(testPattern, ref.verse, ref.verse, ref.verse), Pattern.DOTALL);
+      List<String> lines = Files.readAllLines(path);
+      return lines.stream()
+          .filter(line -> !line.isEmpty())
+          .dropWhile(line -> !line.equals(oldTestamentHeading))
+          .skip(1)
+          .filter(line -> !line.equals(newTestamentHeading))
+          .takeWhile(line -> !line.equals(oldTestamentHeading))
+          .filter(line -> ref.ordinal == null ? line.contains(ref.name) :
+              line.contains(ref.name) && line.contains(ORDINAL_MAP.get(ref.ordinal)))
+          .findFirst()
+          .map(bookName -> {
+            Pattern bookMatchPattern = Pattern.compile(String.format(bookPattern, bookName),
+                Pattern.DOTALL);
+            Matcher bookMatcher = bookMatchPattern.matcher(String.join("\n", lines));
+            if (bookMatcher.find()) {
+              String book = bookMatcher.group();
+              Matcher exactMatcher = exactMatchPattern.matcher(book);
+              if (exactMatcher.find()) {
+                return exactMatcher.group();
               }
-              return true;
-            })
-            .peek(line -> {
-              if (oldTestamentHeadingCount.get() < 2 && bookName.get() == null) {
-                bookName.set(line);
-              }
-            })
-            .skip(1)
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .dropWhile(line -> {
-              if (oldTestamentHeadingCount.get() == 2) {
-                return true;
-              }
-              if (!books.containsKey(line)) {
-                if (!line.equals(oldTestamentHeading)) {
-                  books.put(line, 1);
-                  return true;
-                }
-                oldTestamentHeadingCount.incrementAndGet();
-                return false;
-              }
-              return true;
-            })
-            .skip(1)
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .dropWhile(line -> {
-              if (!books.containsKey(line)) {
-                return books.get(bookName.get()) != 2;
-              }
-              books.computeIfPresent(line, (k, v) -> v + 1);
-              return books.get(bookName.get()) != 2 && books.get(line) == 2;
-            })
-            .skip(1)
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .takeWhile(line -> {
-              if (endOfBible.equals(line)) {
-                return true;
-              }
-              if (!books.containsKey(line)) {
-                return true;
-              }
-              return line.equals(bookName.get());
-            })
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .dropWhile(line -> {
-              Matcher matcher = exactMatchPattern.matcher(line);
-              return !matcher.find();
-            })
-            .map(String::trim)
-            .filter(line -> !line.isEmpty())
-            .collect(Collectors.joining());
-        Matcher matcher = pattern.matcher(verses);
-        int prev = 0;
-        while (matcher.find()) {
-
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
-    } finally {
-
+            }
+            return "";
+          })
+          .map(String::trim)
+          .orElse("");
+    } catch (Exception e) {
+      e.printStackTrace();
     }
     return null;
   }
