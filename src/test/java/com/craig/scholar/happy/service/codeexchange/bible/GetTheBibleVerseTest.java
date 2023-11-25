@@ -1,8 +1,8 @@
 package com.craig.scholar.happy.service.codeexchange.bible;
 
-import java.util.List;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.stream.Stream;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -60,6 +60,14 @@ class GetTheBibleVerseTest {
         Arguments.of(
             "Revelation 22:21",
             "The grace of our Lord Jesus Christ be with you all. Amen."
+        ),
+        Arguments.of(
+            "Mark 6:3",
+            "Is not this the carpenter, the son of Mary, the brother of James, and Joses, and of Juda, and Simon? and are not his sisters here with us? And they were offended at him."
+        ),
+        Arguments.of(
+            "Genesis 50:27",
+            ""
         )
     );
   }
@@ -67,76 +75,7 @@ class GetTheBibleVerseTest {
   @ParameterizedTest
   @MethodSource("bibleCases")
   void getText(String referenceId, String expectedText) {
-    Assertions.assertThat(getTheBibleVerse.getText(referenceId)).isEqualTo(expectedText);
+    assertThat(getTheBibleVerse.getText(referenceId)).isEqualTo(expectedText);
   }
 
-
-  private List<String> getBooks() {
-    return List.of("Genesis",
-        "Exodus",
-        "Leviticus",
-        "Numbers",
-        "Deuteronomy",
-        "Joshua",
-        "Judges",
-        "Ruth",
-        "1 Samuel",
-        "2 Samuel",
-        "1 Kings",
-        "2 Kings",
-        "1 Chronicles",
-        "2 Chronicles",
-        "Ezra",
-        "Nehemiah",
-        "Esther",
-        "Job",
-        "Psalm",
-        "Proverbs",
-        "Ecclesiastes",
-        "Song of Solomon",
-        "Isaiah",
-        "Jeremiah",
-        "Lamentations",
-        "Ezekiel",
-        "Daniel",
-        "Hosea",
-        "Joel",
-        "Amos",
-        "Obadiah",
-        "Jonah",
-        "Micah",
-        "Nahum",
-        "Habakkuk",
-        "Zephaniah",
-        "Haggai",
-        "Zechariah",
-        "Malachi",
-        "Matthew",
-        "Mark",
-        "Luke",
-        "John",
-        "Acts",
-        "Romans",
-        "1 Corinthians",
-        "2 Corinthians",
-        "Galatians",
-        "Ephesians",
-        "Philippians",
-        "Colossians",
-        "1 Thessalonians",
-        "2 Thessalonians",
-        "1 Timothy",
-        "2 Timothy",
-        "Titus",
-        "Philemon",
-        "Hebrews",
-        "James",
-        "1 Peter",
-        "2 Peter",
-        "1 John",
-        "2 John",
-        "3 John",
-        "Jude",
-        "Revelation");
-  }
 }

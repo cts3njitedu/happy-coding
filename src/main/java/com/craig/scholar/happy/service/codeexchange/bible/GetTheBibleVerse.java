@@ -89,11 +89,14 @@ public class GetTheBibleVerse implements HappyCoding {
             }
             return "";
           })
+          .filter(verse -> !verse.isEmpty())
           .map(String::trim)
           .map(verse -> verse.replaceAll("\\R", " "))
           .map(verse -> verse.replaceAll("\\s+", " "))
-          .orElseThrow(
-              () -> new IllegalArgumentException(String.format("Couldn't find %s", referenceId)));
+          .orElseGet(() -> {
+            System.out.printf("Unable to find text for reference %s", referenceId);
+            return "";
+          });
     } catch (Exception e) {
       e.printStackTrace();
     }
