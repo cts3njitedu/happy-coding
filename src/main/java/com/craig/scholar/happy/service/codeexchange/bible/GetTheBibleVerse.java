@@ -1,12 +1,15 @@
 package com.craig.scholar.happy.service.codeexchange.bible;
 
 import com.craig.scholar.happy.service.codeexchange.HappyCoding;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,18 +30,18 @@ public class GetTheBibleVerse implements HappyCoding {
       "2", "Second",
       "3", "Third"
   );
-  private final String BOOK_PATTERN_FORMAT = "(\\n{5}%s.*?\\n{5})";
-  private final String VERSE_PATTERN_FORMAT = "((?<=\\s%s\\s)|(?<=\\n1:21\\s) | (?<=^%s\\s))[\\s\\S]*?((?=\\s\\d+\\:\\d+|\\z)|(?=\\n\\d+\\:\\d+|\\z))";
 
-  final Set<String> VALID_BOOKS = getBooks();
-  final Set<String> VALID_SINGLE_CHAPTER_BOOKS = Set.of(
+  private final Set<String> VALID_BOOKS = getBooks();
+  private final Set<String> VALID_SINGLE_CHAPTER_BOOKS = Set.of(
       "Obadiah",
       "Philemon",
       "John",
       "Jude"
   );
-  final Pattern REFERENCE_PATTERN = Pattern.compile(
-      "^((?<ordinal>\\d)(\\s))?(?<book>[A-Za-z]+)(\\s)(?<verse>\\d+|((?<chapter>\\d+):(?<chapterVerse>\\d+)))$");
+
+  private final String REFERENCE_PATTERN_FORMAT = "^((?<%s>\\d)(\\s))?(?<%s>[A-Za-z]+)(\\s)(?<%s>\\d+|((?<%s>\\d+):(?<%s>\\d+)))$";
+  private final Pattern REFERENCE_PATTERN = Pattern.compile(
+      String.format(REFERENCE_PATTERN_FORMAT, ORDINAL, BOOK, VERSE, CHAPTER, CHAPTER_VERSE));
 
   @Override
   public void execute() {
@@ -59,36 +62,9 @@ public class GetTheBibleVerse implements HappyCoding {
   public String getText(String referenceId) {
     Reference reference = getReference(referenceId);
     try {
-      Path path = Paths.get(Objects.requireNonNull(GetTheBibleVerse.class.getClassLoader()
-              .getResource(KING_JAMES_BIBLE))
-          .toURI());
-      List<String> lines = Files.readAllLines(path);
-      return lines.stream()
-          .filter(line -> !line.isEmpty())
-          .dropWhile(line -> !line.equals(OLD_TESTAMENT_HEADING))
-          .skip(1)
-          .filter(line -> !line.equals(NEW_TESTAMENT_HEADING))
-          .takeWhile(line -> !line.equals(OLD_TESTAMENT_HEADING))
-          .filter(line -> reference.ordinal == null ? line.contains(reference.name) :
-              line.contains(reference.name) && line.contains(ORDINAL_MAP.get(reference.ordinal)))
-          .findFirst()
-          .map(bookName -> {
-            Pattern bookMatchPattern = Pattern.compile(String.format(BOOK_PATTERN_FORMAT, bookName),
-                Pattern.DOTALL);
-            Matcher bookMatcher = bookMatchPattern.matcher(String.join("\n", lines));
-            if (bookMatcher.find()) {
-              String book = bookMatcher.group();
-              Pattern exactMatchPattern = Pattern.compile(
-                  String.format(VERSE_PATTERN_FORMAT, reference.chapterAndVerse(),
-                      reference.chapterAndVerse()),
-                  Pattern.DOTALL);
-              Matcher exactMatcher = exactMatchPattern.matcher(book);
-              if (exactMatcher.find()) {
-                return exactMatcher.group();
-              }
-            }
-            return "";
-          })
+      List<String> bible = getBible();
+      return getBookName(reference, bible)
+          .map(bookName -> getText(reference, bible, bookName))
           .filter(verse -> !verse.isEmpty())
           .map(String::trim)
           .map(verse -> verse.replaceAll("\\R", " "))
@@ -101,6 +77,37 @@ public class GetTheBibleVerse implements HappyCoding {
       e.printStackTrace();
     }
     return null;
+  }
+
+  private static List<String> getBible() throws URISyntaxException, IOException {
+    Path path = Paths.get(Objects.requireNonNull(GetTheBibleVerse.class.getClassLoader()
+            .getResource(KING_JAMES_BIBLE))
+        .toURI());
+    return Files.readAllLines(path);
+  }
+
+  private Optional<String> getBookName(Reference reference, List<String> bible) {
+    return bible.stream()
+        .filter(line -> !line.isEmpty())
+        .dropWhile(line -> !line.equals(OLD_TESTAMENT_HEADING))
+        .skip(1)
+        .filter(line -> !line.equals(NEW_TESTAMENT_HEADING))
+        .takeWhile(line -> !line.equals(OLD_TESTAMENT_HEADING))
+        .filter(line -> isBookTitle(reference, line))
+        .findFirst();
+  }
+
+  private boolean isBookTitle(Reference reference, String line) {
+    return reference.ordinal == null ? line.contains(reference.name) :
+        line.contains(reference.name) && line.contains(ORDINAL_MAP.get(reference.ordinal));
+  }
+
+  private String getText(Reference reference, List<String> bible, String bookName) {
+    String bookText = getBookText(bookName, bible);
+    if (!bookText.isEmpty()) {
+      return getChapterAndVerseText(reference.chapterAndVerse(), bookText);
+    }
+    return "";
   }
 
   private Reference getReference(String referenceId) {
@@ -131,7 +138,31 @@ public class GetTheBibleVerse implements HappyCoding {
       }
       return reference;
     }
-    throw new IllegalArgumentException("Invalid reference id");
+    throw new IllegalArgumentException(String.format("Invalid reference id %s", referenceId));
+  }
+
+  private String getBookText(String bookName, List<String> bible) {
+    String BOOK_PATTERN_FORMAT = "(\\n{5}%s.*?\\n{5})";
+    Pattern bookMatchPattern = Pattern.compile(String.format(BOOK_PATTERN_FORMAT, bookName),
+        Pattern.DOTALL);
+    Matcher bookMatcher = bookMatchPattern.matcher(String.join("\n", bible));
+    if (bookMatcher.find()) {
+      return bookMatcher.group();
+    }
+    return "";
+  }
+
+  private String getChapterAndVerseText(String chapterAndVerse, String bookText) {
+    String VERSE_PATTERN_FORMAT = "((?<=\\s%s\\s)|(?<=\\n1:21\\s) | (?<=^%s\\s))[\\s\\S]*?((?=\\s\\d+\\:\\d+|\\z)|(?=\\n\\d+\\:\\d+|\\z))";
+    Pattern exactMatchPattern = Pattern.compile(
+        String.format(VERSE_PATTERN_FORMAT, chapterAndVerse,
+            chapterAndVerse),
+        Pattern.DOTALL);
+    Matcher exactMatcher = exactMatchPattern.matcher(bookText);
+    if (exactMatcher.find()) {
+      return exactMatcher.group();
+    }
+    return "";
   }
 
   private static Set<String> getBooks() {
