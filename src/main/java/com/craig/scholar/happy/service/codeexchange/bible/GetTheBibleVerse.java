@@ -18,6 +18,27 @@ public class GetTheBibleVerse implements HappyCoding {
   private static final String BOOK = "book";
   private static final String VERSE = "verse";
   private static final String CHAPTER_VERSE = "chapterVerse";
+  private static final String KING_JAMES_BIBLE = "pg10.txt";
+
+  private final String OLD_TESTAMENT_HEADING = "The Old Testament of the King James Version of the Bible";
+  private final String NEW_TESTAMENT_HEADING = "The New Testament of the King James Bible";
+  private final Map<String, String> ORDINAL_MAP = Map.of(
+      "1", "First",
+      "2", "Second",
+      "3", "Third"
+  );
+  private final String BOOK_PATTERN_FORMAT = "(\\n{5}%s.*?\\n{5})";
+  private final String VERSE_PATTERN_FORMAT = "((?<=\\s%s\\s)|(?<=\\n1:21\\s) | (?<=^%s\\s))[\\s\\S]*?((?=\\s\\d+\\:\\d+|\\z)|(?=\\n\\d+\\:\\d+|\\z))";
+
+  final Set<String> VALID_BOOKS = getBooks();
+  final Set<String> VALID_SINGLE_CHAPTER_BOOKS = Set.of(
+      "Obadiah",
+      "Philemon",
+      "John",
+      "Jude"
+  );
+  final Pattern REFERENCE_PATTERN = Pattern.compile(
+      "^((?<ordinal>\\d)(\\s))?(?<book>[A-Za-z]+)(\\s)(?<verse>\\d+|((?<chapter>\\d+):(?<chapterVerse>\\d+)))$");
 
   @Override
   public void execute() {
@@ -35,20 +56,11 @@ public class GetTheBibleVerse implements HappyCoding {
     }
   }
 
-  public String getTheBibleVerse(String referenceId) {
+  public String getText(String referenceId) {
     Reference reference = getReference(referenceId);
-    final String OLD_TESTAMENT_HEADING = "The Old Testament of the King James Version of the Bible";
-    final String NEW_TESTAMENT_HEADING = "The New Testament of the King James Bible";
-    final Map<String, String> ORDINAL_MAP = Map.of(
-        "1", "First",
-        "2", "Second",
-        "3", "Third"
-    );
-    final String BOOK_PATTERN_FORMAT = "(\\n{5}%s.*?\\n{5})";
-    final String VERSE_PATTERN_FORMAT = "((?<=\\s%s\\s)|(?<=\\n1:21\\s) | (?<=^%s\\s))[\\s\\S]*?((?=\\s\\d+\\:\\d+|\\z)|(?=\\n\\d+\\:\\d+|\\z))";
     try {
       Path path = Paths.get(Objects.requireNonNull(GetTheBibleVerse.class.getClassLoader()
-              .getResource("pg10.txt"))
+              .getResource(KING_JAMES_BIBLE))
           .toURI());
       List<String> lines = Files.readAllLines(path);
       return lines.stream()
@@ -78,6 +90,8 @@ public class GetTheBibleVerse implements HappyCoding {
             return "";
           })
           .map(String::trim)
+          .map(verse -> verse.replaceAll("\\R", " "))
+          .map(verse -> verse.replaceAll("\\s+", " "))
           .orElseThrow(
               () -> new IllegalArgumentException(String.format("Couldn't find %s", referenceId)));
     } catch (Exception e) {
@@ -86,17 +100,8 @@ public class GetTheBibleVerse implements HappyCoding {
     return null;
   }
 
-  private static Reference getReference(String referenceId) {
+  private Reference getReference(String referenceId) {
     referenceId = referenceId.trim();
-    final Set<String> VALID_BOOKS = getBooks();
-    final Set<String> VALID_SINGLE_CHAPTER_BOOKS = Set.of(
-        "Obadiah",
-        "Philemon",
-        "John",
-        "Jude"
-    );
-    final Pattern REFERENCE_PATTERN = Pattern.compile(
-        "^((?<ordinal>\\d)(\\s))?(?<book>[A-Za-z]+)(\\s)(?<verse>\\d+|((?<chapter>\\d+):(?<chapterVerse>\\d+)))$");
     Matcher referenceMatcher = REFERENCE_PATTERN.matcher(referenceId);
     if (referenceMatcher.find()) {
       String chapter = referenceMatcher.group(CHAPTER);

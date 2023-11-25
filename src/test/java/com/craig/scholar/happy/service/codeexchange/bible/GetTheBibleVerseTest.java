@@ -1,24 +1,23 @@
 package com.craig.scholar.happy.service.codeexchange.bible;
 
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 
 class GetTheBibleVerseTest {
 
   private final GetTheBibleVerse getTheBibleVerse = new GetTheBibleVerse();
 
+  private static Stream<Arguments> bibleCases() {
+    return Stream.of(
+
+    );
+  }
+
   @Test
-  void getTheBibleVerse() {
-//        List<Integer> numbers = List.of(1,2,3,4,5,1,1,1,1,6,7,8,9);
-//        List<Integer> collect = numbers.stream()
-//            .dropWhile(i -> i <= 5)
-//            .takeWhile(i -> i != 1)
-//            .collect(Collectors.toList());
-//        System.out.println(collect);
-//    getBooks()
-//        .forEach(book -> System.out.println(
-//            book + ":" + getTheBibleVerse.getTheBibleVerse(book + " 119:2")));
-    System.out.println(getTheBibleVerse.getTheBibleVerse("Jude 21"));
+  void getText() {
+    System.out.println(getTheBibleVerse.getText("Revelation 21:16"));
   }
 
 
