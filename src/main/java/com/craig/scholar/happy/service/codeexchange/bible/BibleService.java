@@ -1,18 +1,15 @@
 package com.craig.scholar.happy.service.codeexchange.bible;
 
 import com.craig.scholar.happy.service.codeexchange.HappyCoding;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -23,6 +20,7 @@ public class BibleService implements HappyCoding {
   private static final String BOOK = "book";
   private static final String VERSE = "verse";
   private static final String KING_JAMES_BIBLE = "pg10.txt";
+  public static final String EMPTY = "";
 
   private final String OLD_TESTAMENT_HEADING = "The Old Testament of the King James Version of the Bible";
   private final String NEW_TESTAMENT_HEADING = "The New Testament of the King James Bible";
@@ -75,8 +73,8 @@ public class BibleService implements HappyCoding {
           .map(verse -> verse.replaceAll("\\R", " "))
           .map(verse -> verse.replaceAll("\\s+", " "))
           .orElseGet(() -> {
-            System.out.printf("Unable to find text for reference %s", referenceId);
-            return "";
+            log.info("Unable to find text for reference {}", referenceId);
+            return EMPTY;
           });
     } catch (Exception e) {
       e.printStackTrace();
@@ -118,7 +116,7 @@ public class BibleService implements HappyCoding {
     if (!bookText.isEmpty()) {
       return getChapterAndVerseText(reference.chapterAndVerse(), bookText);
     }
-    return "";
+    return EMPTY;
   }
 
   private Reference getReference(String referenceId) {
@@ -158,20 +156,20 @@ public class BibleService implements HappyCoding {
     if (bookMatcher.find()) {
       return bookMatcher.group();
     }
-    return "";
+    return EMPTY;
   }
 
   private String getChapterAndVerseText(String chapterAndVerse, String bookText) {
-    String VERSE_PATTERN_FORMAT = "((?<=\\s%s\\s)|(?<=\\n1:21\\s) | (?<=^%s\\s))[\\s\\S]*?((?=\\s\\d+\\:\\d+|\\z)|(?=\\n\\d+\\:\\d+|\\z))";
+    String VERSE_PATTERN_FORMAT = "((?<=\\s%s\\s)|(?<=\\n%s\\s) | (?<=^%s\\s))[\\s\\S]*?((?=\\s\\d+\\:\\d+|\\z)|(?=\\n\\d+\\:\\d+|\\z))";
     Pattern exactMatchPattern = Pattern.compile(
-        String.format(VERSE_PATTERN_FORMAT, chapterAndVerse,
-            chapterAndVerse),
-        Pattern.DOTALL);
+            String.format(VERSE_PATTERN_FORMAT, chapterAndVerse, chapterAndVerse,
+                    chapterAndVerse),
+            Pattern.DOTALL);
     Matcher exactMatcher = exactMatchPattern.matcher(bookText);
     if (exactMatcher.find()) {
       return exactMatcher.group();
     }
-    return "";
+    return EMPTY;
   }
 
   private static Set<String> getBooks() {
