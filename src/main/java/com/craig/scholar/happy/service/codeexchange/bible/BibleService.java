@@ -1,15 +1,18 @@
 package com.craig.scholar.happy.service.codeexchange.bible;
 
 import com.craig.scholar.happy.service.codeexchange.HappyCoding;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -21,6 +24,8 @@ public class BibleService implements HappyCoding {
   private static final String VERSE = "verse";
   private static final String KING_JAMES_BIBLE = "pg10.txt";
   public static final String EMPTY = "";
+  public static final String REFERENCE_ID = "referenceId";
+  public static final String TEXT = "text";
 
   private final String OLD_TESTAMENT_HEADING = "The Old Testament of the King James Version of the Bible";
   private final String NEW_TESTAMENT_HEADING = "The New Testament of the King James Bible";
@@ -63,11 +68,16 @@ public class BibleService implements HappyCoding {
     }
   }
 
+  private record Text(String referenceId, String text) {
+
+  }
+
   public String getText(String referenceId) {
     Reference reference = getReference(referenceId);
     try {
       return getBookName(reference)
-          .map(bookName -> getText(reference, bookName))
+          .flatMap(bookName -> getText(reference, bookName))
+          .map(Text::text)
           .filter(verse -> !verse.isEmpty())
           .map(String::trim)
           .map(verse -> verse.replaceAll("\\R", " "))
@@ -111,12 +121,12 @@ public class BibleService implements HappyCoding {
             ORDINAL_MAP.get(reference.ordinal));
   }
 
-  private String getText(Reference reference, String bookName) {
+  private Optional<Text> getText(Reference reference, String bookName) {
     String bookText = getBookText(bookName);
     if (!bookText.isEmpty()) {
       return getChapterAndVerseText(reference.chapterAndVerse(), bookText);
     }
-    return EMPTY;
+    return Optional.empty();
   }
 
   private Reference getReference(String referenceId) {
@@ -159,17 +169,16 @@ public class BibleService implements HappyCoding {
     return EMPTY;
   }
 
-  private String getChapterAndVerseText(String chapterAndVerse, String bookText) {
-    String VERSE_PATTERN_FORMAT = "((?<=\\s%s\\s)|(?<=\\n%s\\s) | (?<=^%s\\s))[\\s\\S]*?((?=\\s\\d+\\:\\d+|\\z)|(?=\\n\\d+\\:\\d+|\\z))";
-    Pattern exactMatchPattern = Pattern.compile(
-            String.format(VERSE_PATTERN_FORMAT, chapterAndVerse, chapterAndVerse,
-                    chapterAndVerse),
-            Pattern.DOTALL);
-    Matcher exactMatcher = exactMatchPattern.matcher(bookText);
-    if (exactMatcher.find()) {
-      return exactMatcher.group();
+  private Optional<Text> getChapterAndVerseText(String chapterAndVerse, String bookText) {
+    String VERSE_PATTERN_FORMAT = "((^|\\s|\\n)(?<referenceId>%s)\\s)(?<text>[\\s\\S]*?)(?:(\\s|\\n)\\d+\\:\\d+(\\s|\\n)|\\z)";
+    Pattern textMatchPattern = Pattern.compile(
+        String.format(VERSE_PATTERN_FORMAT, chapterAndVerse),
+        Pattern.DOTALL);
+    Matcher textMatcher = textMatchPattern.matcher(bookText);
+    if (textMatcher.find()) {
+      return Optional.of(new Text(textMatcher.group(REFERENCE_ID), textMatcher.group(TEXT)));
     }
-    return EMPTY;
+    return Optional.empty();
   }
 
   private static Set<String> getBooks() {
