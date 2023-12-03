@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 class BibleReferenceTest {
 
   @Test
-  void getPattern_StartChapterAndVerseNextVerse() {
+  void getBibleReference_StartChapterAndVerseNextVerse() {
     BibleReference bibleReference = BibleReference.builder()
         .startChapterAndVerse(new ChapterAndVerse("4", "24"))
         .endChapterAndVerse(new ChapterAndVerse(null, null))
@@ -789,6 +789,59 @@ class BibleReferenceTest {
   }
 
   @Test
+  void getBibleReference_StartChapterAndStartVerseAndEndChapterAndEndVerseEndOfBook() {
+    BibleReference bibleReference = BibleReference.builder()
+        .startChapterAndVerse(new ChapterAndVerse("4", "2"))
+        .endChapterAndVerse(new ChapterAndVerse("6", "4"))
+        .bibleBook(new BibleBook("John", "5", null))
+        .build();
+    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:5|7:1)(\\s|\\n)|\\z)";
+    String text = """
+               
+        4:1 After this I looked, and, behold, a door was opened in heaven: and
+        the first voice which I heard was as it were of a trumpet talking with
+        me; which said, Come up hither, and I will shew thee things which must
+        be hereafter.
+                
+        4:2 And immediately I was in the spirit: and, behold, a throne was set
+        in heaven, and one sat on the throne.
+                
+        5:1 And I saw in the right hand of him that sat on the throne a book
+        written within and on the backside, sealed with seven seals.
+                
+        5:2 And I saw a strong angel proclaiming with a loud voice, Who is
+        worthy to open the book, and to loose the seals thereof? 5:3 And no
+        man in heaven, nor in earth, neither under the earth, was able to open
+        the book, neither to look thereon.
+                
+        6:1 And I saw when the Lamb opened one of the seals, and I heard, as
+        it were the noise of thunder, one of the four beasts saying, Come and
+        see.
+                
+        6:2 And I saw, and behold a white horse: and he that sat on him had a
+        bow; and a crown was given unto him: and he went forth conquering, and
+        to conquer.
+
+        """;
+    String expectedPassage =
+        "4:2 And immediately I was in the spirit: and, behold, a throne was set "
+            + "in heaven, and one sat on the throne. "
+            + "5:1 And I saw in the right hand of him that sat on the throne a book "
+            + "written within and on the backside, sealed with seven seals. "
+            + "5:2 And I saw a strong angel proclaiming with a loud voice, Who is "
+            + "worthy to open the book, and to loose the seals thereof? 5:3 And no "
+            + "man in heaven, nor in earth, neither under the earth, was able to open "
+            + "the book, neither to look thereon. "
+            + "6:1 And I saw when the Lamb opened one of the seals, and I heard, as "
+            + "it were the noise of thunder, one of the four beasts saying, Come and "
+            + "see. "
+            + "6:2 And I saw, and behold a white horse: and he that sat on him had a "
+            + "bow; and a crown was given unto him: and he went forth conquering, and "
+            + "to conquer.";
+    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+  }
+
+  @Test
   void getBibleReference_StartVerseAndEndVerse() {
     BibleReference bibleReference = BibleReference.builder()
         .startChapterAndVerse(new ChapterAndVerse(null, "17"))
@@ -821,6 +874,45 @@ class BibleReferenceTest {
         present you faultless before the presence of his glory with exceeding
         joy, 1:25 To the only wise God our Saviour, be glory and majesty,
         dominion and power, both now and ever. Amen.
+                
+        """;
+    String expectedPassage = "1:17 But, beloved, remember ye the words which were spoken before of "
+        + "the apostles of our Lord Jesus Christ; 1:18 How that they told you "
+        + "there should be mockers in the last time, who should walk after their "
+        + "own ungodly lusts. "
+        + "1:19 These be they who separate themselves, sensual, having not the "
+        + "Spirit. "
+        + "1:20 But ye, beloved, building up yourselves on your most holy faith, "
+        + "praying in the Holy Ghost, 1:21 Keep yourselves in the love of God, "
+        + "looking for the mercy of our Lord Jesus Christ unto eternal life.";
+    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+  }
+
+
+  @Test
+  void getBibleReference_StartVerseAndEndVerseEndOfBook() {
+    BibleReference bibleReference = BibleReference.builder()
+        .startChapterAndVerse(new ChapterAndVerse(null, "17"))
+        .endChapterAndVerse(new ChapterAndVerse(null, "21"))
+        .bibleBook(new BibleBook("John", "5", null))
+        .build();
+    String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:17\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:22|2:1)(\\s|\\n)|\\z)";
+    String text = """
+        1:16 These are murmurers, complainers, walking after their own lusts;
+        and their mouth speaketh great swelling words, having men’s persons in
+        admiration because of advantage.
+
+        1:17 But, beloved, remember ye the words which were spoken before of
+        the apostles of our Lord Jesus Christ; 1:18 How that they told you
+        there should be mockers in the last time, who should walk after their
+        own ungodly lusts.
+
+        1:19 These be they who separate themselves, sensual, having not the
+        Spirit.
+
+        1:20 But ye, beloved, building up yourselves on your most holy faith,
+        praying in the Holy Ghost, 1:21 Keep yourselves in the love of God,
+        looking for the mercy of our Lord Jesus Christ unto eternal life.
                 
         """;
     String expectedPassage = "1:17 But, beloved, remember ye the words which were spoken before of "
