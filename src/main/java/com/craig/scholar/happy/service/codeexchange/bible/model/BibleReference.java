@@ -3,7 +3,11 @@ package com.craig.scholar.happy.service.codeexchange.bible.model;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,6 +19,13 @@ public class BibleReference {
 
   private final String PASSAGE_PATTERN_FORMAT = "(^|\\s|\\n)(?<passage>(%s\\s)([\\s\\S]*?))(?:(\\s|\\n)(%s)(\\s|\\n)|\\z)";
 
+  private final String REFERENCE_PATTERN_FORMAT = "^(((?<book>%s)\\s(?<startChapter>\\d+)(\\:(?<startVerse>\\d+)|\\-(?<endChapter>\\d+)|\\:(?<startVerse1>\\d+)\\-(?<endVerse>\\d+)|\\:(?<startVerse2>\\d+)\\-(?<endChapter1>\\d+)\\:(?<endVerse1>\\d+))?)|((?<book1>%s)\\s(?<startVerse3>\\d+)(\\-(?<endVerse2>\\d+))?))$";
+
+  private final Pattern REFFERENCE_PATTERN = Pattern.compile(
+      String.format(REFERENCE_PATTERN_FORMAT, getBooks().stream()
+          .filter(book -> !SINGLE_CHAPTER_BOOKS.contains(book))
+          .collect(Collectors.joining("|")), String.join("|", SINGLE_CHAPTER_BOOKS)));
+
   private final BibleBook bibleBook;
   private final ChapterAndVerse startChapterAndVerse;
 
@@ -22,13 +33,67 @@ public class BibleReference {
 
   private final Pattern pattern;
 
+  private final static Set<String> SINGLE_CHAPTER_BOOKS = Set.of(
+      "Obadiah",
+      "Philemon",
+      "2 John",
+      "3 John",
+      "Jude"
+  );
+
+
+  private final static Set<String> BOOK_CAPTURE_GROUPS = Set.of(
+      "book",
+      "book1"
+  );
+
+  private final static Set<String> START_CHAPTER_CAPTURE_GROUPS = Set.of(
+      "startChapter"
+  );
+
+  private final static Set<String> START_VERSE_CAPTURE_GROUPS = Set.of(
+      "startVerse",
+      "startVerse1",
+      "startVerse2",
+      "startVerse3"
+  );
+
+  private final static Set<String> END_CHAPTER_CAPTURE_GROUPS = Set.of(
+      "endChapter",
+      "endChapter1"
+  );
+
+  private final static Set<String> END_VERSE_CAPTURE_GROUPS = Set.of(
+      "endVerse",
+      "endVerse1",
+      "endVerse2"
+  );
+
   @Builder
-  public BibleReference(BibleBook bibleBook, ChapterAndVerse startChapterAndVerse,
-      ChapterAndVerse endChapterAndVerse) {
-    this.bibleBook = bibleBook;
-    this.startChapterAndVerse = startChapterAndVerse;
-    this.endChapterAndVerse = endChapterAndVerse;
-    this.pattern = getPattern(startChapterAndVerse, endChapterAndVerse);
+  public BibleReference(String reference) {
+    Matcher matcher = REFFERENCE_PATTERN.matcher(reference);
+    if (matcher.find()) {
+      this.bibleBook = BibleBook.builder()
+          .book(getValue(matcher, BOOK_CAPTURE_GROUPS))
+          .build();
+      this.startChapterAndVerse = new ChapterAndVerse(
+          getValue(matcher, START_CHAPTER_CAPTURE_GROUPS),
+          getValue(matcher, START_VERSE_CAPTURE_GROUPS));
+      this.endChapterAndVerse = new ChapterAndVerse(
+          getValue(matcher, END_CHAPTER_CAPTURE_GROUPS),
+          getValue(matcher, END_VERSE_CAPTURE_GROUPS));
+      this.pattern = getPattern(this.startChapterAndVerse, this.endChapterAndVerse);
+    } else {
+      throw new IllegalArgumentException("Reference in invalid format");
+    }
+  }
+
+  private String getValue(Matcher matcher, Set<String> captureNamedGroups) {
+    return captureNamedGroups.stream()
+        .map(matcher::group)
+        .filter(Objects::nonNull)
+        .findFirst()
+        .orElse(null);
   }
 
   private Pattern getPattern(ChapterAndVerse startChapterAndVerse,
@@ -146,5 +211,75 @@ public class BibleReference {
 
   private String increment(String value) {
     return String.valueOf(Integer.parseInt(value) + 1);
+  }
+
+
+  private static Set<String> getBooks() {
+    return Set.of("Genesis",
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "Ruth",
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Esther",
+        "Job",
+        "Psalm",
+        "Proverbs",
+        "Ecclesiastes",
+        "Song of Solomon",
+        "Isaiah",
+        "Jeremiah",
+        "Lamentations",
+        "Ezekiel",
+        "Daniel",
+        "Hosea",
+        "Joel",
+        "Amos",
+        "Obadiah",
+        "Jonah",
+        "Micah",
+        "Nahum",
+        "Habakkuk",
+        "Zephaniah",
+        "Haggai",
+        "Zechariah",
+        "Malachi",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans",
+        "1 Corinthians",
+        "2 Corinthians",
+        "Galatians",
+        "Ephesians",
+        "Philippians",
+        "Colossians",
+        "1 Thessalonians",
+        "2 Thessalonians",
+        "1 Timothy",
+        "2 Timothy",
+        "Titus",
+        "Philemon",
+        "Hebrews",
+        "James",
+        "1 Peter",
+        "2 Peter",
+        "1 John",
+        "2 John",
+        "3 John",
+        "Jude",
+        "Revelation");
   }
 }

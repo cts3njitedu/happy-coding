@@ -12,9 +12,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndVerseNextVerse() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", "24"))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4:24")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:24\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:25|5:1)(\\s|\\n)|\\z)";
     String text = """
@@ -50,9 +48,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndVerseNextChapter() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", "26"))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4:26")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:27|5:1)(\\s|\\n)|\\z)";
     String text = """
@@ -88,9 +84,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndVerseEndOfBook() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", "26"))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4:26")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:27|5:1)(\\s|\\n)|\\z)";
     String text = """
@@ -112,9 +106,7 @@ class BibleReferenceTest {
   @Test
   void getPattern_StartChapterAndVerseMissing() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", "23"))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4:23")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:23\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:24|5:1)(\\s|\\n)|\\z)";
     String text = """
@@ -150,21 +142,19 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterNextChapter() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", null))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(5:1|5:1)(\\s|\\n)|\\z)";
     String text = """
         4:1 And Adam knew Eve his wife; and she conceived, and bare Cain, and
         said, I have gotten a man from the LORD.
-                                                                    
+
         4:2 And she again bare his brother Abel. And Abel was a keeper of
         sheep, but Cain was a tiller of the ground.
-                                                                    
+
         4:3 And in process of time it came to pass, that Cain brought of the
         fruit of the ground an offering unto the LORD.
-                
+
         5:1 This is the book of the generations of Adam. In the day that God
         created man, in the likeness of God made he him; 5:2 Male and female
         created he them; and blessed them, and called their name Adam, in the
@@ -184,18 +174,16 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterEndOfBook() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", null))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(5:1|5:1)(\\s|\\n)|\\z)";
     String text = """
         4:1 And Adam knew Eve his wife; and she conceived, and bare Cain, and
         said, I have gotten a man from the LORD.
-                                                                    
+
         4:2 And she again bare his brother Abel. And Abel was a keeper of
         sheep, but Cain was a tiller of the ground.
-                                                                    
+
         4:3 And in process of time it came to pass, that Cain brought of the
         fruit of the ground an offering unto the LORD.
 
@@ -213,21 +201,19 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterPassageMissing() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("6", null))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 6")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(6:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
     String text = """
         4:1 And Adam knew Eve his wife; and she conceived, and bare Cain, and
         said, I have gotten a man from the LORD.
-                                                                    
+
         4:2 And she again bare his brother Abel. And Abel was a keeper of
         sheep, but Cain was a tiller of the ground.
-                                                                    
+
         4:3 And in process of time it came to pass, that Cain brought of the
         fruit of the ground an offering unto the LORD.
-                
+
         5:1 This is the book of the generations of Adam. In the day that God
         created man, in the likeness of God made he him; 5:2 Male and female
         created he them; and blessed them, and called their name Adam, in the
@@ -241,9 +227,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartVerseNextVerse() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse(null, "18"))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("2 John 18")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:18\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:19|2:1)(\\s|\\n)|\\z)";
     String text = """
@@ -271,7 +255,7 @@ class BibleReferenceTest {
         present you faultless before the presence of his glory with exceeding
         joy, 1:25 To the only wise God our Saviour, be glory and majesty,
         dominion and power, both now and ever. Amen.
-                
+
         """;
     String expectedPassage = "1:18 How that they told you "
         + "there should be mockers in the last time, who should walk after their "
@@ -282,9 +266,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartVerseEndOfBook() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse(null, "25"))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("2 John 25")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:25\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:26|2:1)(\\s|\\n)|\\z)";
     String text = """
@@ -312,7 +294,7 @@ class BibleReferenceTest {
         present you faultless before the presence of his glory with exceeding
         joy, 1:25 To the only wise God our Saviour, be glory and majesty,
         dominion and power, both now and ever. Amen.
-                
+
         """;
     String expectedPassage = "1:25 To the only wise God our Saviour, be glory and majesty, "
         + "dominion and power, both now and ever. Amen.";
@@ -322,9 +304,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartVerse_PassageMissing() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse(null, "26"))
-        .endChapterAndVerse(new ChapterAndVerse(null, null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("2 John 26")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:27|2:1)(\\s|\\n)|\\z)";
     String text = """
@@ -352,7 +332,7 @@ class BibleReferenceTest {
         present you faultless before the presence of his glory with exceeding
         joy, 1:25 To the only wise God our Saviour, be glory and majesty,
         dominion and power, both now and ever. Amen.
-                
+
         """;
     String expectedPassage = "";
     assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
@@ -361,13 +341,11 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterStartVerseAndEndVerseNextVerse() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("2", "5"))
-        .endChapterAndVerse(new ChapterAndVerse(null, "7"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 2:5-7")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         2:1 Unto the angel of the church of Ephesus write; These things saith
         he that holdeth the seven stars in his right hand, who walketh in the
         midst of the seven golden candlesticks; 2:2 I know thy works, and thy
@@ -430,13 +408,11 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterStartVerseAndEndVerseNextChapter() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("2", "5"))
-        .endChapterAndVerse(new ChapterAndVerse(null, "7"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 2:5-7")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         2:1 Unto the angel of the church of Ephesus write; These things saith
         he that holdeth the seven stars in his right hand, who walketh in the
         midst of the seven golden candlesticks; 2:2 I know thy works, and thy
@@ -458,7 +434,7 @@ class BibleReferenceTest {
         2:7 He that hath an ear, let him hear what the Spirit saith unto the
         churches; To him that overcometh will I give to eat of the tree of
         life, which is in the midst of the paradise of God.
-                
+
         3:1 And unto the angel of the church in Sardis write; These things
         saith he that hath the seven Spirits of God, and the seven stars; I
         know thy works, that thou hast a name that thou livest, and art dead.
@@ -479,13 +455,11 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterStartVerseAndEndVerseEndOfBook() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("2", "5"))
-        .endChapterAndVerse(new ChapterAndVerse(null, "7"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 2:5-7")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         2:1 Unto the angel of the church of Ephesus write; These things saith
         he that holdeth the seven stars in his right hand, who walketh in the
         midst of the seven golden candlesticks; 2:2 I know thy works, and thy
@@ -526,33 +500,31 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndEndChapterNextChapter() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", null))
-        .endChapterAndVerse(new ChapterAndVerse("6", null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4-6")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         4:1 After this I looked, and, behold, a door was opened in heaven: and
         the first voice which I heard was as it were of a trumpet talking with
         me; which said, Come up hither, and I will shew thee things which must
         be hereafter.
-                
+
         4:2 And immediately I was in the spirit: and, behold, a throne was set
         in heaven, and one sat on the throne.
-                
+
         5:1 And I saw in the right hand of him that sat on the throne a book
         written within and on the backside, sealed with seven seals.
-                
+
         5:2 And I saw a strong angel proclaiming with a loud voice, Who is
         worthy to open the book, and to loose the seals thereof? 5:3 And no
         man in heaven, nor in earth, neither under the earth, was able to open
         the book, neither to look thereon.
-                
+
         6:1 And I saw when the Lamb opened one of the seals, and I heard, as
         it were the noise of thunder, one of the four beasts saying, Come and
         see.
-                
+
         6:2 And I saw, and behold a white horse: and he that sat on him had a
         bow; and a crown was given unto him: and he went forth conquering, and
         to conquer. 7:1 And after these things I saw four
@@ -586,33 +558,31 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndEndChapterEndOfBook() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", null))
-        .endChapterAndVerse(new ChapterAndVerse("6", null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4-6")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         4:1 After this I looked, and, behold, a door was opened in heaven: and
         the first voice which I heard was as it were of a trumpet talking with
         me; which said, Come up hither, and I will shew thee things which must
         be hereafter.
-                
+
         4:2 And immediately I was in the spirit: and, behold, a throne was set
         in heaven, and one sat on the throne.
-                
+
         5:1 And I saw in the right hand of him that sat on the throne a book
         written within and on the backside, sealed with seven seals.
-                
+
         5:2 And I saw a strong angel proclaiming with a loud voice, Who is
         worthy to open the book, and to loose the seals thereof? 5:3 And no
         man in heaven, nor in earth, neither under the earth, was able to open
         the book, neither to look thereon.
-                
+
         6:1 And I saw when the Lamb opened one of the seals, and I heard, as
         it were the noise of thunder, one of the four beasts saying, Come and
         see.
-                
+
         6:2 And I saw, and behold a white horse: and he that sat on him had a
         bow; and a crown was given unto him: and he went forth conquering, and
         to conquer.
@@ -643,33 +613,31 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndEndChapter_PassageMissing() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("3", null))
-        .endChapterAndVerse(new ChapterAndVerse("6", null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 3-6")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(3:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         4:1 After this I looked, and, behold, a door was opened in heaven: and
         the first voice which I heard was as it were of a trumpet talking with
         me; which said, Come up hither, and I will shew thee things which must
         be hereafter.
-                
+
         4:2 And immediately I was in the spirit: and, behold, a throne was set
         in heaven, and one sat on the throne.
-                
+
         5:1 And I saw in the right hand of him that sat on the throne a book
         written within and on the backside, sealed with seven seals.
-                
+
         5:2 And I saw a strong angel proclaiming with a loud voice, Who is
         worthy to open the book, and to loose the seals thereof? 5:3 And no
         man in heaven, nor in earth, neither under the earth, was able to open
         the book, neither to look thereon.
-                
+
         6:1 And I saw when the Lamb opened one of the seals, and I heard, as
         it were the noise of thunder, one of the four beasts saying, Come and
         see.
-                
+
         6:2 And I saw, and behold a white horse: and he that sat on him had a
         bow; and a crown was given unto him: and he went forth conquering, and
         to conquer.
@@ -682,33 +650,31 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndStartVerseAndEndChapterAndEndVerseNextVerse() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", "2"))
-        .endChapterAndVerse(new ChapterAndVerse("6", "1"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4:2-6:1")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:2|7:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         4:1 After this I looked, and, behold, a door was opened in heaven: and
         the first voice which I heard was as it were of a trumpet talking with
         me; which said, Come up hither, and I will shew thee things which must
         be hereafter.
-                
+
         4:2 And immediately I was in the spirit: and, behold, a throne was set
         in heaven, and one sat on the throne.
-                
+
         5:1 And I saw in the right hand of him that sat on the throne a book
         written within and on the backside, sealed with seven seals.
-                
+
         5:2 And I saw a strong angel proclaiming with a loud voice, Who is
         worthy to open the book, and to loose the seals thereof? 5:3 And no
         man in heaven, nor in earth, neither under the earth, was able to open
         the book, neither to look thereon.
-                
+
         6:1 And I saw when the Lamb opened one of the seals, and I heard, as
         it were the noise of thunder, one of the four beasts saying, Come and
         see.
-                
+
         6:2 And I saw, and behold a white horse: and he that sat on him had a
         bow; and a crown was given unto him: and he went forth conquering, and
         to conquer. 7:1 And after these things I saw four
@@ -735,33 +701,31 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndStartVerseAndEndChapterAndEndVerseNextChapter() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", "2"))
-        .endChapterAndVerse(new ChapterAndVerse("6", "4"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4:2-6:4")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:5|7:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         4:1 After this I looked, and, behold, a door was opened in heaven: and
         the first voice which I heard was as it were of a trumpet talking with
         me; which said, Come up hither, and I will shew thee things which must
         be hereafter.
-                
+
         4:2 And immediately I was in the spirit: and, behold, a throne was set
         in heaven, and one sat on the throne.
-                
+
         5:1 And I saw in the right hand of him that sat on the throne a book
         written within and on the backside, sealed with seven seals.
-                
+
         5:2 And I saw a strong angel proclaiming with a loud voice, Who is
         worthy to open the book, and to loose the seals thereof? 5:3 And no
         man in heaven, nor in earth, neither under the earth, was able to open
         the book, neither to look thereon.
-                
+
         6:1 And I saw when the Lamb opened one of the seals, and I heard, as
         it were the noise of thunder, one of the four beasts saying, Come and
         see.
-                
+
         6:2 And I saw, and behold a white horse: and he that sat on him had a
         bow; and a crown was given unto him: and he went forth conquering, and
         to conquer. 7:1 And after these things I saw four
@@ -791,33 +755,31 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndStartVerseAndEndChapterAndEndVerseEndOfBook() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("4", "2"))
-        .endChapterAndVerse(new ChapterAndVerse("6", "4"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 4:2-6:4")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:5|7:1)(\\s|\\n)|\\z)";
     String text = """
-               
+
         4:1 After this I looked, and, behold, a door was opened in heaven: and
         the first voice which I heard was as it were of a trumpet talking with
         me; which said, Come up hither, and I will shew thee things which must
         be hereafter.
-                
+
         4:2 And immediately I was in the spirit: and, behold, a throne was set
         in heaven, and one sat on the throne.
-                
+
         5:1 And I saw in the right hand of him that sat on the throne a book
         written within and on the backside, sealed with seven seals.
-                
+
         5:2 And I saw a strong angel proclaiming with a loud voice, Who is
         worthy to open the book, and to loose the seals thereof? 5:3 And no
         man in heaven, nor in earth, neither under the earth, was able to open
         the book, neither to look thereon.
-                
+
         6:1 And I saw when the Lamb opened one of the seals, and I heard, as
         it were the noise of thunder, one of the four beasts saying, Come and
         see.
-                
+
         6:2 And I saw, and behold a white horse: and he that sat on him had a
         bow; and a crown was given unto him: and he went forth conquering, and
         to conquer.
@@ -844,9 +806,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartVerseAndEndVerse() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse(null, "17"))
-        .endChapterAndVerse(new ChapterAndVerse(null, "21"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("Jude 17-21")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:17\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:22|2:1)(\\s|\\n)|\\z)";
     String text = """
@@ -874,7 +834,7 @@ class BibleReferenceTest {
         present you faultless before the presence of his glory with exceeding
         joy, 1:25 To the only wise God our Saviour, be glory and majesty,
         dominion and power, both now and ever. Amen.
-                
+
         """;
     String expectedPassage = "1:17 But, beloved, remember ye the words which were spoken before of "
         + "the apostles of our Lord Jesus Christ; 1:18 How that they told you "
@@ -892,9 +852,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartVerseAndEndVerseEndOfBook() {
     BibleReference bibleReference = BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse(null, "17"))
-        .endChapterAndVerse(new ChapterAndVerse(null, "21"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("Jude 17-21")
         .build();
     String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:17\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:22|2:1)(\\s|\\n)|\\z)";
     String text = """
@@ -913,7 +871,7 @@ class BibleReferenceTest {
         1:20 But ye, beloved, building up yourselves on your most holy faith,
         praying in the Holy Ghost, 1:21 Keep yourselves in the love of God,
         looking for the mercy of our Lord Jesus Christ unto eternal life.
-                
+
         """;
     String expectedPassage = "1:17 But, beloved, remember ye the words which were spoken before of "
         + "the apostles of our Lord Jesus Christ; 1:18 How that they told you "
@@ -928,21 +886,25 @@ class BibleReferenceTest {
   }
 
   @Test
-  void getBibleReference_EndVerse() {
+  void getBibleReference_OnlyName() {
     assertThatThrownBy(() -> BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse(null, null))
-        .endChapterAndVerse(new ChapterAndVerse(null, "9"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John")
         .build())
         .isInstanceOf(IllegalArgumentException.class);
   }
 
   @Test
-  void getBibleReference_EndChapter() {
+  void getBibleReference_InvalidName() {
     assertThatThrownBy(() -> BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse(null, null))
-        .endChapterAndVerse(new ChapterAndVerse("9", null))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("Mary")
+        .build())
+        .isInstanceOf(IllegalArgumentException.class);
+  }
+
+  @Test
+  void getBibleReference_ChapterButMissingVerse() {
+    assertThatThrownBy(() -> BibleReference.builder()
+        .reference("John 1:")
         .build())
         .isInstanceOf(IllegalArgumentException.class);
   }
@@ -950,9 +912,7 @@ class BibleReferenceTest {
   @Test
   void getBibleReference_StartChapterAndEndChapterAndEndVerse() {
     assertThatThrownBy(() -> BibleReference.builder()
-        .startChapterAndVerse(new ChapterAndVerse("5", null))
-        .endChapterAndVerse(new ChapterAndVerse("9", "2"))
-        .bibleBook(new BibleBook("John", "5", null))
+        .reference("John 1-4:5")
         .build())
         .isInstanceOf(IllegalArgumentException.class);
   }
