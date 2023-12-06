@@ -16,7 +16,7 @@ public class BibleBook {
   private final String nameWithoutOrdinal;
 
   private final Pattern BOOK_PATTERN = Pattern.compile(
-      "^(?<fullName>((?<ordinal>[1-3]?)\\s)?(?<nameWithoutOrdinal>[A-Za-z]+))$");
+      "^(?<fullName>((?<ordinal>[1-3]?)\\s)?(?<nameWithoutOrdinal>[A-Za-z\\s]+))$");
 
   @Builder
   public BibleBook(String book) {
