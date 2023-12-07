@@ -2,6 +2,7 @@ package com.craig.scholar.happy.service.codeexchange.bible.model;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,6 +16,7 @@ public class BibleBook {
   private final String ordinal;
   private final String nameWithoutOrdinal;
 
+  @Getter(AccessLevel.PRIVATE)
   private final Pattern BOOK_PATTERN = Pattern.compile(
       "^(?<fullName>((?<ordinal>[1-3]?)\\s)?(?<nameWithoutOrdinal>[A-Za-z\\s]+))$");
 
