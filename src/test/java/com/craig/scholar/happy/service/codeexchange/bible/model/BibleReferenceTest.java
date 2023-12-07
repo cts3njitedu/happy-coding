@@ -42,7 +42,8 @@ class BibleReferenceTest {
         begat sons and daughters: 5:8 And all the days of Seth were nine
         hundred and twelve years: and he died.""";
     String expectedPassage = "4:24 If Cain shall be avenged sevenfold, truly Lamech seventy and sevenfold.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -78,7 +79,8 @@ class BibleReferenceTest {
         begat sons and daughters: 5:8 And all the days of Seth were nine
         hundred and twelve years: and he died.""";
     String expectedPassage = "4:26 And to Seth, to him also there was born a son; and he called his name Enos: then began men to call upon the name of the LORD.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -100,7 +102,8 @@ class BibleReferenceTest {
 
         """;
     String expectedPassage = "4:26 And to Seth, to him also there was born a son; and he called his name Enos: then began men to call upon the name of the LORD.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -136,7 +139,8 @@ class BibleReferenceTest {
         begat sons and daughters: 5:8 And all the days of Seth were nine
         hundred and twelve years: and he died.""";
     String expectedPassage = "";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -168,7 +172,8 @@ class BibleReferenceTest {
             + "sheep, but Cain was a tiller of the ground. "
             + "4:3 And in process of time it came to pass, that Cain brought of the "
             + "fruit of the ground an offering unto the LORD.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -195,7 +200,8 @@ class BibleReferenceTest {
             + "sheep, but Cain was a tiller of the ground. "
             + "4:3 And in process of time it came to pass, that Cain brought of the "
             + "fruit of the ground an offering unto the LORD.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -221,7 +227,8 @@ class BibleReferenceTest {
 
         """;
     String expectedPassage = "";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -260,7 +267,8 @@ class BibleReferenceTest {
     String expectedPassage = "1:18 How that they told you "
         + "there should be mockers in the last time, who should walk after their "
         + "own ungodly lusts.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -298,7 +306,8 @@ class BibleReferenceTest {
         """;
     String expectedPassage = "1:25 To the only wise God our Saviour, be glory and majesty, "
         + "dominion and power, both now and ever. Amen.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -335,7 +344,8 @@ class BibleReferenceTest {
 
         """;
     String expectedPassage = "";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -402,7 +412,8 @@ class BibleReferenceTest {
             + "2:7 He that hath an ear, let him hear what the Spirit saith unto the "
             + "churches; To him that overcometh will I give to eat of the tree of "
             + "life, which is in the midst of the paradise of God.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -449,7 +460,8 @@ class BibleReferenceTest {
             + "2:7 He that hath an ear, let him hear what the Spirit saith unto the "
             + "churches; To him that overcometh will I give to eat of the tree of "
             + "life, which is in the midst of the paradise of God.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -494,7 +506,8 @@ class BibleReferenceTest {
             + "2:7 He that hath an ear, let him hear what the Spirit saith unto the "
             + "churches; To him that overcometh will I give to eat of the tree of "
             + "life, which is in the midst of the paradise of God.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -552,7 +565,8 @@ class BibleReferenceTest {
             + "6:2 And I saw, and behold a white horse: and he that sat on him had a "
             + "bow; and a crown was given unto him: and he went forth conquering, and "
             + "to conquer.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -607,7 +621,8 @@ class BibleReferenceTest {
             + "6:2 And I saw, and behold a white horse: and he that sat on him had a "
             + "bow; and a crown was given unto him: and he went forth conquering, and "
             + "to conquer.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -644,7 +659,8 @@ class BibleReferenceTest {
 
         """;
     String expectedPassage = "";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -695,7 +711,8 @@ class BibleReferenceTest {
             + "6:1 And I saw when the Lamb opened one of the seals, and I heard, as "
             + "it were the noise of thunder, one of the four beasts saying, Come and "
             + "see.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -749,7 +766,8 @@ class BibleReferenceTest {
             + "6:2 And I saw, and behold a white horse: and he that sat on him had a "
             + "bow; and a crown was given unto him: and he went forth conquering, and "
             + "to conquer.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -800,7 +818,8 @@ class BibleReferenceTest {
             + "6:2 And I saw, and behold a white horse: and he that sat on him had a "
             + "bow; and a crown was given unto him: and he went forth conquering, and "
             + "to conquer.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -845,7 +864,8 @@ class BibleReferenceTest {
         + "1:20 But ye, beloved, building up yourselves on your most holy faith, "
         + "praying in the Holy Ghost, 1:21 Keep yourselves in the love of God, "
         + "looking for the mercy of our Lord Jesus Christ unto eternal life.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
 
@@ -882,7 +902,8 @@ class BibleReferenceTest {
         + "1:20 But ye, beloved, building up yourselves on your most holy faith, "
         + "praying in the Holy Ghost, 1:21 Keep yourselves in the love of God, "
         + "looking for the mercy of our Lord Jesus Christ unto eternal life.";
-    assertBibleReference(bibleReference.getPattern(), expectedPatternString, text, expectedPassage);
+    assertBibleReferencePattern(bibleReference.getPattern(), expectedPatternString, text,
+        expectedPassage);
   }
 
   @Test
@@ -917,7 +938,8 @@ class BibleReferenceTest {
         .isInstanceOf(IllegalArgumentException.class);
   }
 
-  private void assertBibleReference(Pattern pattern, String expectedPatternString, String text,
+  private void assertBibleReferencePattern(Pattern pattern, String expectedPatternString,
+      String text,
       String expectedPassage) {
     assertThat(pattern.pattern())
         .isEqualTo(expectedPatternString);

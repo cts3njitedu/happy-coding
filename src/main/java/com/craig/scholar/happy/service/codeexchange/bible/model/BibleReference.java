@@ -3,11 +3,13 @@ package com.craig.scholar.happy.service.codeexchange.bible.model;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -19,7 +21,7 @@ public class BibleReference {
 
   private final String PASSAGE_PATTERN_FORMAT = "(^|\\s|\\n)(?<passage>(%s\\s)([\\s\\S]*?))(?:(\\s|\\n)(%s)(\\s|\\n)|\\z)";
 
-  private final String REFERENCE_PATTERN_FORMAT = "^(((?<book>%s)\\s(?<startChapter>\\d+)(\\:(?<startVerse>\\d+)|\\-(?<endChapter>\\d+)|\\:(?<startVerse1>\\d+)\\-(?<endVerse>\\d+)|\\:(?<startVerse2>\\d+)\\-(?<endChapter1>\\d+)\\:(?<endVerse1>\\d+))?)|((?<book1>%s)\\s(?<startVerse3>\\d+)(\\-(?<endVerse2>\\d+))?))$";
+  private final String REFERENCE_PATTERN_FORMAT = "^(((?<book1>%s)\\s(?<startChapter1>\\d+)(\\:(?<startVerse1>\\d+)|\\-(?<endChapter1>\\d+)|\\:(?<startVerse2>\\d+)\\-(?<endVerse1>\\d+)|\\:(?<startVerse3>\\d+)\\-(?<endChapter2>\\d+)\\:(?<endVerse2>\\d+))?)|((?<book2>%s)\\s(?<startVerse4>\\d+)(\\-(?<endVerse3>\\d+))?))$";
 
   private final Pattern REFFERENCE_PATTERN = Pattern.compile(
       String.format(REFERENCE_PATTERN_FORMAT, getBooks().stream()
@@ -42,31 +44,22 @@ public class BibleReference {
   );
 
 
-  private final static Set<String> BOOK_CAPTURE_GROUPS = Set.of(
-      "book",
-      "book1"
-  );
+  private final static String BOOK_CAPTURE_GROUP = "book";
 
-  private final static Set<String> START_CHAPTER_CAPTURE_GROUPS = Set.of(
-      "startChapter"
-  );
+  private final static String START_CHAPTER_CAPTURE_GROUP = "startChapter";
 
-  private final static Set<String> START_VERSE_CAPTURE_GROUPS = Set.of(
-      "startVerse",
-      "startVerse1",
-      "startVerse2",
-      "startVerse3"
-  );
+  private final static String START_VERSE_CAPTURE_GROUP = "startVerse";
 
-  private final static Set<String> END_CHAPTER_CAPTURE_GROUPS = Set.of(
-      "endChapter",
-      "endChapter1"
-  );
+  private final static String END_CHAPTER_CAPTURE_GROUP = "endChapter";
 
-  private final static Set<String> END_VERSE_CAPTURE_GROUPS = Set.of(
-      "endVerse",
-      "endVerse1",
-      "endVerse2"
+  private final static String END_VERSE_CAPTURE_GROUP = "endVerse";
+
+  private final static Map<String, Integer> CAPTURE_GROUPS = Map.of(
+      BOOK_CAPTURE_GROUP, 2,
+      START_CHAPTER_CAPTURE_GROUP, 1,
+      START_VERSE_CAPTURE_GROUP, 4,
+      END_CHAPTER_CAPTURE_GROUP, 2,
+      END_VERSE_CAPTURE_GROUP, 3
   );
 
   @Builder
@@ -74,22 +67,24 @@ public class BibleReference {
     Matcher matcher = REFFERENCE_PATTERN.matcher(reference);
     if (matcher.find()) {
       this.bibleBook = BibleBook.builder()
-          .book(getValue(matcher, BOOK_CAPTURE_GROUPS))
+          .book(getValue(matcher, BOOK_CAPTURE_GROUP))
           .build();
       this.startChapterAndVerse = new ChapterAndVerse(
-          getValue(matcher, START_CHAPTER_CAPTURE_GROUPS),
-          getValue(matcher, START_VERSE_CAPTURE_GROUPS));
+          getValue(matcher, START_CHAPTER_CAPTURE_GROUP),
+          getValue(matcher, START_VERSE_CAPTURE_GROUP));
       this.endChapterAndVerse = new ChapterAndVerse(
-          getValue(matcher, END_CHAPTER_CAPTURE_GROUPS),
-          getValue(matcher, END_VERSE_CAPTURE_GROUPS));
+          getValue(matcher, END_CHAPTER_CAPTURE_GROUP),
+          getValue(matcher, END_VERSE_CAPTURE_GROUP));
       this.pattern = getPattern(this.startChapterAndVerse, this.endChapterAndVerse);
     } else {
       throw new IllegalArgumentException("Reference in invalid format");
     }
   }
 
-  private String getValue(Matcher matcher, Set<String> captureNamedGroups) {
-    return captureNamedGroups.stream()
+  private String getValue(Matcher matcher, String captureGroup) {
+    return IntStream.rangeClosed(1, CAPTURE_GROUPS.get(captureGroup))
+        .mapToObj(String::valueOf)
+        .map(captureGroup::concat)
         .map(matcher::group)
         .filter(Objects::nonNull)
         .findFirst()
