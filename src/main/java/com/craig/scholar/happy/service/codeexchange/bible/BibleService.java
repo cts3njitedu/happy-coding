@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -39,6 +40,8 @@ public class BibleService implements HappyCoding {
   private static final List<String> BIBLE = getBible();
 
   private static final String BIBLE_TEXT = String.join("\n", BIBLE);
+
+  private static final Map<String, Pattern> BOOK_PATTERN_CACHE = new HashMap<>();
 
   @Override
   public void execute() {
@@ -112,8 +115,9 @@ public class BibleService implements HappyCoding {
 
   private String getBookText(String bookName) {
     String BOOK_PATTERN_FORMAT = "(\\n{5}%s.*?\\n{5})";
-    Pattern bookMatchPattern = Pattern.compile(String.format(BOOK_PATTERN_FORMAT, bookName),
-        Pattern.DOTALL);
+    Pattern bookMatchPattern = BOOK_PATTERN_CACHE.computeIfAbsent(bookName,
+        k -> Pattern.compile(String.format(BOOK_PATTERN_FORMAT, bookName),
+            Pattern.DOTALL));
     Matcher bookMatcher = bookMatchPattern.matcher(BIBLE_TEXT);
     if (bookMatcher.find()) {
       return bookMatcher.group();
