@@ -26,10 +26,11 @@ public class BibleController {
 
   @PostMapping("/getText")
   public @ResponseBody BibleResponse getText(@RequestBody BibleRequest request) {
-    log.info("Get text for reference {}", request.getReferenceId());
+    log.info("Get text for reference {}", request.getReference());
     try {
       return BibleResponse.builder()
-          .text(bibleService.getPassage(request.getReferenceId()))
+          .reference(request.getReference())
+          .passage(bibleService.getPassage(request.getReference()))
           .build();
     } catch (Exception ex) {
       throw new ResponseStatusException(

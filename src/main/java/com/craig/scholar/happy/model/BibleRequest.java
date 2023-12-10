@@ -14,5 +14,5 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class BibleRequest {
 
-  private String referenceId;
+  private String reference;
 }

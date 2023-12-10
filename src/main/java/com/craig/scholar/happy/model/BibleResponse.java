@@ -13,5 +13,6 @@ import lombok.experimental.FieldDefaults;
 @Getter
 public class BibleResponse {
 
-  private String text;
+  private String reference;
+  private String passage;
 }
