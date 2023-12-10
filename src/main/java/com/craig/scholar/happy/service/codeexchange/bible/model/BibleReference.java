@@ -16,6 +16,8 @@ import lombok.Getter;
 @Getter
 public class BibleReference {
 
+  public final static String PASSAGES = "passages";
+
   private final static String BOOK_CAPTURE_GROUP = "book";
 
   private final static String START_CHAPTER_CAPTURE_GROUP = "startChapter";
@@ -36,7 +38,7 @@ public class BibleReference {
 
   public static final String CHAPTER_AND_VERSE_FORMAT = "%s:%s";
 
-  private static final String PASSAGE_PATTERN_FORMAT = "(^|\\s|\\n)(?<passage>(%s\\s)([\\s\\S]*?))(?:(\\s|\\n)(%s)(\\s|\\n)|\\z)";
+  private static final String PASSAGE_PATTERN_FORMAT = "(^|\\s|\\n)(?<passages>(%s\\s)([\\s\\S]*?))(?:(\\s|\\n)(%s)(\\s|\\n)|\\z)";
 
   private static final String REFERENCE_PATTERN_FORMAT = "^(((?<book1>%s)\\s(?<startChapter1>\\d+)(\\:(?<startVerse1>\\d+)|\\-(?<endChapter1>\\d+)|\\:(?<startVerse2>\\d+)\\-(?<endVerse1>\\d+)|\\:(?<startVerse3>\\d+)\\-(?<endChapter2>\\d+)\\:(?<endVerse2>\\d+))?)|((?<book2>%s)\\s(?<startVerse4>\\d+)(\\-(?<endVerse3>\\d+))?))$";
 

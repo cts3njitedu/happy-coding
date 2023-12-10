@@ -14,7 +14,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4:24")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:24\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:25|5:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:24\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:25|5:1)(\\s|\\n)|\\z)";
     String text = """
         4:24 If Cain shall be avenged sevenfold, truly Lamech seventy and
         sevenfold.
@@ -51,7 +51,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4:26")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:27|5:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:27|5:1)(\\s|\\n)|\\z)";
     String text = """
         4:24 If Cain shall be avenged sevenfold, truly Lamech seventy and
         sevenfold.
@@ -88,7 +88,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4:26")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:27|5:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:27|5:1)(\\s|\\n)|\\z)";
     String text = """
         4:24 If Cain shall be avenged sevenfold, truly Lamech seventy and
         sevenfold.
@@ -111,7 +111,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4:23")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:23\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:24|5:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:23\\s)([\\s\\S]*?))(?:(\\s|\\n)(4:24|5:1)(\\s|\\n)|\\z)";
     String text = """
         4:24 If Cain shall be avenged sevenfold, truly Lamech seventy and
         sevenfold.
@@ -148,7 +148,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(5:1|5:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(5:1|5:1)(\\s|\\n)|\\z)";
     String text = """
         4:1 And Adam knew Eve his wife; and she conceived, and bare Cain, and
         said, I have gotten a man from the LORD.
@@ -181,7 +181,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(5:1|5:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(5:1|5:1)(\\s|\\n)|\\z)";
     String text = """
         4:1 And Adam knew Eve his wife; and she conceived, and bare Cain, and
         said, I have gotten a man from the LORD.
@@ -209,7 +209,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 6")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(6:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(6:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
     String text = """
         4:1 And Adam knew Eve his wife; and she conceived, and bare Cain, and
         said, I have gotten a man from the LORD.
@@ -236,7 +236,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("2 John 18")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:18\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:19|2:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(1:18\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:19|2:1)(\\s|\\n)|\\z)";
     String text = """
         1:16 These are murmurers, complainers, walking after their own lusts;
         and their mouth speaketh great swelling words, having men’s persons in
@@ -276,7 +276,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("2 John 25")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:25\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:26|2:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(1:25\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:26|2:1)(\\s|\\n)|\\z)";
     String text = """
         1:16 These are murmurers, complainers, walking after their own lusts;
         and their mouth speaketh great swelling words, having men’s persons in
@@ -315,7 +315,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("2 John 26")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:27|2:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(1:26\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:27|2:1)(\\s|\\n)|\\z)";
     String text = """
         1:16 These are murmurers, complainers, walking after their own lusts;
         and their mouth speaketh great swelling words, having men’s persons in
@@ -353,7 +353,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 2:5-7")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
     String text = """
 
         2:1 Unto the angel of the church of Ephesus write; These things saith
@@ -421,7 +421,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 2:5-7")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
     String text = """
 
         2:1 Unto the angel of the church of Ephesus write; These things saith
@@ -469,7 +469,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 2:5-7")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(2:5\\s)([\\s\\S]*?))(?:(\\s|\\n)(2:8|3:1)(\\s|\\n)|\\z)";
     String text = """
 
         2:1 Unto the angel of the church of Ephesus write; These things saith
@@ -515,7 +515,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4-6")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
     String text = """
 
         4:1 After this I looked, and, behold, a door was opened in heaven: and
@@ -574,7 +574,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4-6")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
     String text = """
 
         4:1 After this I looked, and, behold, a door was opened in heaven: and
@@ -630,7 +630,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 3-6")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(3:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(3:1\\s)([\\s\\S]*?))(?:(\\s|\\n)(7:1|7:1)(\\s|\\n)|\\z)";
     String text = """
 
         4:1 After this I looked, and, behold, a door was opened in heaven: and
@@ -668,7 +668,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4:2-6:1")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:2|7:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:2|7:1)(\\s|\\n)|\\z)";
     String text = """
 
         4:1 After this I looked, and, behold, a door was opened in heaven: and
@@ -720,7 +720,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4:2-6:4")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:5|7:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:5|7:1)(\\s|\\n)|\\z)";
     String text = """
 
         4:1 After this I looked, and, behold, a door was opened in heaven: and
@@ -775,7 +775,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("John 4:2-6:4")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:5|7:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(4:2\\s)([\\s\\S]*?))(?:(\\s|\\n)(6:5|7:1)(\\s|\\n)|\\z)";
     String text = """
 
         4:1 After this I looked, and, behold, a door was opened in heaven: and
@@ -827,7 +827,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("Jude 17-21")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:17\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:22|2:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(1:17\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:22|2:1)(\\s|\\n)|\\z)";
     String text = """
         1:16 These are murmurers, complainers, walking after their own lusts;
         and their mouth speaketh great swelling words, having men’s persons in
@@ -874,7 +874,7 @@ class BibleReferenceTest {
     BibleReference bibleReference = BibleReference.builder()
         .reference("Jude 17-21")
         .build();
-    String expectedPatternString = "(^|\\s|\\n)(?<passage>(1:17\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:22|2:1)(\\s|\\n)|\\z)";
+    String expectedPatternString = "(^|\\s|\\n)(?<passages>(1:17\\s)([\\s\\S]*?))(?:(\\s|\\n)(1:22|2:1)(\\s|\\n)|\\z)";
     String text = """
         1:16 These are murmurers, complainers, walking after their own lusts;
         and their mouth speaketh great swelling words, having men’s persons in
@@ -948,7 +948,7 @@ class BibleReferenceTest {
       assertThat(nextVerseMatcher.find()).isFalse();
     } else {
       assertThat(nextVerseMatcher.find()).isTrue();
-      String passage = nextVerseMatcher.group("passage");
+      String passage = nextVerseMatcher.group("passages");
       passage = passage.trim();
       passage = passage.replaceAll("\\R", " ");
       passage = passage.replaceAll("\\s+", " ");

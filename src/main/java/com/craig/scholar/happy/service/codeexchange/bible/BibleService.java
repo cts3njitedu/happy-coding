@@ -1,6 +1,6 @@
 package com.craig.scholar.happy.service.codeexchange.bible;
 
-import static com.craig.scholar.happy.service.codeexchange.bible.model.BibleSearchQuery.getBibleSearchResult;
+import static com.craig.scholar.happy.service.codeexchange.bible.model.BibleReference.PASSAGES;
 
 import com.craig.scholar.happy.service.codeexchange.HappyCoding;
 import com.craig.scholar.happy.service.codeexchange.bible.model.BibleBook;
@@ -15,9 +15,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +28,6 @@ import org.springframework.stereotype.Service;
 public class BibleService implements HappyCoding {
 
   private static final String KING_JAMES_BIBLE = "pg10.txt";
-  public static final String EMPTY = "";
   public static final String SINGLE_SPACE = " ";
 
   private final String OLD_TESTAMENT_HEADING = "The Old Testament of the King James Version of the Bible";
@@ -54,7 +55,7 @@ public class BibleService implements HappyCoding {
           .reference(referenceId)
           .build();
       return getBookName(bibleReference)
-          .flatMap(bookName -> getResult(bibleReference, bookName))
+          .flatMap(bookName -> getBibleSearchResult(bibleReference, bookName))
           .map(BibleSearchResult::getBiblePassages)
           .stream()
           .flatMap(Collection::stream)
@@ -105,24 +106,27 @@ public class BibleService implements HappyCoding {
             ORDINAL_MAP.get(bibleBook.getOrdinal()));
   }
 
-  private Optional<BibleSearchResult> getResult(BibleReference bibleReference, String bookName) {
-    String bookText = getBookText(bookName);
-    if (!bookText.isEmpty()) {
-      return getBibleSearchResult(bibleReference, bookText);
-    }
-    return Optional.empty();
+  private Optional<BibleSearchResult> getBibleSearchResult(BibleReference bibleReference,
+      String bookName) {
+    return getBookText(bookName)
+        .map(bookText -> bibleReference.getPattern().matcher(bookText))
+        .map(Matcher::results)
+        .orElseGet(Stream::empty)
+        .findFirst()
+        .map(matchResult -> BibleSearchResult.builder()
+            .text(matchResult.group(PASSAGES))
+            .build());
   }
 
-  private String getBookText(String bookName) {
+  private Optional<String> getBookText(String bookName) {
     String BOOK_PATTERN_FORMAT = "(\\n{5}%s.*?\\n{5})";
     Pattern bookMatchPattern = BOOK_PATTERN_CACHE.computeIfAbsent(bookName,
         k -> Pattern.compile(String.format(BOOK_PATTERN_FORMAT, bookName),
             Pattern.DOTALL));
     Matcher bookMatcher = bookMatchPattern.matcher(BIBLE_TEXT);
-    if (bookMatcher.find()) {
-      return bookMatcher.group();
-    }
-    return EMPTY;
+    return bookMatcher.results()
+        .findFirst()
+        .map(MatchResult::group);
   }
 
 }
