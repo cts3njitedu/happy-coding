@@ -24,8 +24,8 @@ public class BibleController {
   @NonNull
   private final BibleService bibleService;
 
-  @PostMapping("/getText")
-  public @ResponseBody BibleResponse getText(@RequestBody BibleRequest request) {
+  @PostMapping("/getPassage")
+  public @ResponseBody BibleResponse getPassage(@RequestBody BibleRequest request) {
     log.info("Get text for reference {}", request.getReference());
     try {
       return BibleResponse.builder()
