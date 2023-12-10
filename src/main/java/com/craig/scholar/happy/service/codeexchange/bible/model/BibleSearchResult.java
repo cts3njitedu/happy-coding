@@ -11,7 +11,7 @@ import lombok.Getter;
 public class BibleSearchResult {
 
   private static final Pattern BIBLE_SEARCH_RESULT_PATTERN = Pattern.compile(
-      "(?<=(\\s|\\n|^|\\z)?(?<chapter>\\d{1,4})(\\s|\\n)?:(\\s|\\n)?(?<verse>\\d{1,4})(\\s|\\n|\\z|^))(?<passage>[\\s\\S]*?)(?=((\\s|\\n|\\z|^)\\d+(\\s|\\n)?:(\\s\\n)?\\d+(\\s|\\n|\\z|^))|\\z)");
+      "(?<=(\\s|\\n|^|\\z)(?<chapter>\\d{1,4})(\\s|\\n)?:(\\s|\\n)?(?<verse>\\d{1,4})(\\s|\\n|\\z|^))(?<passage>[\\s\\S]*?)(?=((\\s|\\n|\\z|^)\\d+(\\s|\\n)?:(\\s\\n)?\\d+(\\s|\\n|\\z|^))|\\z)");
 
   private final List<BiblePassage> biblePassages;
 
@@ -20,8 +20,12 @@ public class BibleSearchResult {
     Matcher matcher = BIBLE_SEARCH_RESULT_PATTERN.matcher(text);
     List<BiblePassage> passages = new ArrayList<>();
     while (matcher.find()) {
+      String passage = matcher.group("passage");
+      passage = passage.trim();
+      passage = passage.replaceAll("\\R", " ");
+      passage = passage.replaceAll("\\s+", " ");
       BiblePassage biblePassage = new BiblePassage(matcher.group("chapter"), matcher.group("verse"),
-          matcher.group("passage"));
+          passage);
       passages.add(biblePassage);
     }
     this.biblePassages = passages;
