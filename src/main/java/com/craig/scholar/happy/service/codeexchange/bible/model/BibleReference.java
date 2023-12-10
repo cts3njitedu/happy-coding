@@ -16,32 +16,6 @@ import lombok.Getter;
 @Getter
 public class BibleReference {
 
-  public static final String CHAPTER_AND_VERSE_FORMAT = "%s:%s";
-
-  private static final String PASSAGE_PATTERN_FORMAT = "(^|\\s|\\n)(?<passage>(%s\\s)([\\s\\S]*?))(?:(\\s|\\n)(%s)(\\s|\\n)|\\z)";
-
-  private static final String REFERENCE_PATTERN_FORMAT = "^(((?<book1>%s)\\s(?<startChapter1>\\d+)(\\:(?<startVerse1>\\d+)|\\-(?<endChapter1>\\d+)|\\:(?<startVerse2>\\d+)\\-(?<endVerse1>\\d+)|\\:(?<startVerse3>\\d+)\\-(?<endChapter2>\\d+)\\:(?<endVerse2>\\d+))?)|((?<book2>%s)\\s(?<startVerse4>\\d+)(\\-(?<endVerse3>\\d+))?))$";
-
-  private final Pattern REFFERENCE_PATTERN = Pattern.compile(
-      String.format(REFERENCE_PATTERN_FORMAT, getBooks().stream()
-          .filter(book -> !SINGLE_CHAPTER_BOOKS.contains(book))
-          .collect(Collectors.joining("|")), String.join("|", SINGLE_CHAPTER_BOOKS)));
-
-  private final BibleBook bibleBook;
-  private final ChapterAndVerse startChapterAndVerse;
-
-  private final ChapterAndVerse endChapterAndVerse;
-
-  private final Pattern pattern;
-
-  private final static Set<String> SINGLE_CHAPTER_BOOKS = Set.of(
-      "Obadiah",
-      "Philemon",
-      "2 John",
-      "3 John",
-      "Jude"
-  );
-
   private final static String BOOK_CAPTURE_GROUP = "book";
 
   private final static String START_CHAPTER_CAPTURE_GROUP = "startChapter";
@@ -59,6 +33,33 @@ public class BibleReference {
       END_CHAPTER_CAPTURE_GROUP, 2,
       END_VERSE_CAPTURE_GROUP, 3
   );
+
+  public static final String CHAPTER_AND_VERSE_FORMAT = "%s:%s";
+
+  private static final String PASSAGE_PATTERN_FORMAT = "(^|\\s|\\n)(?<passage>(%s\\s)([\\s\\S]*?))(?:(\\s|\\n)(%s)(\\s|\\n)|\\z)";
+
+  private static final String REFERENCE_PATTERN_FORMAT = "^(((?<book1>%s)\\s(?<startChapter1>\\d+)(\\:(?<startVerse1>\\d+)|\\-(?<endChapter1>\\d+)|\\:(?<startVerse2>\\d+)\\-(?<endVerse1>\\d+)|\\:(?<startVerse3>\\d+)\\-(?<endChapter2>\\d+)\\:(?<endVerse2>\\d+))?)|((?<book2>%s)\\s(?<startVerse4>\\d+)(\\-(?<endVerse3>\\d+))?))$";
+
+  private final static Set<String> SINGLE_CHAPTER_BOOKS = Set.of(
+      "Obadiah",
+      "Philemon",
+      "2 John",
+      "3 John",
+      "Jude"
+  );
+
+  private static final Pattern REFFERENCE_PATTERN = Pattern.compile(
+      String.format(REFERENCE_PATTERN_FORMAT, getBooks().stream()
+          .filter(book -> !SINGLE_CHAPTER_BOOKS.contains(book))
+          .collect(Collectors.joining("|")), String.join("|", SINGLE_CHAPTER_BOOKS)));
+
+  private final BibleBook bibleBook;
+
+  private final ChapterAndVerse startChapterAndVerse;
+
+  private final ChapterAndVerse endChapterAndVerse;
+
+  private final Pattern pattern;
 
   @Builder
   public BibleReference(String reference) {
