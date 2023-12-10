@@ -209,6 +209,11 @@ public class BibleReference {
     return String.valueOf(Integer.parseInt(value) + 1);
   }
 
+  public boolean isSingleVerse() {
+    return Objects.isNull(endChapterAndVerse.chapter())
+        && Objects.isNull(endChapterAndVerse.verse())
+        && Objects.nonNull(startChapterAndVerse.verse());
+  }
 
   private static Set<String> getBooks() {
     return Set.of("Genesis",

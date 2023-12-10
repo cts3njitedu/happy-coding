@@ -82,40 +82,40 @@ class BibleServiceTest {
   @ParameterizedTest
   @MethodSource("bibleCases")
   void getPassage(String referenceId, String expectedText) {
-    assertThat(bibleService.getPassage(referenceId)).isEqualTo(expectedText);
+    assertThat(bibleService.getPassages(referenceId)).isEqualTo(expectedText);
   }
 
   @Test
-  void getPassage_InvalidBook() {
-    assertThatThrownBy(() -> bibleService.getPassage("Samuelite 1"))
+  void getPassages_InvalidBook() {
+    assertThatThrownBy(() -> bibleService.getPassages("Samuelite 1"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Samuelite");
   }
 
   @Test
-  void getPassage_SingleChapter_Reference() {
-    String text = bibleService.getPassage("Genesis 1");
+  void getPassages_SingleChapter_Reference() {
+    String text = bibleService.getPassages("Genesis 1");
     Matcher matcher = CHAPTER_VERSE_PATTERN.matcher(text);
     assertThat(matcher.results().count()).isEqualTo(31);
   }
 
   @Test
-  void getPassage_Invalid_Trailing_Colon() {
-    assertThatThrownBy(() -> bibleService.getPassage("Genesis 1:"))
+  void getPassages_Invalid_Trailing_Colon() {
+    assertThatThrownBy(() -> bibleService.getPassages("Genesis 1:"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Genesis 1:");
   }
 
   @Test
-  void getPassage_Invalid_NoSpaceBetweenBookAndChapter() {
-    assertThatThrownBy(() -> bibleService.getPassage("Genesis1:4"))
+  void getPassages_Invalid_NoSpaceBetweenBookAndChapter() {
+    assertThatThrownBy(() -> bibleService.getPassages("Genesis1:4"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Genesis1:4");
   }
 
   @Test
-  void getPassage_Invalid_NoSpaceBetweenOrdinalAndBook() {
-    assertThatThrownBy(() -> bibleService.getPassage("1John3:4"))
+  void getPassages_Invalid_NoSpaceBetweenOrdinalAndBook() {
+    assertThatThrownBy(() -> bibleService.getPassages("1John3:4"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("1John3:4");
   }

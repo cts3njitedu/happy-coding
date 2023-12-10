@@ -25,18 +25,18 @@ class BibleControllerTest {
   private BibleController bibleController;
 
   @Test
-  void getPassage() {
-    when(bibleService.getPassage(any())).thenReturn("Bible verse");
-    BibleResponse response = bibleController.getPassage(BibleRequest.builder()
+  void getPassages() {
+    when(bibleService.getPassages(any())).thenReturn("Bible verse");
+    BibleResponse response = bibleController.getPassages(BibleRequest.builder()
         .reference("referenceId")
         .build());
     assertThat(response.getPassage()).isEqualTo("Bible verse");
   }
 
   @Test
-  void getPassage_Exception() {
-    when(bibleService.getPassage(any())).thenThrow(new IllegalArgumentException("Error"));
-    assertThatThrownBy(() -> bibleController.getPassage(BibleRequest.builder()
+  void getPassages_Exception() {
+    when(bibleService.getPassages(any())).thenThrow(new IllegalArgumentException("Error"));
+    assertThatThrownBy(() -> bibleController.getPassages(BibleRequest.builder()
         .reference("referenceId")
         .build()))
         .isInstanceOf(ResponseStatusException.class);

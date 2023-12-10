@@ -4,6 +4,7 @@ import static com.craig.scholar.happy.service.codeexchange.bible.model.BibleRefe
 
 import com.craig.scholar.happy.service.codeexchange.HappyCoding;
 import com.craig.scholar.happy.service.codeexchange.bible.model.BibleBook;
+import com.craig.scholar.happy.service.codeexchange.bible.model.BiblePassage;
 import com.craig.scholar.happy.service.codeexchange.bible.model.BibleReference;
 import com.craig.scholar.happy.service.codeexchange.bible.model.BibleSearchResult;
 import java.nio.file.Files;
@@ -49,32 +50,30 @@ public class BibleService implements HappyCoding {
 
   }
 
-  public String getPassage(String referenceId) {
+  public String getPassages(String reference) {
     try {
       BibleReference bibleReference = BibleReference.builder()
-          .reference(referenceId)
+          .reference(reference)
           .build();
       return getBookName(bibleReference)
           .flatMap(bookName -> getBibleSearchResult(bibleReference, bookName))
           .map(BibleSearchResult::getBiblePassages)
           .stream()
           .flatMap(Collection::stream)
-          .map(biblePassage -> isSingleVerse(bibleReference) ? biblePassage.text() :
-              String.join(SINGLE_SPACE, biblePassage.getChapterAndVerse(),
-                  biblePassage.text()))
+          .map(biblePassage -> getPassage(biblePassage, bibleReference))
           .filter(verse -> !verse.isEmpty())
           .collect(Collectors.joining(SINGLE_SPACE));
     } catch (Exception e) {
-      log.error("Unable to get passage for reference {}", referenceId, e);
+      log.error("Unable to get passage for reference {}", reference, e);
       throw new IllegalArgumentException(
-          String.format("Error: %s, Reference: %s", e.getMessage(), referenceId));
+          String.format("Error: %s, Reference: %s", e.getMessage(), reference));
     }
   }
 
-  private boolean isSingleVerse(BibleReference bibleReference) {
-    return Objects.isNull(bibleReference.getEndChapterAndVerse().chapter())
-        && Objects.isNull(bibleReference.getEndChapterAndVerse().verse())
-        && Objects.nonNull(bibleReference.getStartChapterAndVerse().verse());
+  private static String getPassage(BiblePassage biblePassage, BibleReference bibleReference) {
+    return bibleReference.isSingleVerse() ? biblePassage.text() :
+        String.join(SINGLE_SPACE, biblePassage.getChapterAndVerse(),
+            biblePassage.text());
   }
 
   private static List<String> getBible() {

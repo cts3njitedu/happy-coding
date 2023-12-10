@@ -24,13 +24,13 @@ public class BibleController {
   @NonNull
   private final BibleService bibleService;
 
-  @PostMapping("/getPassage")
-  public @ResponseBody BibleResponse getPassage(@RequestBody BibleRequest request) {
-    log.info("Get passage for reference {}", request.getReference());
+  @PostMapping("/getPassages")
+  public @ResponseBody BibleResponse getPassages(@RequestBody BibleRequest request) {
+    log.info("Get passages for reference {}", request.getReference());
     try {
       return BibleResponse.builder()
           .reference(request.getReference())
-          .passage(bibleService.getPassage(request.getReference()))
+          .passage(bibleService.getPassages(request.getReference()))
           .build();
     } catch (Exception ex) {
       throw new ResponseStatusException(
