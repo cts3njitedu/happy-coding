@@ -29,7 +29,7 @@ public class BibleController {
     log.info("Get text for reference {}", request.getReferenceId());
     try {
       return BibleResponse.builder()
-          .text(bibleService.getText(request.getReferenceId()))
+          .text(bibleService.getPassage(request.getReferenceId()))
           .build();
     } catch (Exception ex) {
       throw new ResponseStatusException(

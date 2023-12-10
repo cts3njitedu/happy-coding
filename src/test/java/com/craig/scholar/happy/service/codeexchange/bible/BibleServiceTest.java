@@ -3,6 +3,8 @@ package com.craig.scholar.happy.service.codeexchange.bible;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,6 +14,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 class BibleServiceTest {
 
   private final BibleService bibleService = new BibleService();
+
+  private final Pattern CHAPTER_VERSE_PATTERN = Pattern.compile("\\d+:\\d+");
 
   private static Stream<Arguments> bibleCases() {
     return Stream.of(
@@ -74,50 +78,44 @@ class BibleServiceTest {
     );
   }
 
+
   @ParameterizedTest
   @MethodSource("bibleCases")
-  void getText(String referenceId, String expectedText) {
-    assertThat(bibleService.getText(referenceId)).isEqualTo(expectedText);
+  void getPassage(String referenceId, String expectedText) {
+    assertThat(bibleService.getPassage(referenceId)).isEqualTo(expectedText);
   }
 
   @Test
-  void getText_InvalidBook() {
-    assertThatThrownBy(() -> bibleService.getText("Samuelite 1"))
+  void getPassage_InvalidBook() {
+    assertThatThrownBy(() -> bibleService.getPassage("Samuelite 1"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Samuelite");
   }
 
   @Test
-  void getText_Invalid_SingleChapter_Reference() {
-    assertThatThrownBy(() -> bibleService.getText("Genesis 1"))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("Genesis 1");
+  void getPassage_SingleChapter_Reference() {
+    String text = bibleService.getPassage("Genesis 1");
+    Matcher matcher = CHAPTER_VERSE_PATTERN.matcher(text);
+    assertThat(matcher.results().count()).isEqualTo(31);
   }
 
   @Test
-  void getText_Invalid_SingleChapter_Reference_1_John() {
-    assertThatThrownBy(() -> bibleService.getText("1 John 1"))
-        .isInstanceOf(IllegalArgumentException.class)
-        .hasMessageContaining("1 John 1");
-  }
-
-  @Test
-  void getText_Invalid_Trailing_Colon() {
-    assertThatThrownBy(() -> bibleService.getText("Genesis 1:"))
+  void getPassage_Invalid_Trailing_Colon() {
+    assertThatThrownBy(() -> bibleService.getPassage("Genesis 1:"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Genesis 1:");
   }
 
   @Test
-  void getText_Invalid_NoSpaceBetweenBookAndChapter() {
-    assertThatThrownBy(() -> bibleService.getText("Genesis1:4"))
+  void getPassage_Invalid_NoSpaceBetweenBookAndChapter() {
+    assertThatThrownBy(() -> bibleService.getPassage("Genesis1:4"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Genesis1:4");
   }
 
   @Test
-  void getText_Invalid_NoSpaceBetweenOrdinalAndBook() {
-    assertThatThrownBy(() -> bibleService.getText("1John3:4"))
+  void getPassage_Invalid_NoSpaceBetweenOrdinalAndBook() {
+    assertThatThrownBy(() -> bibleService.getPassage("1John3:4"))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("1John3:4");
   }

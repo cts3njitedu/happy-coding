@@ -26,7 +26,7 @@ class BibleControllerTest {
 
   @Test
   void getText() {
-    when(bibleService.getText(any())).thenReturn("Bible verse");
+    when(bibleService.getPassage(any())).thenReturn("Bible verse");
     BibleResponse response = bibleController.getText(BibleRequest.builder()
         .referenceId("referenceId")
         .build());
@@ -35,7 +35,7 @@ class BibleControllerTest {
 
   @Test
   void getText_Exception() {
-    when(bibleService.getText(any())).thenThrow(new IllegalArgumentException("Error"));
+    when(bibleService.getPassage(any())).thenThrow(new IllegalArgumentException("Error"));
     assertThatThrownBy(() -> bibleController.getText(BibleRequest.builder()
         .referenceId("referenceId")
         .build()))

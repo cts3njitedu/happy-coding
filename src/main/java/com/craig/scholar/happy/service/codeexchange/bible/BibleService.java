@@ -1,16 +1,22 @@
 package com.craig.scholar.happy.service.codeexchange.bible;
 
+import static com.craig.scholar.happy.service.codeexchange.bible.model.BibleSearchQuery.getBibleSearchResult;
+
 import com.craig.scholar.happy.service.codeexchange.HappyCoding;
+import com.craig.scholar.happy.service.codeexchange.bible.model.BibleBook;
+import com.craig.scholar.happy.service.codeexchange.bible.model.BibleReference;
+import com.craig.scholar.happy.service.codeexchange.bible.model.BibleSearchResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +24,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class BibleService implements HappyCoding {
 
-  private static final String CHAPTER = "chapter";
-  private static final String ORDINAL = "ordinal";
-  private static final String BOOK = "book";
-  private static final String VERSE = "verse";
   private static final String KING_JAMES_BIBLE = "pg10.txt";
   public static final String EMPTY = "";
-  public static final String REFERENCE_ID = "referenceId";
-  public static final String TEXT = "text";
+  public static final String SINGLE_SPACE = " ";
 
   private final String OLD_TESTAMENT_HEADING = "The Old Testament of the King James Version of the Bible";
   private final String NEW_TESTAMENT_HEADING = "The New Testament of the King James Bible";
@@ -34,19 +35,6 @@ public class BibleService implements HappyCoding {
       "2", "Second",
       "3", "Third"
   );
-
-  private final Set<String> VALID_BOOKS = getBooks();
-  private final Set<String> VALID_SINGLE_CHAPTER_BOOKS = Set.of(
-      "Obadiah",
-      "Philemon",
-      "2 John",
-      "3 John",
-      "Jude"
-  );
-
-  private final String REFERENCE_PATTERN_FORMAT = "^(?<%s>((?<%s>[1-3])\\s)?[A-Za-z]+)\\s((?<%s>\\d+)\\:)?(?<%s>\\d+)$";
-  private final Pattern REFERENCE_PATTERN = Pattern.compile(
-      String.format(REFERENCE_PATTERN_FORMAT, BOOK, ORDINAL, CHAPTER, VERSE));
 
   private static final List<String> BIBLE = getBible();
 
@@ -57,39 +45,32 @@ public class BibleService implements HappyCoding {
 
   }
 
-  private record Reference(String ordinal, String book, String chapter, String verse) {
-
-    public String chapterAndVerse() {
-      return String.format("%s:%s", chapter == null ? "1" : chapter, verse);
-    }
-
-    public String bookNameWithoutOrdinal() {
-      return ordinal == null ? book : book.split(" ")[1];
-    }
-  }
-
-  private record Text(String referenceId, String text) {
-
-  }
-
-  public String getText(String referenceId) {
-    Reference reference = getReference(referenceId);
+  public String getPassage(String referenceId) {
     try {
-      return getBookName(reference)
-          .flatMap(bookName -> getText(reference, bookName))
-          .map(Text::text)
+      BibleReference bibleReference = BibleReference.builder()
+          .reference(referenceId)
+          .build();
+      return getBookName(bibleReference)
+          .flatMap(bookName -> getResult(bibleReference, bookName))
+          .map(BibleSearchResult::getBiblePassages)
+          .stream()
+          .flatMap(Collection::stream)
+          .map(biblePassage -> isSingleVerse(bibleReference) ? biblePassage.text() :
+              String.join(SINGLE_SPACE, biblePassage.getChapterAndVerse(),
+                  biblePassage.text()))
           .filter(verse -> !verse.isEmpty())
-          .map(String::trim)
-          .map(verse -> verse.replaceAll("\\R", " "))
-          .map(verse -> verse.replaceAll("\\s+", " "))
-          .orElseGet(() -> {
-            log.info("Unable to find text for reference {}", referenceId);
-            return EMPTY;
-          });
+          .collect(Collectors.joining(SINGLE_SPACE));
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Unable to get passage for reference {}", referenceId, e);
+      throw new IllegalArgumentException(
+          String.format("Error: %s, Reference: %s", e.getMessage(), referenceId));
     }
-    return null;
+  }
+
+  private boolean isSingleVerse(BibleReference bibleReference) {
+    return Objects.isNull(bibleReference.getEndChapterAndVerse().chapter())
+        && Objects.isNull(bibleReference.getEndChapterAndVerse().verse())
+        && Objects.nonNull(bibleReference.getStartChapterAndVerse().verse());
   }
 
   private static List<String> getBible() {
@@ -104,58 +85,29 @@ public class BibleService implements HappyCoding {
     return List.of();
   }
 
-  private Optional<String> getBookName(Reference reference) {
+  private Optional<String> getBookName(BibleReference bibleReference) {
     return BIBLE.stream()
         .filter(line -> !line.isEmpty())
         .dropWhile(line -> !line.equals(OLD_TESTAMENT_HEADING))
         .skip(1)
         .filter(line -> !line.equals(NEW_TESTAMENT_HEADING))
         .takeWhile(line -> !line.equals(OLD_TESTAMENT_HEADING))
-        .filter(line -> isBookTitle(reference, line))
+        .filter(line -> isBookTitle(bibleReference.getBibleBook(), line))
         .findFirst();
   }
 
-  private boolean isBookTitle(Reference reference, String line) {
-    return reference.ordinal == null ? line.contains(reference.book) :
-        line.contains(reference.bookNameWithoutOrdinal()) && line.contains(
-            ORDINAL_MAP.get(reference.ordinal));
+  private boolean isBookTitle(BibleBook bibleBook, String line) {
+    return bibleBook.getOrdinal() == null ? line.contains(bibleBook.getFullName()) :
+        line.contains(bibleBook.getNameWithoutOrdinal()) && line.contains(
+            ORDINAL_MAP.get(bibleBook.getOrdinal()));
   }
 
-  private Optional<Text> getText(Reference reference, String bookName) {
+  private Optional<BibleSearchResult> getResult(BibleReference bibleReference, String bookName) {
     String bookText = getBookText(bookName);
     if (!bookText.isEmpty()) {
-      return getChapterAndVerseText(reference.chapterAndVerse(), bookText);
+      return getBibleSearchResult(bibleReference, bookText);
     }
     return Optional.empty();
-  }
-
-  private Reference getReference(String referenceId) {
-    referenceId = referenceId.trim();
-    Matcher referenceMatcher = REFERENCE_PATTERN.matcher(referenceId);
-    if (referenceMatcher.find()) {
-      Reference reference = new Reference(referenceMatcher.group(ORDINAL),
-          referenceMatcher.group(BOOK), referenceMatcher.group(CHAPTER),
-          referenceMatcher.group(VERSE));
-      if (!VALID_BOOKS.contains(reference.book())) {
-        throw new IllegalArgumentException(
-            String.format("Invalid book %s", reference.book()));
-      }
-      if (reference.chapter() == null) {
-        if (!VALID_SINGLE_CHAPTER_BOOKS.contains(reference.book())) {
-          throw new IllegalArgumentException(
-              String.format("Invalid reference id %s. Book required to have chapter", referenceId));
-        }
-        if (reference.book().contains("John")) {
-          if (!"2".equals(reference.ordinal()) && !"3".equals(reference.ordinal())) {
-            throw new IllegalArgumentException(String.format(
-                "Invalid reference id %s. Only 2 John and 3 John allowed to have no chapter",
-                referenceId));
-          }
-        }
-      }
-      return reference;
-    }
-    throw new IllegalArgumentException(String.format("Invalid reference id %s", referenceId));
   }
 
   private String getBookText(String bookName) {
@@ -169,84 +121,4 @@ public class BibleService implements HappyCoding {
     return EMPTY;
   }
 
-  private Optional<Text> getChapterAndVerseText(String chapterAndVerse, String bookText) {
-    String VERSE_PATTERN_FORMAT = "((^|\\s|\\n)(?<referenceId>%s)\\s)(?<text>[\\s\\S]*?)(?:(\\s|\\n)\\d+\\:\\d+(\\s|\\n)|\\z)";
-    Pattern textMatchPattern = Pattern.compile(
-        String.format(VERSE_PATTERN_FORMAT, chapterAndVerse),
-        Pattern.DOTALL);
-    Matcher textMatcher = textMatchPattern.matcher(bookText);
-    if (textMatcher.find()) {
-      return Optional.of(new Text(textMatcher.group(REFERENCE_ID), textMatcher.group(TEXT)));
-    }
-    return Optional.empty();
-  }
-
-  private static Set<String> getBooks() {
-    return Set.of("Genesis",
-        "Exodus",
-        "Leviticus",
-        "Numbers",
-        "Deuteronomy",
-        "Joshua",
-        "Judges",
-        "Ruth",
-        "1 Samuel",
-        "2 Samuel",
-        "1 Kings",
-        "2 Kings",
-        "1 Chronicles",
-        "2 Chronicles",
-        "Ezra",
-        "Nehemiah",
-        "Esther",
-        "Job",
-        "Psalm",
-        "Proverbs",
-        "Ecclesiastes",
-        "Song of Solomon",
-        "Isaiah",
-        "Jeremiah",
-        "Lamentations",
-        "Ezekiel",
-        "Daniel",
-        "Hosea",
-        "Joel",
-        "Amos",
-        "Obadiah",
-        "Jonah",
-        "Micah",
-        "Nahum",
-        "Habakkuk",
-        "Zephaniah",
-        "Haggai",
-        "Zechariah",
-        "Malachi",
-        "Matthew",
-        "Mark",
-        "Luke",
-        "John",
-        "Acts",
-        "Romans",
-        "1 Corinthians",
-        "2 Corinthians",
-        "Galatians",
-        "Ephesians",
-        "Philippians",
-        "Colossians",
-        "1 Thessalonians",
-        "2 Thessalonians",
-        "1 Timothy",
-        "2 Timothy",
-        "Titus",
-        "Philemon",
-        "Hebrews",
-        "James",
-        "1 Peter",
-        "2 Peter",
-        "1 John",
-        "2 John",
-        "3 John",
-        "Jude",
-        "Revelation");
-  }
 }
