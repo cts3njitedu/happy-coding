@@ -11,11 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,7 +43,7 @@ public class BibleService implements HappyCoding {
 
   private static final String BIBLE_TEXT = String.join("\n", BIBLE);
 
-  private static final Map<String, Pattern> BOOK_PATTERN_CACHE = new HashMap<>();
+  private static final ConcurrentHashMap<String, Pattern> BOOK_PATTERN_CACHE = new ConcurrentHashMap<>();
 
   @Override
   public void execute() {
