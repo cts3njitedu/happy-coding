@@ -30,7 +30,7 @@ public class BibleController {
     try {
       return BibleResponse.builder()
           .reference(request.getReference())
-          .passage(bibleService.getPassages(request.getReference()))
+          .passages(bibleService.getPassages(request.getReference()))
           .build();
     } catch (Exception ex) {
       throw new ResponseStatusException(

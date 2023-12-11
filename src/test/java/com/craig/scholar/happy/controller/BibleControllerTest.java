@@ -30,7 +30,7 @@ class BibleControllerTest {
     BibleResponse response = bibleController.getPassages(BibleRequest.builder()
         .reference("referenceId")
         .build());
-    assertThat(response.getPassage()).isEqualTo("Bible verse");
+    assertThat(response.getPassages()).isEqualTo("Bible verse");
   }
 
   @Test

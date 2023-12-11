@@ -14,5 +14,5 @@ import lombok.experimental.FieldDefaults;
 public class BibleResponse {
 
   private String reference;
-  private String passage;
+  private String passages;
 }
