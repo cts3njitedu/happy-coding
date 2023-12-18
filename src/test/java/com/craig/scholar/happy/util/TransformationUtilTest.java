@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -205,5 +206,15 @@ public class TransformationUtilTest {
     for (int i = 0; i < expectedRotatedMatrices.size(); i++) {
       assertArrayEquals(expectedRotatedMatrices.get(i), rotateMatrices.get(i), "Unequal " + i);
     }
+  }
+
+  @Test
+  void testGetTransformationsBitSet() {
+    BitSet[] matrix = {
+        BitSet.valueOf(new byte[]{10}),
+        BitSet.valueOf(new byte[]{12}),
+        BitSet.valueOf(new byte[]{3})
+    };
+    System.out.println(getTransformations(matrix));
   }
 }

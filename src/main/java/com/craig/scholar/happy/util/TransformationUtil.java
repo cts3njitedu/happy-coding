@@ -2,6 +2,8 @@ package com.craig.scholar.happy.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +55,17 @@ public final class TransformationUtil {
     return rotate;
   }
 
+  public static List<String> getTransformations(List<Integer> rows) {
+    return getTransformations(rows.stream().mapToInt(Integer::intValue).toArray());
+  }
+
   public static List<String> getTransformations(int[] rows) {
+    return getTransformationsList(rows).stream()
+        .map(Arrays::toString)
+        .collect(Collectors.toList());
+  }
+
+  public static Collection<int[]> getTransformationsList(int[] rows) {
     int columns = getColumns(rows);
     Map<Integer, int[]> matrices = new HashMap<>(MAX_TRANSFORMATIONS);
     matrices.put(ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT, rows);
@@ -81,9 +93,59 @@ public final class TransformationUtil {
             rows.length - 1 - i));
       }
     }
-    return matrices.values().stream()
-        .map(Arrays::toString)
-        .collect(Collectors.toList());
+    return matrices.values();
+  }
+
+  public static List<BitSet[]> getTransformations(BitSet[] matrix) {
+    List<BitSet[]> matrices = new ArrayList<>(MAX_TRANSFORMATIONS);
+    int rows = matrix.length;
+    int columns = Arrays.stream(matrix)
+        .mapToInt(BitSet::length)
+        .max()
+        .orElse(0);
+    matrices.add(ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT, getBitSet(rows));
+    matrices.add(ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT, getBitSet(rows));
+    matrices.add(NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT, getBitSet(columns));
+    matrices.add(NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT, getBitSet(columns));
+    matrices.add(ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT, getBitSet(rows));
+    matrices.add(ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT, getBitSet(rows));
+    matrices.add(TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT, getBitSet(columns));
+    matrices.add(TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT, getBitSet(columns));
+
+    for (int r = 0; r < rows; r++) {
+      int i = r;
+      matrix[i].stream()
+          .forEach(j -> {
+            for (int t = 0; t < MAX_TRANSFORMATIONS; t++) {
+              if (t == ZERO_DEGREE_ROTATION_LEFT_TO_RIGHT) {
+                matrices.get(t)[i].set(j);
+              } else if (t == ZERO_DEGREE_ROTATION_RIGHT_TO_LEFT) {
+                matrices.get(t)[i].set(columns - 1 - j);
+              } else if (t == NINETY_DEGREE_ROTATION_LEFT_TO_RIGHT) {
+                matrices.get(t)[columns - 1 - j].set(i);
+              } else if (t == NINETY_DEGREE_ROTATION_RIGHT_TO_LEFT) {
+                matrices.get(t)[j].set(i);
+              } else if (t == ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_LEFT_TO_RIGHT) {
+                matrices.get(t)[rows - 1 - i].set(columns - 1 - j);
+              } else if (t == ONE_HUNDRED_EIGHTY_DEGREE_ROTATION_RIGHT_TO_LEFT) {
+                matrices.get(t)[rows - 1 - i].set(j);
+              } else if (t == TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_LEFT_TO_RIGHT) {
+                matrices.get(t)[j].set(rows - 1 - i);
+              } else if (t == TWO_HUNDRED_SEVENTY_DEGREE_ROTATION_RIGHT_TO_LEFT) {
+                matrices.get(t)[columns - 1 - j].set(rows - 1 - i);
+              }
+            }
+          });
+    }
+    return matrices;
+  }
+
+  private static BitSet[] getBitSet(int rows) {
+    BitSet[] bitSets = new BitSet[rows];
+    for (int i = 0; i < bitSets.length; i++) {
+      bitSets[i] = new BitSet();
+    }
+    return bitSets;
   }
 
   public static List<boolean[][]> getTransformations(boolean[][] matrix) {
