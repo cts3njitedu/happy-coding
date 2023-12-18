@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.craig.scholar.happy.service.codeexchange.EnumerateFreePolyominoes;
 import com.craig.scholar.happy.util.MatrixUtil;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -96,13 +95,9 @@ public class EnumerateFreePolyominoesTest {
 
   @Test
   void getNumberOfFreePolyominoesV10() {
-    List<BitSet[]> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV10(4);
-    polys.stream()
-        .forEach(poly -> {
-          for (int i = 0; i < poly.length; i++) {
-
-          }
-        });
+    List<EnumerateFreePolyominoesArgument> arguments = getEnumerateFreePolyominoesArguments();
+    arguments.forEach(argument -> assertThat(argument.expectedCount).isEqualTo(
+        enumerateFreePolyominoes.enumerateFreePolyominoesV10(argument.n).size()));
   }
 
   @NotNull
@@ -125,9 +120,9 @@ public class EnumerateFreePolyominoesTest {
   @Test
   void testEnumerateFreePolyominoes() {
     int n = 7;
-    Collection<String> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV7(n);
+    List<BitSet[]> polys = enumerateFreePolyominoes.enumerateFreePolyominoesV10(n);
 //    System.out.println(polys.size());
-    MatrixUtil.print4(n, polys, "[]");
+    MatrixUtil.printBitSet(n, polys, "[]");
   }
 
   @Test
