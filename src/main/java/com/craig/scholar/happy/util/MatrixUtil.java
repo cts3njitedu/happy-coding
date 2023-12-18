@@ -12,6 +12,7 @@ import static com.craig.scholar.happy.util.TransformationUtil.ZERO_DEGREE_ROTATI
 
 import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -150,6 +151,23 @@ public class MatrixUtil {
         System.out.println();
       }
       System.out.println("__________________");
+    });
+  }
+
+  public static void printBitSet(int n, List<BitSet[]> matrices, String trueFlag) {
+    printImage(n, matrices, matrix -> {
+      int columns = Arrays.stream(matrix)
+          .mapToInt(BitSet::length)
+          .max()
+          .orElse(0);
+      ;
+      for (BitSet r : matrix) {
+        for (int c = columns - 1; c >= 0; c--) {
+          System.out.print(r.get(c) ? trueFlag : " ".repeat(trueFlag.length()));
+        }
+        System.out.println();
+      }
+      System.out.println("_________________");
     });
   }
 
