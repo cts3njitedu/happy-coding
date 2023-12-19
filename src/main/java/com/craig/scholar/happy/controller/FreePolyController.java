@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/polyominoes")
+@RequestMapping("/poly")
 @Slf4j
 @RequiredArgsConstructor
 public class FreePolyController {
