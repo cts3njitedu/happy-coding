@@ -154,13 +154,12 @@ public class MatrixUtil {
     });
   }
 
-  public static void printBitSet(int n, List<BitSet[]> matrices, String trueFlag) {
+  public static void printBitSet(int n, Collection<BitSet[]> matrices, String trueFlag) {
     printImage(n, matrices, matrix -> {
       int columns = Arrays.stream(matrix)
           .mapToInt(BitSet::length)
           .max()
           .orElse(0);
-      ;
       for (BitSet r : matrix) {
         for (int c = columns - 1; c >= 0; c--) {
           System.out.print(r.get(c) ? trueFlag : " ".repeat(trueFlag.length()));
