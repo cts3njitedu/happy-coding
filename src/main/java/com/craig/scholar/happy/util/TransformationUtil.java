@@ -142,9 +142,7 @@ public final class TransformationUtil {
 
   private static BitSet[] getBitSet(int rows) {
     BitSet[] bitSets = new BitSet[rows];
-    for (int i = 0; i < bitSets.length; i++) {
-      bitSets[i] = new BitSet();
-    }
+    Arrays.setAll(bitSets, k -> new BitSet());
     return bitSets;
   }
 
