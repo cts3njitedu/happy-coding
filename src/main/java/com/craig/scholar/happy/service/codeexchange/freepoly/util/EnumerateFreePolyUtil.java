@@ -6,9 +6,11 @@ import static com.craig.scholar.happy.util.TransformationUtil.getTransformations
 
 import com.craig.scholar.happy.trie.MatrixTrie;
 import com.craig.scholar.happy.util.MatrixUtil;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class EnumerateFreePolyUtil {
 
@@ -68,5 +70,25 @@ public class EnumerateFreePolyUtil {
     return isExist;
   }
 
+  public static Collection<int[][]> getMatrices(Collection<int[]> matrices) {
+    return matrices.stream()
+        .map(EnumerateFreePolyUtil::getMatrix)
+        .collect(Collectors.toList());
+  }
+
+  private static int[][] getMatrix(int[] matrix) {
+    int columns = 0;
+    for (int row : matrix) {
+      columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
+    }
+    int[][] newMatrix = new int[matrix.length][columns];
+    for (int r = 0; r < matrix.length; r++) {
+      int row = matrix[r];
+      for (int c = columns - 1; c >= 0; c--) {
+        newMatrix[r][columns - 1 - c] = (row & (1 << c)) != 0 ? 1 : 0;
+      }
+    }
+    return newMatrix;
+  }
 
 }
