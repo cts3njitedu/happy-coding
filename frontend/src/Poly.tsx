@@ -17,8 +17,8 @@ class Poly extends React.Component<Props, State> {
 
     state = {
         numberOfBlocks: "",
-        svgWidth: "100",
-        svgHeight: "100",
+        svgWidth: "",
+        svgHeight: "",
         freePolys: [],
         blockSize: "50"
     }
@@ -91,18 +91,19 @@ class Poly extends React.Component<Props, State> {
                         {
                             this.state.freePolys.map((poly: number[][], index) => (
                                 <div key={index}>
-                                    <svg width={this.state.svgWidth} height={this.state.svgHeight} className="svgStyle">
+                                    <svg key = {index} width={this.state.svgWidth} height={this.state.svgHeight} className="svgStyle">
                                         {
                                             poly.map((row: number[], rowIndex) => (
                                                 row.map((col: number, colIndex: number) => (
                                                     col == 1 && <rect width={this.state.blockSize} height={this.state.blockSize}
                                                                 x={this.translateX(rowIndex, poly.length)} 
                                                                 y={this.translateY(colIndex, row.length)}
-                                                                fill="green" strokeWidth="3" stroke="rgb(0,0,0)" />
+                                                                fill="blue" strokeWidth="7" stroke="rgb(0,0,0)" />
                                                 ))
                                             ))
                                         }
                                     </svg>
+                                    <br/>
                                 </div>
 
                             ))

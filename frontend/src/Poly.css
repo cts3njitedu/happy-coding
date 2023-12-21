@@ -1,34 +1,47 @@
 .polyStyle {
-    display: 'flex';
+    display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex: flex-grow;
     width: 100vw;
     height: 100vh;
 }
 
 
 .headerStyle {
-    display: 'flex';
-    flex-direction: 'row';
-    justify-content: 'space-between';
-    flex: 'flex-grow';
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
     flex-basis: 5%;
-    width: 30%
+    background-color: rgb(1, 1, 12);
+    width: 100%;
 }
 
 .bodyStyle {
     display: flex;
-    background-color: #e3e8edd1;
-    padding: 10px;
+    background-color: lightcyan;
     flex-basis: 95%;
-    border: 1px solid black;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-evenly;
+    justify-content: flex-start;
 }
 
 .svgStyle {
-    border: 1px solid black;
     font-size: larger;
+}
+
+.headerStyle > label {
+    flex-basis: 60%;
+    color: yellow;
+    font-size: xx-large;
+}
+
+.headerStyle > label > input {
+    font-size: xx-large;
+    width: 50px;
+}
+
+.headerStyle > button {
+    flex-basis: 10%;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    background-color: lightblue;
 }
