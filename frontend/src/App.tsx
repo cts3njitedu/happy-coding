@@ -1,11 +1,11 @@
 import './App.css'
-import Poly from './Poly'
+import Polys from './Polys'
 
 function App() {
   return (
     <>
       <div>
-        <Poly />
+        <Polys />
       </div>
     </>
   )

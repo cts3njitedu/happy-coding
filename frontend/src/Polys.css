@@ -45,3 +45,7 @@
     font-family: Georgia, 'Times New Roman', Times, serif;
     background-color: lightblue;
 }
+
+svg > rect {
+    border-style: groove;
+}
