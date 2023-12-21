@@ -2,9 +2,11 @@ package com.craig.scholar.happy.controller;
 
 import com.craig.scholar.happy.model.FreePolyominoesResponse;
 import com.craig.scholar.happy.service.codeexchange.freepoly.EnumerateFreePolyServiceImpl;
+import com.craig.scholar.happy.service.codeexchange.freepoly.util.EnumerateFreePolyUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,11 +22,12 @@ public class FreePolyController {
     @NonNull
     private final EnumerateFreePolyServiceImpl enumerateFreePolyService;
 
+    @CrossOrigin(origins = "http://localhost:5173")
     @GetMapping("/enumerate/{n}")
     public @ResponseBody FreePolyominoesResponse enumerate(@PathVariable Integer n) {
         log.info("Enumerate polyominoes with {} blocks", n);
         return FreePolyominoesResponse.builder()
-            .polys(enumerateFreePolyService.enumerate(n))
+            .polys(EnumerateFreePolyUtil.getMatrices(enumerateFreePolyService.enumerate(n)))
                 .build();
     }
 
