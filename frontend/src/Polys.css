@@ -26,6 +26,11 @@
 
 .svgClass {
     font-size: larger;
+    /* -webkit-animation: spin1 10s infinite linear;
+    -moz-animation: spin1 10s infinite linear;
+    -o-animation: spin1 10s infinite linear;
+    -ms-animation: spin1 10s infinite linear;
+    animation: spin1 10s infinite linear; */
 }
 
 .headerClass>label {
@@ -45,14 +50,20 @@
     background-color: lightblue;
 }
 
- .rectClass {
+/*.rectClass {
     /* animation: rotation 2s infinite linear; */
-    /* fill: blue */
-}
+    /* fill: blue
+    -webkit-animation: spin1 2s infinite linear;
+    -moz-animation: spin1 2s infinite linear;
+    -o-animation: spin1 2s infinite linear;
+    -ms-animation: spin1 2s infinite linear;
+    animation: spin1 2s infinite linear;
+    display: block;
+}*/
 
-/*
 
-@keyframes rotation {
+
+ @keyframes rotation {
     from {
         transform: rotate(0deg);
     }
@@ -60,13 +71,69 @@
     to {
         transform: rotate(359deg);
     }
-} */
+}
+
+@-webkit-keyframes spin1 {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@-moz-keyframes spin1 {
+    0% {
+        -moz-transform: rotate(0deg);
+    }
+
+    100% {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-o-keyframes spin1 {
+    0% {
+        -o-transform: rotate(0deg);
+    }
+
+    100% {
+        -o-transform: rotate(360deg);
+    }
+}
+
+@-ms-keyframes spin1 {
+    0% {
+        -ms-transform: rotate(0deg);
+    }
+
+    100% {
+        -ms-transform: rotate(360deg);
+    }
+}
+
+@-keyframes spin1 {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
 
 .polyDiv {
     display: flex;
     justify-content: flex-start;
     border: 1px solid black;
     flex-direction: column;
+}
+
+.polyDiv>div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
 }
 
 .subHeaderClass {

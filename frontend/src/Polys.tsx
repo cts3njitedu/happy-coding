@@ -1,4 +1,4 @@
-import React, { MouseEvent, FormEvent, useState, useEffect } from "react";
+import React, { MouseEvent, FormEvent, useState, useRef } from "react";
 import './Polys.css'
 
 type Props = {
@@ -121,6 +121,10 @@ const divKey = (numberOfBlocks: string, polyIndex: number) => {
     return [numberOfBlocks, polyIndex].toString();
 }
 
+const svgKey = (divKey: string) => {
+    return ["svg", divKey].toString();
+}
+
 function PolyBody(props: any) {
     return (
         <>
@@ -147,17 +151,25 @@ function Poly(props: any) {
     const blockSize = parseInt(props.blockSize);
     const index = props.index;
     const divStyle = {
-        height: svgHeight * 1.20
+        height: svgHeight * 1.5
     }
     const poly: number[][] = props.poly;
     const [fill, setFill] = useState(genHexString());
+    const [svgRotate, setSvgRotate] = useState("rotate(0)");
+    const [degree, setDegree] = useState(0);
+    const svgKeyRef = useRef(null);
     const handleChangeColor = (e: FormEvent<HTMLInputElement>): void => {
         setFill(e.currentTarget.value)
+    }
+    const handleRotate = (): void => {
+        let deg = (degree + 90) % 360;
+        setDegree(deg)
+        setSvgRotate("rotate(" + deg + ")");
     }
     return (
         <>
             <div className="polyDiv" style={divStyle}>
-                <svg width={svgWidth} height={svgHeight} className="svgClass">
+                <svg ref={svgKeyRef} id={svgKey(divKey(props.numberOfBlocks, index))} width={svgWidth} height={svgHeight} className="svgClass" transform={svgRotate}>
                     {
                         poly.map((row: number[], rowIndex) => (
                             row.map((col: number, colIndex: number) => (
@@ -167,12 +179,18 @@ function Poly(props: any) {
                                     height={props.blockSize}
                                     x={translate(rowIndex, poly.length, svgWidth, blockSize)}
                                     y={translate(colIndex, row.length, svgHeight, blockSize)}
-                                    fill={fill} strokeWidth="10" stroke="rgb(0,0,0)" className="rectClass" />
+                                    fill={fill} 
+                                    strokeWidth="10" 
+                                    stroke="rgb(0,0,0)" 
+                                    className="rectClass" />
                             ))
                         ))
                     }
                 </svg>
-                <input type="color" defaultValue={fill} onChange={handleChangeColor}></input>
+                <div>
+                    <input type="color" defaultValue={fill} onChange={handleChangeColor}></input>
+                    <button onClick={handleRotate}>Rotate</button>
+                </div>
             </div>
         </>
     )
