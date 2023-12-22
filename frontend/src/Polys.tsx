@@ -51,7 +51,7 @@ class Polys extends React.Component<Props, State> {
     render() {
         return (
             <>
-                <div className="polyStyle">
+                <div className="polyClass">
                     <PolyHead handleClick={this.handleClick} inputDisabled={this.state.inputDisabled} />
                     <PolySubHead
                         numberOfBlocks={this.state.numberOfBlocks}
@@ -93,7 +93,7 @@ function PolyHead(props: any) {
     }
     return (
         <>
-            <div className="headerStyle">
+            <div className="headerClass">
                 <label>
                     Number Of Blocks:
                     <input type="text" value={numberOfBlocks} onChange={handleChange}></input>
@@ -117,39 +117,75 @@ const cellKey = (polyIndex: number, rowIndex: number, colIndex: number) => {
     return [polyIndex, rowIndex, colIndex].toString();
 }
 
+const divKey = (numberOfBlocks: string, polyIndex: number) => {
+    return [numberOfBlocks, polyIndex].toString();
+}
+
 function PolyBody(props: any) {
-    const svgWidth = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
-    const svgHeight = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
-    const blockSize = parseInt(props.blockSize);
     return (
         <>
-            <div className="bodyStyle">
+            <div className="bodyClass">
                 {
                     props.freePolys.map((poly: number[][], index: number) => (
-                        <div key={index}>
-                            <svg key={index} width={svgWidth} height={svgHeight} className="svgStyle">
-                                {
-                                    poly.map((row: number[], rowIndex) => (
-                                        row.map((col: number, colIndex: number) => (
-                                            col == 1 && <rect key={cellKey(index, rowIndex, colIndex)} width={props.blockSize} height={props.blockSize}
-                                                x={translate(rowIndex, poly.length, svgWidth, blockSize)}
-                                                y={translate(colIndex, row.length, svgHeight, blockSize)}
-                                                fill="blue" strokeWidth="7" stroke="rgb(0,0,0)" />
-                                        ))
-                                    ))
-                                }
-                            </svg>
-
-                        </div>
+                        <Poly
+                            key = {divKey(props.numberOfBlocks, index)}
+                            blockSize={props.blockSize}
+                            numberOfBlocks={props.numberOfBlocks}
+                            poly={poly}
+                            index={index}
+                        />
                     ))
                 }
             </div>
         </>
     )
+}
 
+function Poly(props: any) {
+    const svgWidth = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
+    const svgHeight = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
+    const blockSize = parseInt(props.blockSize);
+    const index = props.index;
+    const divStyle = {
+        height: svgHeight * 1.20
+    }
+    const poly: number[][] = props.poly;
+    const [fill, setFill] = useState(genHexString());
+    const handleChangeColor = (e: FormEvent<HTMLInputElement>): void => {
+        setFill(e.currentTarget.value)
+    }
+    return (
+        <>
+            <div className="polyDiv" style={divStyle}>
+                <svg width={svgWidth} height={svgHeight} className="svgClass">
+                    {
+                        poly.map((row: number[], rowIndex) => (
+                            row.map((col: number, colIndex: number) => (
+                                col == 1 && <rect
+                                    key={cellKey(index, rowIndex, colIndex)}
+                                    width={props.blockSize}
+                                    height={props.blockSize}
+                                    x={translate(rowIndex, poly.length, svgWidth, blockSize)}
+                                    y={translate(colIndex, row.length, svgHeight, blockSize)}
+                                    fill={fill} strokeWidth="10" stroke="rgb(0,0,0)" className="rectClass" />
+                            ))
+                        ))
+                    }
+                </svg>
+                <input type="color" defaultValue={fill} onChange={handleChangeColor}></input>
+            </div>
+        </>
+    )
 
+}
 
-
+const genHexString = () => {
+    const hex = '0123456789ABCDEF';
+    let output: string = '#';
+    for (let i = 1; i <= 6; i++) {
+        output += hex.charAt(Math.floor(Math.random() * hex.length));
+    }
+    return output;
 }
 
 export default Polys;

@@ -1,4 +1,4 @@
-.polyStyle {
+.polyClass {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -7,7 +7,7 @@
 }
 
 
-.headerStyle {
+.headerClass {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
@@ -16,38 +16,57 @@
     width: 100%;
 }
 
-.bodyStyle {
+.bodyClass {
     display: flex;
     background-color: lightcyan;
     flex-basis: 95%;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-flow: row wrap;
     justify-content: flex-start;
 }
 
-.svgStyle {
+.svgClass {
     font-size: larger;
 }
 
-.headerStyle > label {
+.headerClass>label {
     flex-basis: 60%;
     color: yellow;
     font-size: xx-large;
 }
 
-.headerStyle > label > input {
+.headerClass>label>input {
     font-size: xx-large;
     width: 50px;
 }
 
-.headerStyle > button {
+.headerClass>button {
     flex-basis: 10%;
     font-family: Georgia, 'Times New Roman', Times, serif;
     background-color: lightblue;
 }
 
-svg > rect {
-    border-style: groove;
+ .rectClass {
+    /* animation: rotation 2s infinite linear; */
+    /* fill: blue */
+}
+
+/*
+
+@keyframes rotation {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(359deg);
+    }
+} */
+
+.polyDiv {
+    display: flex;
+    justify-content: flex-start;
+    border: 1px solid black;
+    flex-direction: column;
 }
 
 .subHeaderClass {
@@ -57,7 +76,7 @@ svg > rect {
     justify-content: space-between;
 }
 
-.subHeaderClass > p {
+.subHeaderClass>p {
     font-size: xx-large;
     color: darkblue;
     font-style: oblique;
