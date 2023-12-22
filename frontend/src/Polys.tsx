@@ -1,15 +1,14 @@
-import React, { MouseEvent, FormEvent } from "react";
+import React, { MouseEvent, FormEvent, useState, useEffect } from "react";
 import './Polys.css'
 
 type Props = {
 };
 type State = {
-    numberOfBlocks: string;
-    numberOfBlocksInput: string;
-    svgWidth: string;
-    svgHeight: string;
     freePolys: number[][][];
+    numberOfBlocks: string;
+    numberOfPolys: string;
     blockSize: string;
+    inputDisabled: boolean;
 };
 
 const POLY_ENDPOINT: string = 'http://localhost:8080/poly/enumerate/';
@@ -17,21 +16,15 @@ const POLY_ENDPOINT: string = 'http://localhost:8080/poly/enumerate/';
 class Polys extends React.Component<Props, State> {
 
     state = {
-        numberOfBlocks: "",
-        svgWidth: "",
-        svgHeight: "",
         freePolys: [],
         blockSize: "50",
-        numberOfBlocksInput: ""
+        numberOfBlocks: "",
+        numberOfPolys: "",
+        inputDisabled: false
     }
-    handleChange = (e: FormEvent<HTMLInputElement>): void => {
-        this.setState({ numberOfBlocksInput: e.currentTarget.value });
 
-    };
-
-    handleClick = (e: MouseEvent<HTMLButtonElement>): void => {
-        e.preventDefault();
-        fetch(POLY_ENDPOINT + this.state.numberOfBlocksInput, {
+    handleClick = (numberOfBlocks: number): void => {
+        fetch(POLY_ENDPOINT + numberOfBlocks, {
             method: "GET",
             mode: "cors",
             headers: {
@@ -42,29 +35,33 @@ class Polys extends React.Component<Props, State> {
             .then((data) => {
                 this.setState({
                     freePolys: data.polys,
-                    numberOfBlocks: this.state.numberOfBlocksInput
-
+                    numberOfBlocks: data.numberOfBlocks,
+                    numberOfPolys: data.numberOfPolys
                 })
             })
             .catch((err) => {
                 console.log(err.message);
             });
     }
+    enableInput = (): void => {
+        this.setState({
+            inputDisabled: false
+        })
+    }
     render() {
         return (
             <>
                 <div className="polyStyle">
-                    <div className="headerStyle">
-                        <label>
-                            Number Of Blocks:
-                            <input type="text" value={this.state.numberOfBlocksInput} onChange={this.handleChange}></input>
-                        </label>
-                        <button onClick={this.handleClick}>Enumerate</button>
-                    </div>
+                    <PolyHead handleClick={this.handleClick} inputDisabled={this.state.inputDisabled} />
+                    <PolySubHead
+                        numberOfBlocks={this.state.numberOfBlocks}
+                        numberOfPolys={this.state.numberOfPolys} />
                     <PolyBody
                         blockSize={this.state.blockSize}
                         freePolys={this.state.freePolys}
-                        numberOfBlocks={this.state.numberOfBlocks} />
+                        numberOfBlocks={this.state.numberOfBlocks}
+                        numberOfPolys={this.state.numberOfPolys}
+                        enableInput={this.enableInput} />
                 </div>
             </>
         )
@@ -72,8 +69,40 @@ class Polys extends React.Component<Props, State> {
 
 }
 
+function PolySubHead(props: any) {
+    const isDisplay = props.numberOfBlocks && props.numberOfPolys;
+    return (
+        <>
+            {isDisplay && <div className="subHeaderClass">
+                <p>Number Of Blocks: {props.numberOfBlocks}</p>
+                <p>Number Of Free Polyominoes: {props.numberOfPolys}</p>
+            </div>}
+        </>
+    )
+}
 
-
+function PolyHead(props: any) {
+    const [numberOfBlocks, setNumberOfBlocks] = useState("");
+    const handleChange = (e: FormEvent<HTMLInputElement>): void => {
+        setNumberOfBlocks(e.currentTarget.value);
+    }
+    const handleClick = (e: MouseEvent<HTMLButtonElement>): void => {
+        e.preventDefault();
+        setNumberOfBlocks("");
+        props.handleClick(numberOfBlocks);
+    }
+    return (
+        <>
+            <div className="headerStyle">
+                <label>
+                    Number Of Blocks:
+                    <input type="text" value={numberOfBlocks} onChange={handleChange}></input>
+                </label>
+                <button onClick={handleClick}>Enumerate</button>
+            </div>
+        </>
+    )
+}
 
 const translate = (i: number, size: number, dimension: number, blockSize: number) => {
     let iMid = Math.floor(size / 2);
@@ -82,6 +111,10 @@ const translate = (i: number, size: number, dimension: number, blockSize: number
     } else {
         return dimension / 2 + (i - iMid) * blockSize
     }
+}
+
+const cellKey = (polyIndex: number, rowIndex: number, colIndex: number) => {
+    return [polyIndex, rowIndex, colIndex].toString();
 }
 
 function PolyBody(props: any) {
@@ -98,7 +131,7 @@ function PolyBody(props: any) {
                                 {
                                     poly.map((row: number[], rowIndex) => (
                                         row.map((col: number, colIndex: number) => (
-                                            col == 1 && <rect width={props.blockSize} height={props.blockSize}
+                                            col == 1 && <rect key={cellKey(index, rowIndex, colIndex)} width={props.blockSize} height={props.blockSize}
                                                 x={translate(rowIndex, poly.length, svgWidth, blockSize)}
                                                 y={translate(colIndex, row.length, svgHeight, blockSize)}
                                                 fill="blue" strokeWidth="7" stroke="rgb(0,0,0)" />

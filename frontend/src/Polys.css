@@ -49,3 +49,16 @@
 svg > rect {
     border-style: groove;
 }
+
+.subHeaderClass {
+    display: flex;
+    flex-direction: row;
+    width: 70%;
+    justify-content: space-between;
+}
+
+.subHeaderClass > p {
+    font-size: xx-large;
+    color: darkblue;
+    font-style: oblique;
+}
