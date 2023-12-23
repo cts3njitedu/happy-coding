@@ -18,10 +18,10 @@
 
 .bodyClass {
     display: flex;
-    background-color: lightcyan;
+    /* background-color: lightcyan; */
     flex-basis: 95%;
     flex-flow: row wrap;
-    justify-content: flex-start;
+    justify-content: center;
 }
 
 .svgClass {
@@ -52,7 +52,7 @@
 
 /*.rectClass {
     /* animation: rotation 2s infinite linear; */
-    /* fill: blue
+/* fill: blue
     -webkit-animation: spin1 2s infinite linear;
     -moz-animation: spin1 2s infinite linear;
     -o-animation: spin1 2s infinite linear;
@@ -63,7 +63,7 @@
 
 
 
- @keyframes rotation {
+@keyframes rotation {
     from {
         transform: rotate(0deg);
     }
@@ -125,22 +125,44 @@
 
 .polyDiv {
     display: flex;
-    justify-content: flex-start;
-    border: 1px solid black;
+    justify-content: space-between;
+    border: 5px dashed black;
     flex-direction: column;
+    background-color: tan;
 }
 
 .polyDiv>div {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: flex-end;
+    flex-grow: 1;
+    flex-basis: 15%;
+}
+
+.polyDiv>div>div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.polyDiv>div>input {
+    width: 50%;
+    font-size: x-large;
+}
+
+.polyDiv>div>div>button {
+    font-size: small;
+    color: yellow;
+    font-style: unset;
+    background-color: black;
+    flex-grow: 1;
 }
 
 .subHeaderClass {
     display: flex;
     flex-direction: row;
-    width: 70%;
-    justify-content: space-between;
+    width: 100%;
+    justify-content: space-around;
 }
 
 .subHeaderClass>p {

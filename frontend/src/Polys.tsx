@@ -1,4 +1,6 @@
 import React, { MouseEvent, FormEvent, useState, useRef } from "react";
+import { GrRotateRight } from "react-icons/gr";
+import { TbFlipHorizontal, TbFlipVertical } from "react-icons/tb";
 import './Polys.css'
 
 type Props = {
@@ -113,7 +115,7 @@ const translate = (i: number, size: number, dimension: number, blockSize: number
     }
 }
 
-const cellKey = (polyIndex: number, rowIndex: number, colIndex: number) => {
+const cellKey = (numberOfBlocks: string, polyIndex: number, rowIndex: number, colIndex: number) => {
     return [polyIndex, rowIndex, colIndex].toString();
 }
 
@@ -132,7 +134,7 @@ function PolyBody(props: any) {
                 {
                     props.freePolys.map((poly: number[][], index: number) => (
                         <Poly
-                            key = {divKey(props.numberOfBlocks, index)}
+                            key={divKey(props.numberOfBlocks, index)}
                             blockSize={props.blockSize}
                             numberOfBlocks={props.numberOfBlocks}
                             poly={poly}
@@ -151,20 +153,44 @@ function Poly(props: any) {
     const blockSize = parseInt(props.blockSize);
     const index = props.index;
     const divStyle = {
-        height: svgHeight * 1.5
+        height: svgHeight * 1.2,
+        width: svgWidth
     }
     const poly: number[][] = props.poly;
     const [fill, setFill] = useState(genHexString());
-    const [svgRotate, setSvgRotate] = useState("rotate(0)");
+    const [svgRotate, setSvgRotate] = useState("rotate(0), scale(1,1)");
     const [degree, setDegree] = useState(0);
+    const [scaleX, setScaleX] = useState(1);
+    const [scaleY, setScaleY] = useState(1);
     const svgKeyRef = useRef(null);
+    const FLIP_HORIZONTALLY = "flipHorizontally";
+    const FLIP_VERTICALLY = "flipVeritcally";
     const handleChangeColor = (e: FormEvent<HTMLInputElement>): void => {
         setFill(e.currentTarget.value)
     }
     const handleRotate = (): void => {
         let deg = (degree + 90) % 360;
         setDegree(deg)
-        setSvgRotate("rotate(" + deg + ")");
+        setSvgRotate("rotate(" + deg + ") " + "scale(" + scaleX + "," + scaleY + ")");
+    }
+    const handleFlipHorizontally = (): void => {
+        let sy = -1 * scaleY;
+        setScaleY(sy);
+        setSvgRotate("rotate(" + degree + ") " + "scale(" + scaleX + "," + sy + ")");
+    }
+    const handleFlipVertically = (): void => {
+        let sx = -1 * scaleX;
+        setScaleX(sx);
+        setSvgRotate("rotate(" + degree + ") " + "scale(" + sx + "," + scaleY + ")");
+
+    }
+    const handleFlip = (e: MouseEvent<HTMLButtonElement>): void => {
+        if (FLIP_HORIZONTALLY == e.target.name && (degree == 0 || degree == 180)
+            || FLIP_VERTICALLY == e.target.name && (degree != 0 && degree != 180)) {
+            handleFlipHorizontally();
+        } else {
+            handleFlipVertically();
+        }
     }
     return (
         <>
@@ -174,14 +200,14 @@ function Poly(props: any) {
                         poly.map((row: number[], rowIndex) => (
                             row.map((col: number, colIndex: number) => (
                                 col == 1 && <rect
-                                    key={cellKey(index, rowIndex, colIndex)}
+                                    key={cellKey(props.numberOfBlocks, index, rowIndex, colIndex)}
                                     width={props.blockSize}
                                     height={props.blockSize}
                                     x={translate(rowIndex, poly.length, svgWidth, blockSize)}
                                     y={translate(colIndex, row.length, svgHeight, blockSize)}
-                                    fill={fill} 
-                                    strokeWidth="10" 
-                                    stroke="rgb(0,0,0)" 
+                                    fill={fill}
+                                    strokeWidth="10"
+                                    stroke="rgb(0,0,0)"
                                     className="rectClass" />
                             ))
                         ))
@@ -189,7 +215,11 @@ function Poly(props: any) {
                 </svg>
                 <div>
                     <input type="color" defaultValue={fill} onChange={handleChangeColor}></input>
-                    <button onClick={handleRotate}>Rotate</button>
+                    {props.numberOfBlocks != "1" &&<div>
+                        <button onClick={handleRotate}><GrRotateRight/></button>
+                        {/* <button name={FLIP_VERTICALLY} onClick={handleFlip}><TbFlipVertical/></button>
+                        <button name={FLIP_HORIZONTALLY} onClick={handleFlip}><TbFlipHorizontal/></button> */}
+                    </div>}
                 </div>
             </div>
         </>
