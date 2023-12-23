@@ -16,4 +16,10 @@ public class FreePolyominoesResponse {
 
     @NonNull
     Collection<?> polys;
+
+    @NonNull
+    Integer numberOfBlocks;
+
+    @NonNull
+    Integer numberOfPolys;
 }
