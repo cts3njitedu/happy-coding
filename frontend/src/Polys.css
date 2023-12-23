@@ -63,7 +63,7 @@
 
 
 
-@keyframes rotation {
+/* @keyframes rotation {
     from {
         transform: rotate(0deg);
     }
@@ -71,9 +71,9 @@
     to {
         transform: rotate(359deg);
     }
-}
+} */
 
-@-webkit-keyframes spin1 {
+/* @-webkit-keyframes spin1 {
     0% {
         -webkit-transform: rotate(0deg);
     }
@@ -121,7 +121,7 @@
     100% {
         transform: rotate(360deg);
     }
-}
+} */
 
 .polyDiv {
     display: flex;

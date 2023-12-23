@@ -26,8 +26,15 @@ class Polys extends React.Component<Props, State> {
         inputDisabled: false,
         polyId: ""
     }
-
     handleClick = (numberOfBlocks: number): void => {
+        this.setState({
+            freePolys: [],
+            blockSize: "50",
+            numberOfBlocks: "",
+            numberOfPolys: "",
+            inputDisabled: true,
+            polyId: ""
+        })
         fetch(POLY_ENDPOINT + numberOfBlocks, {
             method: "GET",
             mode: "cors",
@@ -41,7 +48,8 @@ class Polys extends React.Component<Props, State> {
                     polyId: crypto.randomUUID(),
                     freePolys: data.polys,
                     numberOfBlocks: data.numberOfBlocks,
-                    numberOfPolys: data.numberOfPolys
+                    numberOfPolys: data.numberOfPolys,
+                    inputDisabled: false
                 })
             })
             .catch((err) => {
@@ -102,9 +110,9 @@ function PolyHead(props: any) {
             <div className="headerClass">
                 <label>
                     Number Of Blocks:
-                    <input type="text" value={numberOfBlocks} onChange={handleChange}></input>
+                    <input type="text" disabled={props.inputDisabled} value={numberOfBlocks} onChange={handleChange}></input>
                 </label>
-                <button onClick={handleClick}>Enumerate</button>
+                <button disabled={props.inputDisabled} onClick={handleClick}>Enumerate</button>
             </div>
         </>
     )
@@ -235,7 +243,7 @@ function Poly(props: any) {
                     {props.numberOfBlocks != "1" && <div>
                         <button onClick={handleRotate}><GrRotateRight /></button>
                         <button onClick={handleFlipVertically}><TbFlipVertical /></button>
-                        <button onClick={handleFlipHorizontally}><TbFlipHorizontal/></button>
+                        <button onClick={handleFlipHorizontally}><TbFlipHorizontal /></button>
                     </div>}
                 </div>
             </div>
