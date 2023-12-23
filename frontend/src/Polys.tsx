@@ -11,6 +11,7 @@ type State = {
     numberOfPolys: string;
     blockSize: string;
     inputDisabled: boolean;
+    polyId: any;
 };
 
 const POLY_ENDPOINT: string = 'http://localhost:8080/poly/enumerate/';
@@ -22,7 +23,8 @@ class Polys extends React.Component<Props, State> {
         blockSize: "50",
         numberOfBlocks: "",
         numberOfPolys: "",
-        inputDisabled: false
+        inputDisabled: false,
+        polyId: ""
     }
 
     handleClick = (numberOfBlocks: number): void => {
@@ -36,6 +38,7 @@ class Polys extends React.Component<Props, State> {
             .then((response) => response.json())
             .then((data) => {
                 this.setState({
+                    polyId: crypto.randomUUID(),
                     freePolys: data.polys,
                     numberOfBlocks: data.numberOfBlocks,
                     numberOfPolys: data.numberOfPolys
@@ -63,6 +66,7 @@ class Polys extends React.Component<Props, State> {
                         freePolys={this.state.freePolys}
                         numberOfBlocks={this.state.numberOfBlocks}
                         numberOfPolys={this.state.numberOfPolys}
+                        polyId={this.state.polyId}
                         enableInput={this.enableInput} />
                 </div>
             </>
@@ -115,12 +119,12 @@ const translate = (i: number, size: number, dimension: number, blockSize: number
     }
 }
 
-const cellKey = (numberOfBlocks: string, polyIndex: number, rowIndex: number, colIndex: number) => {
-    return [polyIndex, rowIndex, colIndex].toString();
+const cellKey = (polyId: any, numberOfBlocks: string, polyIndex: number, rowIndex: number, colIndex: number) => {
+    return [polyId, numberOfBlocks, polyIndex, rowIndex, colIndex].toString();
 }
 
-const divKey = (numberOfBlocks: string, polyIndex: number) => {
-    return [numberOfBlocks, polyIndex].toString();
+const divKey = (polyId: any, numberOfBlocks: string, polyIndex: number) => {
+    return [polyId, numberOfBlocks, polyIndex].toString();
 }
 
 const svgKey = (divKey: string) => {
@@ -134,11 +138,12 @@ function PolyBody(props: any) {
                 {
                     props.freePolys.map((poly: number[][], index: number) => (
                         <Poly
-                            key={divKey(props.numberOfBlocks, index)}
+                            key={divKey(props.polyId, props.numberOfBlocks, index)}
                             blockSize={props.blockSize}
                             numberOfBlocks={props.numberOfBlocks}
                             poly={poly}
                             index={index}
+                            polyId={props.polyId}
                         />
                     ))
                 }
@@ -163,8 +168,6 @@ function Poly(props: any) {
     const [scaleX, setScaleX] = useState(1);
     const [scaleY, setScaleY] = useState(1);
     const svgKeyRef = useRef(null);
-    const FLIP_HORIZONTALLY = "flipHorizontally";
-    const FLIP_VERTICALLY = "flipVeritcally";
     const handleChangeColor = (e: FormEvent<HTMLInputElement>): void => {
         setFill(e.currentTarget.value)
     }
@@ -173,34 +176,48 @@ function Poly(props: any) {
         setDegree(deg)
         setSvgRotate("rotate(" + deg + ") " + "scale(" + scaleX + "," + scaleY + ")");
     }
-    const handleFlipHorizontally = (): void => {
+    const handleFlipY = (): void => {
         let sy = -1 * scaleY;
         setScaleY(sy);
-        setSvgRotate("rotate(" + degree + ") " + "scale(" + scaleX + "," + sy + ")");
+        setSvgRotate("rotate(" + degree + "), " + "scale(" + scaleX + "," + sy + ")");
     }
-    const handleFlipVertically = (): void => {
+    const handleFlipX = (): void => {
         let sx = -1 * scaleX;
         setScaleX(sx);
-        setSvgRotate("rotate(" + degree + ") " + "scale(" + sx + "," + scaleY + ")");
+        setSvgRotate("rotate(" + degree + "), " + "scale(" + sx + "," + scaleY + ")");
 
     }
-    const handleFlip = (e: MouseEvent<HTMLButtonElement>): void => {
-        if (FLIP_HORIZONTALLY == e.target.name && (degree == 0 || degree == 180)
-            || FLIP_VERTICALLY == e.target.name && (degree != 0 && degree != 180)) {
-            handleFlipHorizontally();
+    const handleFlipVertically = (e: MouseEvent<HTMLButtonElement>): void => {
+        e.preventDefault();
+        if (degree == 0 || degree == 180) {
+            handleFlipX();
         } else {
-            handleFlipVertically();
+            handleFlipY();
+        }
+    }
+    const handleFlipHorizontally = (e: MouseEvent<HTMLButtonElement>): void => {
+        e.preventDefault();
+        if (degree == 0 || degree == 180) {
+            handleFlipY();
+        } else {
+            handleFlipX();
         }
     }
     return (
         <>
             <div className="polyDiv" style={divStyle}>
-                <svg ref={svgKeyRef} id={svgKey(divKey(props.numberOfBlocks, index))} width={svgWidth} height={svgHeight} className="svgClass" transform={svgRotate}>
+                <svg
+                    ref={svgKeyRef}
+                    id={svgKey(divKey(props.polyId, props.numberOfBlocks, index))}
+                    width={svgWidth} height={svgHeight}
+                    className="svgClass"
+                    transform={svgRotate}
+                    transform-origin="center">
                     {
                         poly.map((row: number[], rowIndex) => (
                             row.map((col: number, colIndex: number) => (
                                 col == 1 && <rect
-                                    key={cellKey(props.numberOfBlocks, index, rowIndex, colIndex)}
+                                    key={cellKey(props.polyId, props.numberOfBlocks, index, rowIndex, colIndex)}
                                     width={props.blockSize}
                                     height={props.blockSize}
                                     x={translate(rowIndex, poly.length, svgWidth, blockSize)}
@@ -215,10 +232,10 @@ function Poly(props: any) {
                 </svg>
                 <div>
                     <input type="color" defaultValue={fill} onChange={handleChangeColor}></input>
-                    {props.numberOfBlocks != "1" &&<div>
-                        <button onClick={handleRotate}><GrRotateRight/></button>
-                        {/* <button name={FLIP_VERTICALLY} onClick={handleFlip}><TbFlipVertical/></button>
-                        <button name={FLIP_HORIZONTALLY} onClick={handleFlip}><TbFlipHorizontal/></button> */}
+                    {props.numberOfBlocks != "1" && <div>
+                        <button onClick={handleRotate}><GrRotateRight /></button>
+                        <button onClick={handleFlipVertically}><TbFlipVertical /></button>
+                        <button onClick={handleFlipHorizontally}><TbFlipHorizontal/></button>
                     </div>}
                 </div>
             </div>

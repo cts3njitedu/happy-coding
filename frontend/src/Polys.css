@@ -128,7 +128,7 @@
     justify-content: space-between;
     border: 5px dashed black;
     flex-direction: column;
-    background-color: tan;
+    background-color:lightskyblue;
 }
 
 .polyDiv>div {
