@@ -1,7 +1,7 @@
 import React, { MouseEvent, FormEvent, useState, useRef, useEffect } from "react";
 import { GrRotateRight } from "react-icons/gr";
 import { TbFlipHorizontal, TbFlipVertical } from "react-icons/tb";
-import './Polys.css'
+import './Polys.scss'
 import ReactPaginate from "react-paginate";
 
 type Props = {
@@ -181,7 +181,7 @@ function PolyBody(props: any) {
     useEffect(() => {
         setPagination((prevState) => ({
             ...prevState,
-            pageCount: prevState.data.length / prevState.numberPerPage,
+            pageCount: Math.ceil(prevState.data.length / prevState.numberPerPage),
             currentData: prevState.data.slice(pagination.offset, pagination.offset + pagination.numberPerPage)
         }))
     }, [pagination.numberPerPage, pagination.offset])
@@ -194,8 +194,8 @@ function PolyBody(props: any) {
         <>
             <div className="polyPagination">
                 {pagination.currentData.length != 0 && <ReactPaginate
-                    previousLabel={'previous'}
-                    nextLabel={'next'}
+                    previousLabel={'Prev'}
+                    nextLabel={'Next'}
                     breakLabel={'...'}
                     pageCount={pagination.pageCount}
                     marginPagesDisplayed={2}
@@ -204,6 +204,8 @@ function PolyBody(props: any) {
                     containerClassName={'pagination'}
                     activeClassName={'paginationActive'}
                     pageClassName={'paginationPage'}
+                    nextClassName={'paginationNext'}
+                    previousClassName={'paginationPrevious'}
                 />}
             </div>
 

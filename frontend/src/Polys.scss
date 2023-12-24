@@ -12,20 +12,49 @@
     flex-direction: row;
 }
 
-.polyPagination>.pagination {
-    width: 100%;
+.pagination {
+    width: 95%;
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     flex-direction: row;
+    list-style-type: none;
+}
+
+@mixin paginationMixin {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+@mixin paginationNextAndPrevious {
+    @include paginationMixin;
+    flex-basis: 5%;
+    border: 1px solid black;
+}
+
+.paginationNext {
+    @include paginationNextAndPrevious;
+    margin-left: 2%;
+}
+
+.paginationPrevious {
+    @include paginationNextAndPrevious;
+    margin-right: 2%;
+}
+
+
+.paginationActive {
+    background-color: lightblue;
+    border: 5px solid black !important;
 }
 
 .paginationActive>a {
-    color: yellow !important
+    color: black;
 }
 
 .paginationPage {
+    @include paginationMixin();
     border: 1px solid black;
-    background-color: blue;
+    flex-basis: 90%;
 }
 
 
@@ -150,7 +179,7 @@
     justify-content: space-between;
     border: 5px dashed black;
     flex-direction: column;
-    background-color:lightskyblue;
+    background-color: lightskyblue;
 }
 
 .polyDiv>div {
