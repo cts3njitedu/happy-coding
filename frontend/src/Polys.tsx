@@ -1,11 +1,9 @@
-import React, { MouseEvent, FormEvent, useState, useRef, useEffect } from "react";
+import { MouseEvent, FormEvent, useState, useRef, useEffect } from "react";
 import { GrRotateRight } from "react-icons/gr";
 import { TbFlipHorizontal, TbFlipVertical } from "react-icons/tb";
 import './Polys.scss'
 import ReactPaginate from "react-paginate";
 
-type Props = {
-};
 type State = {
     freePolys: number[][][];
     numberOfBlocks: string;
@@ -20,9 +18,8 @@ const POLY_ENDPOINT: string = '/api/poly/enumerate/';
 
 const DEFAULT_POLYS_PER_PAGE: number = 20;
 
-class Polys extends React.Component<Props, State> {
-
-    state = {
+function Polys () {
+    const[polyState, setPolyState] = useState<State>({
         freePolys: [],
         blockSize: "50",
         numberOfBlocks: "",
@@ -30,15 +27,16 @@ class Polys extends React.Component<Props, State> {
         inputDisabled: false,
         polyId: "",
         polysPerPage: DEFAULT_POLYS_PER_PAGE
-    }
-    handleClick = (numberOfBlocks: number): void => {
-        this.setState({
+    })
+    const handleClick = (numberOfBlocks: number): void => {
+        setPolyState({
             freePolys: [],
             blockSize: "50",
             numberOfBlocks: "",
             numberOfPolys: "",
             inputDisabled: true,
-            polyId: ""
+            polyId: "",
+            polysPerPage: DEFAULT_POLYS_PER_PAGE
         })
         fetch(POLY_ENDPOINT + numberOfBlocks, {
             method: "GET",
@@ -55,63 +53,97 @@ class Polys extends React.Component<Props, State> {
                 return response.json();
             })
             .then((data) => {
-                this.setState({
+                setPolyState((prevState) => ({
+                    ...prevState,
                     polyId: crypto.randomUUID(),
                     freePolys: enrichFreePolys(data.polys),
                     numberOfBlocks: data.numberOfBlocks,
                     numberOfPolys: data.numberOfPolys,
                     inputDisabled: false,
                     polysPerPage: DEFAULT_POLYS_PER_PAGE
-                })
+                }))
             })
             .catch((err) => {
                 console.log("Error", err.message);
-                this.setState({
+                setPolyState((prevState) => ({
+                    ...prevState,
                     freePolys: [],
                     blockSize: "50",
                     numberOfBlocks: "",
                     numberOfPolys: "",
                     inputDisabled: false,
                     polyId: ""
-                })
+                }))
             });
     }
-    enableInput = (): void => {
-        this.setState({
+   const enableInput = (): void => {
+        setPolyState((prevState) => ({
+            ...prevState,
             inputDisabled: false
-        })
+        }))
     }
-    handlePolysPerPageChange = (polysPerPage: number): void => {
-        this.setState({
+    const handlePolysPerPageChange = (polysPerPage: number): void => {
+        setPolyState((prevState) => ({
+            ...prevState,
             polysPerPage: polysPerPage
-        })
+        }))
     }
-    render() {
         return (
             <>
                 <div className="polyClass">
-                    <PolyHead handleClick={this.handleClick} inputDisabled={this.state.inputDisabled} />
-                    {this.state.numberOfPolys.length != 0 &&
+                    <PolyHead handleClick={handleClick} inputDisabled={polyState.inputDisabled} />
+                    {polyState.numberOfPolys.length != 0 &&
                         <>
                             <PolySubHead
-                                numberOfBlocks={this.state.numberOfBlocks}
-                                numberOfPolys={this.state.numberOfPolys}
-                                polysPerPage={this.state.polysPerPage}
-                                handlePolysPerPageChange={this.handlePolysPerPageChange} />
+                                numberOfBlocks={polyState.numberOfBlocks}
+                                numberOfPolys={polyState.numberOfPolys}
+                                polysPerPage={polyState.polysPerPage}
+                                handlePolysPerPageChange={handlePolysPerPageChange} />
                             <PolyBody
-                                blockSize={this.state.blockSize}
-                                freePolys={this.state.freePolys}
-                                numberOfBlocks={this.state.numberOfBlocks}
-                                numberOfPolys={this.state.numberOfPolys}
-                                polyId={this.state.polyId}
-                                enableInput={this.enableInput}
-                                polysPerPage={this.state.polysPerPage} />
+                                blockSize={polyState.blockSize}
+                                freePolys={polyState.freePolys}
+                                numberOfBlocks={polyState.numberOfBlocks}
+                                numberOfPolys={polyState.numberOfPolys}
+                                polyId={polyState.polyId}
+                                enableInput={enableInput}
+                                polysPerPage={polyState.polysPerPage} />
                         </>}
                 </div>
             </>
         )
-    }
 
+}
+
+const VALID_NUMBER_OF_BLOCKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+function PolyHead(props: any) {
+    const [numberOfBlocks, setNumberOfBlocks] = useState("");
+    const handleChange = (e: FormEvent<HTMLSelectElement>): void => {
+        setNumberOfBlocks(e.currentTarget.value);
+    }
+    const handleClick = (e: MouseEvent<HTMLButtonElement>): void => {
+        e.preventDefault();
+        // setNumberOfBlocks("");
+        props.handleClick(numberOfBlocks);
+    }
+    return (
+        <>
+            <div className="headerClass">
+                <label>
+                    Number Of Blocks:
+                    <select name="numberOfBlocks" disabled={props.inputDisabled} onChange={handleChange} defaultValue="0">
+                        <option value="none"></option>
+                        {
+                            VALID_NUMBER_OF_BLOCKS.map((block: number) => (
+                                <option key={block} value={block}>{block}</option>
+                            ))
+                        }
+                    </select>
+                </label>
+                <button disabled={props.inputDisabled} onClick={handleClick}>Enumerate</button>
+            </div>
+        </>
+    )
 }
 
 function PolySubHead(props: any) {
@@ -142,37 +174,6 @@ function PolySubHead(props: any) {
     )
 }
 
-const VALID_NUMBER_OF_BLOCKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
-
-function PolyHead(props: any) {
-    const [numberOfBlocks, setNumberOfBlocks] = useState("");
-    const handleChange = (e: FormEvent<HTMLSelectElement>): void => {
-        setNumberOfBlocks(e.currentTarget.value);
-    }
-    const handleClick = (e: MouseEvent<HTMLButtonElement>): void => {
-        e.preventDefault();
-        // setNumberOfBlocks("");
-        props.handleClick(numberOfBlocks);
-    }
-    return (
-        <>
-            <div className="headerClass">
-                <label>
-                    Number Of Blocks:
-                    <select name="numberOfBlocks" onChange={handleChange} defaultValue="0">
-                        <option value="none"></option>
-                        {
-                            VALID_NUMBER_OF_BLOCKS.map((block: number) => (
-                                <option key={block} value={block}>{block}</option>
-                            ))
-                        }
-                    </select>
-                </label>
-                <button disabled={props.inputDisabled} onClick={handleClick}>Enumerate</button>
-            </div>
-        </>
-    )
-}
 
 const translate = (i: number, size: number, dimension: number, blockSize: number) => {
     let iMid = Math.floor(size / 2);
