@@ -6,6 +6,28 @@
     height: 100vh;
 }
 
+.polyPagination {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.polyPagination>.pagination {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+}
+
+.paginationActive>a {
+    color: yellow !important
+}
+
+.paginationPage {
+    border: 1px solid black;
+    background-color: blue;
+}
+
 
 .headerClass {
     display: flex;

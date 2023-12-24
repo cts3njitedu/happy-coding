@@ -1,7 +1,8 @@
-import React, { MouseEvent, FormEvent, useState, useRef } from "react";
+import React, { MouseEvent, FormEvent, useState, useRef, useEffect } from "react";
 import { GrRotateRight } from "react-icons/gr";
 import { TbFlipHorizontal, TbFlipVertical } from "react-icons/tb";
 import './Polys.css'
+import ReactPaginate from "react-paginate";
 
 type Props = {
 };
@@ -52,7 +53,7 @@ class Polys extends React.Component<Props, State> {
             .then((data) => {
                 this.setState({
                     polyId: crypto.randomUUID(),
-                    freePolys: data.polys,
+                    freePolys: enrichFreePolys(data.polys),
                     numberOfBlocks: data.numberOfBlocks,
                     numberOfPolys: data.numberOfPolys,
                     inputDisabled: false
@@ -83,13 +84,13 @@ class Polys extends React.Component<Props, State> {
                     <PolySubHead
                         numberOfBlocks={this.state.numberOfBlocks}
                         numberOfPolys={this.state.numberOfPolys} />
-                    <PolyBody
+                    {this.state.numberOfPolys.length != 0 && <PolyBody
                         blockSize={this.state.blockSize}
                         freePolys={this.state.freePolys}
                         numberOfBlocks={this.state.numberOfBlocks}
                         numberOfPolys={this.state.numberOfPolys}
                         polyId={this.state.polyId}
-                        enableInput={this.enableInput} />
+                        enableInput={this.enableInput} />}
                 </div>
             </>
         )
@@ -145,7 +146,7 @@ const cellKey = (polyId: any, numberOfBlocks: string, polyIndex: number, rowInde
     return [polyId, numberOfBlocks, polyIndex, rowIndex, colIndex].toString();
 }
 
-const divKey = (polyId: any, numberOfBlocks: string, polyIndex: number) => {
+const divKey = (polyId: any, numberOfBlocks: string, polyIndex: number): string => {
     return [polyId, numberOfBlocks, polyIndex].toString();
 }
 
@@ -153,18 +154,68 @@ const svgKey = (divKey: string) => {
     return ["svg", divKey].toString();
 }
 
+const enrichFreePolys = (polys: number[][][]): any[] => {
+    return polys.map((poly: number[][], index: number) => (
+        {
+            id: index,
+            matrix: poly
+        }
+    ))
+}
+
+type PolyBodyType = {
+    data: any[],
+    offset: number,
+    numberPerPage: number,
+    pageCount: number,
+    currentData: any[]
+}
 function PolyBody(props: any) {
+    const [pagination, setPagination] = useState<PolyBodyType>({
+        data: props.freePolys,
+        offset: 0,
+        numberPerPage: 20,
+        pageCount: 0,
+        currentData: []
+    })
+    useEffect(() => {
+        setPagination((prevState) => ({
+            ...prevState,
+            pageCount: prevState.data.length / prevState.numberPerPage,
+            currentData: prevState.data.slice(pagination.offset, pagination.offset + pagination.numberPerPage)
+        }))
+    }, [pagination.numberPerPage, pagination.offset])
+    const handlePageClick = (event: any) => {
+        const selected = event.selected;
+        const offset = selected * pagination.numberPerPage
+        setPagination({ ...pagination, offset })
+    }
     return (
         <>
+            <div className="polyPagination">
+                {pagination.currentData.length != 0 && <ReactPaginate
+                    previousLabel={'previous'}
+                    nextLabel={'next'}
+                    breakLabel={'...'}
+                    pageCount={pagination.pageCount}
+                    marginPagesDisplayed={2}
+                    pageRangeDisplayed={5}
+                    onPageChange={handlePageClick}
+                    containerClassName={'pagination'}
+                    activeClassName={'paginationActive'}
+                    pageClassName={'paginationPage'}
+                />}
+            </div>
+
             <div className="bodyClass">
                 {
-                    props.freePolys.map((poly: number[][], index: number) => (
+                    pagination.currentData && pagination.currentData.map((poly: { matrix: number[][], id: number }) => (
                         <Poly
-                            key={divKey(props.polyId, props.numberOfBlocks, index)}
+                            key={divKey(props.polyId, props.numberOfBlocks, poly.id)}
                             blockSize={props.blockSize}
                             numberOfBlocks={props.numberOfBlocks}
-                            poly={poly}
-                            index={index}
+                            poly={poly.matrix}
+                            index={poly.id}
                             polyId={props.polyId}
                         />
                     ))
