@@ -42,7 +42,13 @@ class Polys extends React.Component<Props, State> {
                 "Accept": "application/json"
             }
         })
-            .then((response) => response.json())
+            .then((response) => {
+                if (!response.ok) {
+                    let err = new Error("HTTP status code: " + response.status)
+                    throw err
+                }
+                return response.json();
+            })
             .then((data) => {
                 this.setState({
                     polyId: crypto.randomUUID(),
@@ -53,9 +59,14 @@ class Polys extends React.Component<Props, State> {
                 })
             })
             .catch((err) => {
-                console.log(err.message);
+                console.log("Error", err.message);
                 this.setState({
-                    inputDisabled: false
+                    freePolys: [],
+                    blockSize: "50",
+                    numberOfBlocks: "",
+                    numberOfPolys: "",
+                    inputDisabled: false,
+                    polyId: ""
                 })
             });
     }
