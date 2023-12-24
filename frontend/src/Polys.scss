@@ -96,6 +96,7 @@
 
 .svgClass {
     font-size: larger;
+    background-color: rgb(25, 141, 25);
     /* -webkit-animation: spin1 10s infinite linear;
     -moz-animation: spin1 10s infinite linear;
     -o-animation: spin1 10s infinite linear;
@@ -196,7 +197,7 @@
 .polyDiv {
     display: flex;
     justify-content: space-between;
-    border: 5px dashed black;
+    border: 3px ridge lightgrey;
     flex-direction: column;
     background-color: lightskyblue;
 }
@@ -206,6 +207,7 @@
     flex-direction: column;
     justify-content: flex-end;
     flex-grow: 1;
+    background-color: rgb(6, 153, 250);
 
 }
 
