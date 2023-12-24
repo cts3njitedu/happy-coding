@@ -230,6 +230,10 @@
     flex-grow: 1;
 }
 
+.polyDiv>div>div>button:hover {
+    transform: scale(1.5);
+}
+
 .subHeaderClass {
     display: flex;
     flex-direction: row;
