@@ -14,7 +14,7 @@ type State = {
     polyId: any;
 };
 
-const POLY_ENDPOINT: string = 'http://localhost:8080/poly/enumerate/';
+const POLY_ENDPOINT: string = '/api/poly/enumerate/';
 
 class Polys extends React.Component<Props, State> {
 
@@ -54,6 +54,9 @@ class Polys extends React.Component<Props, State> {
             })
             .catch((err) => {
                 console.log(err.message);
+                this.setState({
+                    inputDisabled: false
+                })
             });
     }
     enableInput = (): void => {
