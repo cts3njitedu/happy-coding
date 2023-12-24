@@ -110,9 +110,11 @@ function PolySubHead(props: any) {
     )
 }
 
+const VALID_NUMBER_OF_BLOCKS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+
 function PolyHead(props: any) {
     const [numberOfBlocks, setNumberOfBlocks] = useState("");
-    const handleChange = (e: FormEvent<HTMLInputElement>): void => {
+    const handleChange = (e: FormEvent<HTMLSelectElement>): void => {
         setNumberOfBlocks(e.currentTarget.value);
     }
     const handleClick = (e: MouseEvent<HTMLButtonElement>): void => {
@@ -125,7 +127,14 @@ function PolyHead(props: any) {
             <div className="headerClass">
                 <label>
                     Number Of Blocks:
-                    <input type="text" disabled={props.inputDisabled} value={numberOfBlocks} onChange={handleChange}></input>
+                    <select name="numberOfBlocks" onChange={handleChange} defaultValue="0">
+                        <option value="none"></option>
+                        {
+                            VALID_NUMBER_OF_BLOCKS.map((block:number) => (
+                                <option key={block} value = {block}>{block}</option>
+                            ))
+                        }
+                    </select>
                 </label>
                 <button disabled={props.inputDisabled} onClick={handleClick}>Enumerate</button>
             </div>
