@@ -109,7 +109,7 @@
     font-size: xx-large;
 }
 
-.headerClass>label>select {
+.headerClass>label>select,input {
     font-size: xx-large;
     width: 60px;
 }
@@ -236,7 +236,7 @@
     justify-content: space-evenly;
 }
 
-.subHeaderClass>p {
+.subHeaderClass>p, label, label>input {
     font-size: xx-large;
     color: darkblue;
     font-style: oblique;

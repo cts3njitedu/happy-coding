@@ -13,9 +13,12 @@ type State = {
     blockSize: string;
     inputDisabled: boolean;
     polyId: any;
+    polysPerPage: number;
 };
 
 const POLY_ENDPOINT: string = '/api/poly/enumerate/';
+
+const DEFAULT_POLYS_PER_PAGE: number = 20;
 
 class Polys extends React.Component<Props, State> {
 
@@ -25,7 +28,8 @@ class Polys extends React.Component<Props, State> {
         numberOfBlocks: "",
         numberOfPolys: "",
         inputDisabled: false,
-        polyId: ""
+        polyId: "",
+        polysPerPage: DEFAULT_POLYS_PER_PAGE
     }
     handleClick = (numberOfBlocks: number): void => {
         this.setState({
@@ -56,7 +60,8 @@ class Polys extends React.Component<Props, State> {
                     freePolys: enrichFreePolys(data.polys),
                     numberOfBlocks: data.numberOfBlocks,
                     numberOfPolys: data.numberOfPolys,
-                    inputDisabled: false
+                    inputDisabled: false,
+                    polysPerPage: DEFAULT_POLYS_PER_PAGE
                 })
             })
             .catch((err) => {
@@ -76,21 +81,32 @@ class Polys extends React.Component<Props, State> {
             inputDisabled: false
         })
     }
+    handlePolysPerPageChange = (polysPerPage: number): void => {
+        this.setState({
+            polysPerPage: polysPerPage
+        })
+    }
     render() {
         return (
             <>
                 <div className="polyClass">
                     <PolyHead handleClick={this.handleClick} inputDisabled={this.state.inputDisabled} />
-                    <PolySubHead
-                        numberOfBlocks={this.state.numberOfBlocks}
-                        numberOfPolys={this.state.numberOfPolys} />
-                    {this.state.numberOfPolys.length != 0 && <PolyBody
-                        blockSize={this.state.blockSize}
-                        freePolys={this.state.freePolys}
-                        numberOfBlocks={this.state.numberOfBlocks}
-                        numberOfPolys={this.state.numberOfPolys}
-                        polyId={this.state.polyId}
-                        enableInput={this.enableInput} />}
+                    {this.state.numberOfPolys.length != 0 &&
+                        <>
+                            <PolySubHead
+                                numberOfBlocks={this.state.numberOfBlocks}
+                                numberOfPolys={this.state.numberOfPolys}
+                                polysPerPage={this.state.polysPerPage}
+                                handlePolysPerPageChange={this.handlePolysPerPageChange} />
+                            <PolyBody
+                                blockSize={this.state.blockSize}
+                                freePolys={this.state.freePolys}
+                                numberOfBlocks={this.state.numberOfBlocks}
+                                numberOfPolys={this.state.numberOfPolys}
+                                polyId={this.state.polyId}
+                                enableInput={this.enableInput}
+                                polysPerPage={this.state.polysPerPage} />
+                        </>}
                 </div>
             </>
         )
@@ -100,17 +116,33 @@ class Polys extends React.Component<Props, State> {
 
 function PolySubHead(props: any) {
     const isDisplay = props.numberOfBlocks && props.numberOfPolys;
+    const handlePolysPerPageChange = (e: FormEvent<HTMLInputElement>): void => {
+        if (e.code == 'Enter') {
+            props.handlePolysPerPageChange(parseInt(e.currentTarget.value));
+        }
+    }
     return (
         <>
             {isDisplay && <div className="subHeaderClass">
                 <p>Number Of Blocks: {props.numberOfBlocks}</p>
                 <p>Number Of Free Polyominoes: {props.numberOfPolys}</p>
+                <label>
+                    Free Polyominoes Per Page:
+                    <input
+                        type="number"
+                        defaultValue={props.polysPerPage}
+                        maxLength={4}
+                        max="1000"
+                        min="1"
+                        onKeyDown={handlePolysPerPageChange}
+                    ></input>
+                </label>
             </div>}
         </>
     )
 }
 
-const VALID_NUMBER_OF_BLOCKS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
+const VALID_NUMBER_OF_BLOCKS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
 
 function PolyHead(props: any) {
     const [numberOfBlocks, setNumberOfBlocks] = useState("");
@@ -119,7 +151,7 @@ function PolyHead(props: any) {
     }
     const handleClick = (e: MouseEvent<HTMLButtonElement>): void => {
         e.preventDefault();
-        setNumberOfBlocks("");
+        // setNumberOfBlocks("");
         props.handleClick(numberOfBlocks);
     }
     return (
@@ -130,8 +162,8 @@ function PolyHead(props: any) {
                     <select name="numberOfBlocks" onChange={handleChange} defaultValue="0">
                         <option value="none"></option>
                         {
-                            VALID_NUMBER_OF_BLOCKS.map((block:number) => (
-                                <option key={block} value = {block}>{block}</option>
+                            VALID_NUMBER_OF_BLOCKS.map((block: number) => (
+                                <option key={block} value={block}>{block}</option>
                             ))
                         }
                     </select>
@@ -177,16 +209,26 @@ type PolyBodyType = {
     offset: number,
     numberPerPage: number,
     pageCount: number,
+    selectedPage: number,
     currentData: any[]
 }
 function PolyBody(props: any) {
     const [pagination, setPagination] = useState<PolyBodyType>({
         data: props.freePolys,
         offset: 0,
-        numberPerPage: 20,
+        numberPerPage: props.polysPerPage,
         pageCount: 0,
+        selectedPage: 0,
         currentData: []
     })
+    useEffect(() => {
+        setPagination((prevState) => ({
+            ...prevState,
+            selectedPage: 0,
+            offset: 0,
+            numberPerPage: props.polysPerPage
+        }))
+    }, [props.polysPerPage])
     useEffect(() => {
         setPagination((prevState) => ({
             ...prevState,
@@ -197,7 +239,7 @@ function PolyBody(props: any) {
     const handlePageClick = (event: any) => {
         const selected = event.selected;
         const offset = selected * pagination.numberPerPage
-        setPagination({ ...pagination, offset })
+        setPagination({ ...pagination, offset, selectedPage: selected })
     }
     return (
         <>
@@ -215,6 +257,7 @@ function PolyBody(props: any) {
                     pageClassName={'paginationPage'}
                     nextClassName={'paginationNext'}
                     previousClassName={'paginationPrevious'}
+                    forcePage={pagination.selectedPage}
                 />}
             </div>
 
