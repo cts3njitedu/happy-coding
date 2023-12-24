@@ -4,6 +4,7 @@
     justify-content: space-between;
     width: 100vw;
     height: 100vh;
+    background-color: lightgray;
 }
 
 .polyPagination {
@@ -24,6 +25,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    text-align: center;
 }
 
 @mixin paginationNextAndPrevious {
@@ -65,7 +67,6 @@
     @include paginationMixin();
     border: 1px solid black;
     flex-basis: 90%;
-    text-align: center;
 }
 
 .paginationPage>a {

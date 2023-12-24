@@ -307,7 +307,7 @@ function Poly(props: any) {
                 </svg>
                 <div>
                     <input type="color" defaultValue={fill} onChange={handleChangeColor}></input>
-                    {props.numberOfBlocks != "1" && <div>
+                    {parseInt(props.numberOfBlocks) > 1 && <div>
                         <button onClick={handleRotate}><GrRotateRight /></button>
                         <button onClick={handleFlipVertically}><TbFlipVertical /></button>
                         <button onClick={handleFlipHorizontally}><TbFlipHorizontal /></button>
