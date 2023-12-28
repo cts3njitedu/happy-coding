@@ -1,5 +1,6 @@
 package com.craig.scholar.happy.model;
 
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,4 +18,6 @@ public class FreePolyominoesRequest {
 
     @NonNull
     Integer numberOfBlocks;
+
+    UUID polysId;
 }

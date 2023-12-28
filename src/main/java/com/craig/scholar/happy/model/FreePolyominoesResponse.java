@@ -1,6 +1,7 @@
 package com.craig.scholar.happy.model;
 
 import java.util.Collection;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,7 +15,6 @@ import lombok.experimental.FieldDefaults;
 @Getter
 public class FreePolyominoesResponse {
 
-    @NonNull
     Collection<?> polys;
 
     @NonNull
@@ -22,4 +22,7 @@ public class FreePolyominoesResponse {
 
     @NonNull
     Integer numberOfPolys;
+
+    @NonNull
+    UUID polysId;
 }
