@@ -1,4 +1,4 @@
-import { MouseEvent, FormEvent, useState, useRef, useEffect } from "react";
+import { MouseEvent, FormEvent, useState, useRef, useEffect, useCallback } from "react";
 import { GrRotateRight } from "react-icons/gr";
 import { TbFlipHorizontal, TbFlipVertical } from "react-icons/tb";
 import './Polys.scss'
@@ -14,12 +14,12 @@ type State = {
     polysPerPage: number;
 };
 
-const POLY_ENDPOINT: string = '/api/poly/enumerate/';
+const POLY_ENDPOINT: string = '/api/poly/enumerate';
 
 const DEFAULT_POLYS_PER_PAGE: number = 20;
 
-function Polys () {
-    const[polyState, setPolyState] = useState<State>({
+function Polys() {
+    const [polyState, setPolyState] = useState<State>({
         freePolys: [],
         blockSize: "50",
         numberOfBlocks: "",
@@ -28,6 +28,28 @@ function Polys () {
         polyId: "",
         polysPerPage: DEFAULT_POLYS_PER_PAGE
     })
+    const [client, setClient] = useState(() => {
+        const sock = new SockJS("http://localhost:5173/poly-websocket", null, {
+            timeout: 2000
+        });
+        const client = Stomp.over(sock);
+        return client;
+    });
+
+    useEffect(() => {
+        client.connect({}, function (frame: any) {
+            console.log('Connected: ' + frame);
+            client.subscribe('/user/queue/poly', function (message: any) {
+                let data = JSON.parse(message.body);
+                console.log("Number Of Polys:", data.numberOfPolys, "Number Of Blocks:", data.numberOfBlocks);
+                console.log(data);
+                callEnumerateApi({
+                    ...data
+                }, setPolyState)
+            });
+        });
+    }, [])
+
     const handleClick = (numberOfBlocks: number): void => {
         setPolyState({
             freePolys: [],
@@ -38,45 +60,15 @@ function Polys () {
             polyId: "",
             polysPerPage: DEFAULT_POLYS_PER_PAGE
         })
-        fetch(POLY_ENDPOINT + numberOfBlocks, {
-            method: "GET",
-            mode: "cors",
-            headers: {
-                "Accept": "application/json"
-            }
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    let err = new Error("HTTP status code: " + response.status)
-                    throw err
-                }
-                return response.json();
-            })
-            .then((data) => {
-                setPolyState((prevState) => ({
-                    ...prevState,
-                    polyId: crypto.randomUUID(),
-                    freePolys: enrichFreePolys(data.polys),
-                    numberOfBlocks: data.numberOfBlocks,
-                    numberOfPolys: data.numberOfPolys,
-                    inputDisabled: false,
-                    polysPerPage: DEFAULT_POLYS_PER_PAGE
-                }))
-            })
-            .catch((err) => {
-                console.log("Error", err.message);
-                setPolyState((prevState) => ({
-                    ...prevState,
-                    freePolys: [],
-                    blockSize: "50",
-                    numberOfBlocks: "",
-                    numberOfPolys: "",
-                    inputDisabled: false,
-                    polyId: ""
-                }))
-            });
+        if (numberOfBlocks < 14) {
+            callEnumerateApi({numberOfBlocks}, setPolyState);
+        } else {
+            client.send('/app/poly', {}, JSON.stringify({
+                numberOfBlocks
+            }))
+        }
     }
-   const enableInput = (): void => {
+    const enableInput = (): void => {
         setPolyState((prevState) => ({
             ...prevState,
             inputDisabled: false
@@ -88,29 +80,30 @@ function Polys () {
             polysPerPage: polysPerPage
         }))
     }
-        return (
-            <>
-                <div className="polyClass">
-                    <PolyHead handleClick={handleClick} inputDisabled={polyState.inputDisabled} />
-                    {polyState.numberOfPolys.length != 0 &&
-                        <>
-                            <PolySubHead
-                                numberOfBlocks={polyState.numberOfBlocks}
-                                numberOfPolys={polyState.numberOfPolys}
-                                polysPerPage={polyState.polysPerPage}
-                                handlePolysPerPageChange={handlePolysPerPageChange} />
-                            <PolyBody
-                                blockSize={polyState.blockSize}
-                                freePolys={polyState.freePolys}
-                                numberOfBlocks={polyState.numberOfBlocks}
-                                numberOfPolys={polyState.numberOfPolys}
-                                polyId={polyState.polyId}
-                                enableInput={enableInput}
-                                polysPerPage={polyState.polysPerPage} />
-                        </>}
-                </div>
-            </>
-        )
+    return (
+        <>
+            <div className="polyClass">
+
+                <PolyHead handleClick={handleClick} inputDisabled={polyState.inputDisabled} />
+                {polyState.numberOfPolys.length != 0 &&
+                    <>
+                        <PolySubHead
+                            numberOfBlocks={polyState.numberOfBlocks}
+                            numberOfPolys={polyState.numberOfPolys}
+                            polysPerPage={polyState.polysPerPage}
+                            handlePolysPerPageChange={handlePolysPerPageChange} />
+                        <PolyBody
+                            blockSize={polyState.blockSize}
+                            freePolys={polyState.freePolys}
+                            numberOfBlocks={polyState.numberOfBlocks}
+                            numberOfPolys={polyState.numberOfPolys}
+                            polyId={polyState.polyId}
+                            enableInput={enableInput}
+                            polysPerPage={polyState.polysPerPage} />
+                    </>}
+            </div>
+        </>
+    )
 
 }
 
@@ -144,6 +137,48 @@ function PolyHead(props: any) {
             </div>
         </>
     )
+}
+const callEnumerateApi = (req: any, setPolyState: (value: React.SetStateAction<State>) => void) => {
+    return fetch(POLY_ENDPOINT, {
+        method: "POST",
+        // mode: "cors",
+        headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+
+        },
+        body: JSON.stringify(req)
+    })
+        .then((response) => {
+            if (!response.ok) {
+                let err = new Error("HTTP status code: " + response.status)
+                throw err
+            }
+            return response.json();
+        })
+        .then((data) => {
+            setPolyState((prevState) => ({
+                ...prevState,
+                polyId: crypto.randomUUID(),
+                freePolys: enrichFreePolys(data.polys),
+                numberOfBlocks: data.numberOfBlocks,
+                numberOfPolys: data.numberOfPolys,
+                inputDisabled: false,
+                polysPerPage: DEFAULT_POLYS_PER_PAGE
+            }))
+        })
+        .catch((err) => {
+            console.log("Error", err.message);
+            setPolyState((prevState) => ({
+                ...prevState,
+                freePolys: [],
+                blockSize: "50",
+                numberOfBlocks: "",
+                numberOfPolys: "",
+                inputDisabled: false,
+                polyId: ""
+            }))
+        });
 }
 
 function PolySubHead(props: any) {
