@@ -76,7 +76,7 @@ public class EnumerateFreePolyUtil {
         .collect(Collectors.toList());
   }
 
-  private static int[][] getMatrix(int[] matrix) {
+  public static int[][] getMatrix(int[] matrix) {
     int columns = 0;
     for (int row : matrix) {
       columns = Math.max(columns, Integer.SIZE - Integer.numberOfLeadingZeros(row));
