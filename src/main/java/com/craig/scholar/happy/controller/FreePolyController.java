@@ -4,17 +4,14 @@ import com.craig.scholar.happy.model.FreePolyState;
 import com.craig.scholar.happy.model.FreePolyominoesRequest;
 import com.craig.scholar.happy.model.FreePolyominoesResponse;
 import com.craig.scholar.happy.service.codeexchange.freepoly.EnumerateFreePolyServiceAsync;
-import com.craig.scholar.happy.service.codeexchange.freepoly.EnumerateFreePolyServiceImpl;
 import com.craig.scholar.happy.service.codeexchange.freepoly.util.EnumerateFreePolyUtil;
 import com.craig.scholar.happy.service.storage.FreePolyRabbitService;
-import com.craig.scholar.happy.service.storage.FreePolyStorageService;
 import java.util.List;
 import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,19 +27,9 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class FreePolyController {
 
-  public static final String FREE_POLY_QUEUE = "/queue/poly";
   public static final int POLY_BATCH_SIZE = 500000;
   @NonNull
   private final EnumerateFreePolyServiceAsync enumerateFreePolyServiceAsync;
-
-  @NonNull
-  private final EnumerateFreePolyServiceImpl enumerateFreePolyService;
-
-  @NonNull
-  private final FreePolyStorageService freePolyStorageService;
-
-  @NonNull
-  private final SimpMessagingTemplate simpMessagingTemplate;
 
   @NonNull
   private final FreePolyRabbitService freePolyRabbitService;

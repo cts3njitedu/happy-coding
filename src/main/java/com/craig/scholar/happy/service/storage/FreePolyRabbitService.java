@@ -8,15 +8,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.List;
-import java.util.Objects;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.AmqpAdmin;
-import org.springframework.amqp.core.AmqpTemplate;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.QueueInformation;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -32,15 +26,6 @@ import reactor.rabbitmq.Sender;
 @Slf4j
 @RequiredArgsConstructor
 public class FreePolyRabbitService {
-
-  @NonNull
-  private final AmqpAdmin amqpAdmin;
-
-  @NonNull
-  private final AmqpTemplate amqpTemplate;
-
-  @NonNull
-  private final MessageListenerContainerFactory messageListenerContainerFactory;
 
   @NonNull
   private final Receiver receiver;
@@ -72,13 +57,6 @@ public class FreePolyRabbitService {
         .freePolyState(freePolyState)
         .polysId(freePolyDto.getPolysId())
         .build();
-  }
-
-  private Mono<Boolean> sendMessage(FreePolyDto freePolyDto, String sessionId) {
-    return Mono.just(getMessage(sessionId, freePolyDto))
-        .flux()
-        .transform(sender::sendWithTypedPublishConfirms)
-        .all(OutboundMessageResult::isAck);
   }
 
   private static CorrelableOutboundMessage<FreePolyDto> getMessage(
@@ -116,15 +94,5 @@ public class FreePolyRabbitService {
         });
   }
 
-  private void createQueue(String sessionId) {
-    QueueInformation queueInfo = amqpAdmin.getQueueInfo(sessionId);
-    if (Objects.isNull(queueInfo)) {
-      Queue queue = new Queue(sessionId);
-      Binding binding = new Binding(sessionId, Binding.DestinationType.QUEUE, EXCHANGE, sessionId,
-          null);
-      amqpAdmin.declareQueue(queue);
-      amqpAdmin.declareBinding(binding);
-    }
-  }
 
 }

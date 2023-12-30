@@ -11,7 +11,6 @@ import java.util.UUID;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -23,9 +22,6 @@ public class EnumerateFreePolyServiceAsync {
 
   @NonNull
   private final EnumerateFreePolyServiceImpl enumerateFreePolyService;
-
-  @NonNull
-  private final SimpMessagingTemplate simpMessagingTemplate;
 
   @NonNull
   private final FreePolyRabbitService freePolyRabbitService;
