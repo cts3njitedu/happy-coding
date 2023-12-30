@@ -20,9 +20,12 @@ public class FreePolyominoesResponse {
     @NonNull
     Integer numberOfBlocks;
 
-    @NonNull
     Integer numberOfPolys;
 
     @NonNull
     UUID polysId;
+
+    FreePolyState freePolyState;
+
+    String sessionId;
 }

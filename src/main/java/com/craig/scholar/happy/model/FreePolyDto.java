@@ -16,9 +16,11 @@ public class FreePolyDto {
 
   private final String poly;
 
-  private final Collection<int[]> polys;
+  private final Collection<?> polys;
 
   private final int numberOfBlocks;
+
+  private final int numberOfPolys;
 
   @Id
   private final UUID polysId;

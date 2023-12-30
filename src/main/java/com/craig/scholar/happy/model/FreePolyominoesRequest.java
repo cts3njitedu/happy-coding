@@ -20,4 +20,6 @@ public class FreePolyominoesRequest {
     Integer numberOfBlocks;
 
     UUID polysId;
+
+    String sessionId;
 }
