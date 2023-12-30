@@ -1,5 +1,6 @@
 package com.craig.scholar.happy.model;
 
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.UUID;
 import lombok.Builder;
@@ -12,11 +13,13 @@ import org.springframework.data.redis.core.RedisHash;
 @Builder
 @RedisHash
 @Getter
-public class FreePolyDto {
+public class FreePolyDto implements Serializable {
 
   private final String poly;
 
   private final Collection<?> polys;
+
+  private final Collection<int[]> freePolys;
 
   private final int numberOfBlocks;
 
@@ -24,4 +27,6 @@ public class FreePolyDto {
 
   @Id
   private final UUID polysId;
+
+  private final FreePolyState freePolyState;
 }
