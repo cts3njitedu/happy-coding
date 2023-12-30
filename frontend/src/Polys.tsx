@@ -35,17 +35,22 @@ function Polys() {
         const client = Stomp.over(sock);
         return client;
     });
+    const [sessionId] = useState(() => crypto.randomUUID());
 
     useEffect(() => {
         client.connect({}, function (frame: any) {
             console.log('Connected: ' + frame);
             client.subscribe('/user/queue/poly', function (message: any) {
                 let data = JSON.parse(message.body);
-                console.log("Number Of Polys:", data.numberOfPolys, "Number Of Blocks:", data.numberOfBlocks);
-                console.log(data);
-                callEnumerateApi({
-                    ...data
-                }, setPolyState)
+                // console.log("Number Of Polys:", data.numberOfPolys, "Number Of Blocks:", data.numberOfBlocks);
+                console.log("Data:", data);
+                if (data.freePolyState === "START") {
+                    callEnumerateApi({
+                        ...data,
+                    }, "", setPolyState)
+                }
+            }, function (frame) {
+
             });
         });
     }, [])
@@ -60,8 +65,9 @@ function Polys() {
             polyId: "",
             polysPerPage: DEFAULT_POLYS_PER_PAGE
         })
-        if (numberOfBlocks < 14) {
-            callEnumerateApi({numberOfBlocks}, setPolyState);
+
+        if (numberOfBlocks < 16) {
+            callEnumerateApi({ numberOfBlocks }, sessionId, setPolyState);
         } else {
             client.send('/app/poly', {}, JSON.stringify({
                 numberOfBlocks
@@ -138,47 +144,99 @@ function PolyHead(props: any) {
         </>
     )
 }
-const callEnumerateApi = (req: any, setPolyState: (value: React.SetStateAction<State>) => void) => {
-    return fetch(POLY_ENDPOINT, {
+async function callEnumerateApi(req: any, sessionId: string, setPolyState: (value: React.SetStateAction<State>) => void) {
+    let response = await fetch(POLY_ENDPOINT, {
         method: "POST",
         // mode: "cors",
         headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-
+            "Accept": "application/x-ndjson",
+            "Content-Type": "application/json",
+            sessionId
         },
         body: JSON.stringify(req)
-    })
-        .then((response) => {
-            if (!response.ok) {
-                let err = new Error("HTTP status code: " + response.status)
-                throw err
-            }
-            return response.json();
+    });
+    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
+    let polys: number[][][] = [];
+    let numberOfBlocks = "";
+    let numberOfPolys = "";
+    let polysId = "";
+    let dataString: string = "";
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        dataString = dataString + value;
+    }
+    let dataBlock: any[] = dataString.split('\n');
+    type DataType = {
+        polys: number[][][],
+        numberOfBlocks: number,
+        numberOfPolys: number,
+        polysId: string
+    }
+    let data = dataBlock.filter(d => d && d.length != 0)
+        .map(d => JSON.parse(d))
+        .reduce((dFinal: DataType, d) => {
+            dFinal.polys = [...dFinal.polys, ...d.polys]
+            dFinal.numberOfBlocks = d.numberOfBlocks;
+            dFinal.numberOfPolys = d.numberOfPolys;
+            dFinal.polysId = d.polysId;
+            return dFinal;
+        }, {
+            polys: [],
+            numberOfBlocks: 0,
+            numberOfPolys: 0,
+            polysId: 0
         })
-        .then((data) => {
-            setPolyState((prevState) => ({
-                ...prevState,
-                polyId: crypto.randomUUID(),
-                freePolys: enrichFreePolys(data.polys),
-                numberOfBlocks: data.numberOfBlocks,
-                numberOfPolys: data.numberOfPolys,
-                inputDisabled: false,
-                polysPerPage: DEFAULT_POLYS_PER_PAGE
-            }))
-        })
-        .catch((err) => {
-            console.log("Error", err.message);
-            setPolyState((prevState) => ({
-                ...prevState,
-                freePolys: [],
-                blockSize: "50",
-                numberOfBlocks: "",
-                numberOfPolys: "",
-                inputDisabled: false,
-                polyId: ""
-            }))
-        });
+    setPolyState((prevState) => ({
+        ...prevState,
+        polyId: data.polysId,
+        freePolys: enrichFreePolys(data.polys),
+        numberOfBlocks: data.numberOfBlocks,
+        numberOfPolys: data.numberOfPolys,
+        inputDisabled: false,
+        polysPerPage: DEFAULT_POLYS_PER_PAGE
+    }))
+    // .then((response) => {
+    //     if (!response.ok) {
+    //         let err = new Error("HTTP status code: " + response.status)
+    //         throw err
+    //     }
+    //     return response.body;
+    // })
+    // .then((responseBody) => {
+    //     let reader = responseBody.pipeThrough(new TextDecoderStream()).getReader()
+    //     const chunks = [];
+
+    //     let done, value;
+    //     while (!done) {
+    //         ({ value, done } = await reader.read());
+    //         if (done) {
+    //             return chunks;
+    //         }
+    //         chunks.push(value);
+    //     }
+    //     // setPolyState((prevState) => ({
+    //     //     ...prevState,
+    //     //     polyId: crypto.randomUUID(),
+    //     //     freePolys: enrichFreePolys(data.polys),
+    //     //     numberOfBlocks: data.numberOfBlocks,
+    //     //     numberOfPolys: data.numberOfPolys,
+    //     //     inputDisabled: false,
+    //     //     polysPerPage: DEFAULT_POLYS_PER_PAGE
+    //     // }))
+    // })
+    // .catch((err) => {
+    //     console.log("Error", err.message);
+    //     setPolyState((prevState) => ({
+    //         ...prevState,
+    //         freePolys: [],
+    //         blockSize: "50",
+    //         numberOfBlocks: "",
+    //         numberOfPolys: "",
+    //         inputDisabled: false,
+    //         polyId: ""
+    //     }))
+    // });
 }
 
 function PolySubHead(props: any) {
