@@ -10,8 +10,10 @@ type State = {
     numberOfPolys: string;
     blockSize: string;
     inputDisabled: boolean;
-    polyId: any;
+    polysId: any;
     polysPerPage: number;
+    count: number;
+    subPolysId: string
 };
 
 const POLY_ENDPOINT: string = '/api/poly/enumerate';
@@ -25,34 +27,50 @@ function Polys() {
         numberOfBlocks: "",
         numberOfPolys: "",
         inputDisabled: false,
-        polyId: "",
-        polysPerPage: DEFAULT_POLYS_PER_PAGE
+        polysId: "",
+        polysPerPage: DEFAULT_POLYS_PER_PAGE,
+        count: 0, 
+        subPolysId: ""
     })
-    const [client, setClient] = useState(() => {
-        const sock = new SockJS("http://localhost:5173/poly-websocket", null, {
-            timeout: 2000
-        });
-        const client = Stomp.over(sock);
-        return client;
-    });
+    enum FreePolyState {
+        START, FINISH
+    }
     const [sessionId] = useState(() => crypto.randomUUID());
 
     useEffect(() => {
-        client.connect({}, function (frame: any) {
-            console.log('Connected: ' + frame);
-            client.subscribe('/user/queue/poly', function (message: any) {
-                let data = JSON.parse(message.body);
-                // console.log("Number Of Polys:", data.numberOfPolys, "Number Of Blocks:", data.numberOfBlocks);
-                console.log("Data:", data);
-                if (data.freePolyState === "START") {
-                    callEnumerateApi({
-                        ...data,
-                    }, "", setPolyState)
-                }
-            }, function (frame) {
+        let event = new EventSource("/api/poly/queue/enumerate/" + sessionId)
+        event.onmessage = (e) => {
+            console.log("Message:", e.data);
+            let data = JSON.parse(e.data);
+            let temp = polyState.freePolys;
+            console.log("Temp:", temp);
+            if (data.freePolyState == FreePolyState[FreePolyState.FINISH]) {
+                setPolyState((prevState) => ({
+                    ...prevState,
+                    inputDisabled: false
+                }))
+            } else {
+                setPolyState((prevState) => ({
+                    ...prevState,
+                    polysId: data.polysId,
+                    numberOfBlocks: data.numberOfBlocks,
+                    numberOfPolys: data.numberOfPolys,
+                    polysPerPage: DEFAULT_POLYS_PER_PAGE,
+                    freePolys: [...prevState.freePolys, ...enrichFreePolys(data.freePolys)],
+                    count: prevState.count + 1,
+                    subPolysId: crypto.randomUUID()
 
-            });
-        });
+                }))
+            }
+
+        };
+        event.onopen = (e) => {
+            console.log("Opened:", e);
+        }
+        event.onerror = (e) => {
+            console.log("Error")
+        }
+        return () => event.close();
     }, [])
 
     const handleClick = (numberOfBlocks: number): void => {
@@ -62,16 +80,14 @@ function Polys() {
             numberOfBlocks: "",
             numberOfPolys: "",
             inputDisabled: true,
-            polyId: "",
-            polysPerPage: DEFAULT_POLYS_PER_PAGE
+            polysId: "",
+            polysPerPage: DEFAULT_POLYS_PER_PAGE,
+            count: 0,
+            subPolysId: ""
         })
 
         if (numberOfBlocks < 16) {
-            callEnumerateApi({ numberOfBlocks }, sessionId, setPolyState);
-        } else {
-            client.send('/app/poly', {}, JSON.stringify({
-                numberOfBlocks
-            }))
+            callEnumerateApi({ numberOfBlocks, sessionId }, sessionId, setPolyState);
         }
     }
     const enableInput = (): void => {
@@ -103,9 +119,12 @@ function Polys() {
                             freePolys={polyState.freePolys}
                             numberOfBlocks={polyState.numberOfBlocks}
                             numberOfPolys={polyState.numberOfPolys}
-                            polyId={polyState.polyId}
+                            polysId={polyState.polysId}
                             enableInput={enableInput}
-                            polysPerPage={polyState.polysPerPage} />
+                            polysPerPage={polyState.polysPerPage}
+                            count={polyState.count}
+                            inputDisabled={polyState.inputDisabled}
+                            subPolysId={polyState.subPolysId} />
                     </>}
             </div>
         </>
@@ -144,99 +163,25 @@ function PolyHead(props: any) {
         </>
     )
 }
-async function callEnumerateApi(req: any, sessionId: string, setPolyState: (value: React.SetStateAction<State>) => void) {
-    let response = await fetch(POLY_ENDPOINT, {
+const callEnumerateApi = (req: any, sessionId: string, setPolyState: (value: React.SetStateAction<State>) => void) => {
+    return fetch(POLY_ENDPOINT, {
         method: "POST",
         // mode: "cors",
         headers: {
-            "Accept": "application/x-ndjson",
+            "Accept": "application/json",
             "Content-Type": "application/json",
             sessionId
         },
         body: JSON.stringify(req)
-    });
-    const reader = response.body.pipeThrough(new TextDecoderStream()).getReader()
-    let polys: number[][][] = [];
-    let numberOfBlocks = "";
-    let numberOfPolys = "";
-    let polysId = "";
-    let dataString: string = "";
-    while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        dataString = dataString + value;
-    }
-    let dataBlock: any[] = dataString.split('\n');
-    type DataType = {
-        polys: number[][][],
-        numberOfBlocks: number,
-        numberOfPolys: number,
-        polysId: string
-    }
-    let data = dataBlock.filter(d => d && d.length != 0)
-        .map(d => JSON.parse(d))
-        .reduce((dFinal: DataType, d) => {
-            dFinal.polys = [...dFinal.polys, ...d.polys]
-            dFinal.numberOfBlocks = d.numberOfBlocks;
-            dFinal.numberOfPolys = d.numberOfPolys;
-            dFinal.polysId = d.polysId;
-            return dFinal;
-        }, {
-            polys: [],
-            numberOfBlocks: 0,
-            numberOfPolys: 0,
-            polysId: 0
-        })
-    setPolyState((prevState) => ({
-        ...prevState,
-        polyId: data.polysId,
-        freePolys: enrichFreePolys(data.polys),
-        numberOfBlocks: data.numberOfBlocks,
-        numberOfPolys: data.numberOfPolys,
-        inputDisabled: false,
-        polysPerPage: DEFAULT_POLYS_PER_PAGE
-    }))
-    // .then((response) => {
-    //     if (!response.ok) {
-    //         let err = new Error("HTTP status code: " + response.status)
-    //         throw err
-    //     }
-    //     return response.body;
-    // })
-    // .then((responseBody) => {
-    //     let reader = responseBody.pipeThrough(new TextDecoderStream()).getReader()
-    //     const chunks = [];
+    }).then(response => {
+        if (!response.ok) {
+            setPolyState((prevState) => ({
+                ...prevState,
+                inputDisabled: false
+            }))
+        }
+    })
 
-    //     let done, value;
-    //     while (!done) {
-    //         ({ value, done } = await reader.read());
-    //         if (done) {
-    //             return chunks;
-    //         }
-    //         chunks.push(value);
-    //     }
-    //     // setPolyState((prevState) => ({
-    //     //     ...prevState,
-    //     //     polyId: crypto.randomUUID(),
-    //     //     freePolys: enrichFreePolys(data.polys),
-    //     //     numberOfBlocks: data.numberOfBlocks,
-    //     //     numberOfPolys: data.numberOfPolys,
-    //     //     inputDisabled: false,
-    //     //     polysPerPage: DEFAULT_POLYS_PER_PAGE
-    //     // }))
-    // })
-    // .catch((err) => {
-    //     console.log("Error", err.message);
-    //     setPolyState((prevState) => ({
-    //         ...prevState,
-    //         freePolys: [],
-    //         blockSize: "50",
-    //         numberOfBlocks: "",
-    //         numberOfPolys: "",
-    //         inputDisabled: false,
-    //         polyId: ""
-    //     }))
-    // });
 }
 
 function PolySubHead(props: any) {
@@ -277,12 +222,12 @@ const translate = (i: number, size: number, dimension: number, blockSize: number
     }
 }
 
-const cellKey = (polyId: any, numberOfBlocks: string, polyIndex: number, rowIndex: number, colIndex: number) => {
-    return [polyId, numberOfBlocks, polyIndex, rowIndex, colIndex].toString();
+const cellKey = (polysId: any, numberOfBlocks: string, polyIndex: number, rowIndex: number, colIndex: number) => {
+    return [polysId, numberOfBlocks, polyIndex, rowIndex, colIndex].toString();
 }
 
-const divKey = (polyId: any, numberOfBlocks: string, polyIndex: number): string => {
-    return [polyId, numberOfBlocks, polyIndex].toString();
+const divKey = (polysId: any, numberOfBlocks: string, polyIndex: number): string => {
+    return [polysId, numberOfBlocks, polyIndex].toString();
 }
 
 const svgKey = (divKey: string) => {
@@ -292,7 +237,7 @@ const svgKey = (divKey: string) => {
 const enrichFreePolys = (polys: number[][][]): any[] => {
     return polys.map((poly: number[][], index: number) => (
         {
-            id: index,
+            id: crypto.randomUUID(),
             matrix: poly
         }
     ))
@@ -307,6 +252,7 @@ type PolyBodyType = {
     currentData: any[]
 }
 function PolyBody(props: any) {
+    console.log("Chicken:", props.freePolys.length);
     const [pagination, setPagination] = useState<PolyBodyType>({
         data: props.freePolys,
         offset: 0,
@@ -323,6 +269,19 @@ function PolyBody(props: any) {
             numberPerPage: props.polysPerPage
         }))
     }, [props.polysPerPage])
+    useEffect(() => {
+        if (props.subPolysId) {
+            setPagination((prevState) => ({
+                ...prevState,
+                data: props.freePolys,
+                offset: 0,
+                numberPerPage: props.polysPerPage,
+                pageCount: Math.ceil(props.freePolys.length / prevState.numberPerPage),
+                selectedPage: 0,
+                currentData: props.freePolys.slice(0, pagination.numberPerPage)
+            }))
+        }
+    }, [props.subPolysId])
     useEffect(() => {
         setPagination((prevState) => ({
             ...prevState,
@@ -359,12 +318,12 @@ function PolyBody(props: any) {
                 {
                     pagination.currentData && pagination.currentData.map((poly: { matrix: number[][], id: number }) => (
                         <Poly
-                            key={divKey(props.polyId, props.numberOfBlocks, poly.id)}
+                            key={divKey(props.polysId, props.numberOfBlocks, poly.id)}
                             blockSize={props.blockSize}
                             numberOfBlocks={props.numberOfBlocks}
                             poly={poly.matrix}
                             index={poly.id}
-                            polyId={props.polyId}
+                            polysId={props.polysId}
                         />
                     ))
                 }
@@ -429,7 +388,7 @@ function Poly(props: any) {
             <div className="polyDiv" style={divStyle}>
                 <svg
                     ref={svgKeyRef}
-                    id={svgKey(divKey(props.polyId, props.numberOfBlocks, index))}
+                    id={svgKey(divKey(props.polysId, props.numberOfBlocks, index))}
                     width={svgWidth} height={svgHeight}
                     className="svgClass"
                     transform={svgRotate}
@@ -438,7 +397,7 @@ function Poly(props: any) {
                         poly.map((row: number[], rowIndex) => (
                             row.map((col: number, colIndex: number) => (
                                 col == 1 && <rect
-                                    key={cellKey(props.polyId, props.numberOfBlocks, index, rowIndex, colIndex)}
+                                    key={cellKey(props.polysId, props.numberOfBlocks, index, rowIndex, colIndex)}
                                     width={props.blockSize}
                                     height={props.blockSize}
                                     x={translate(rowIndex, poly.length, svgWidth, blockSize)}
