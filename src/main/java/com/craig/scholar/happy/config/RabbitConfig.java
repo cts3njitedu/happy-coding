@@ -24,6 +24,7 @@ public class RabbitConfig {
     connectionFactory.setHost(rabbitProperties.getHost());
     connectionFactory.setPort(rabbitProperties.getPort());
     connectionFactory.setUsername(rabbitProperties.getUsername());
+    connectionFactory.useNio();
     connectionFactory.setPassword(rabbitProperties.getPassword());
     return Mono.fromCallable(() -> connectionFactory.newConnection("reactor-rabbit")).cache();
   }

@@ -1,7 +1,9 @@
 package com.craig.scholar.happy.service.storage;
 
+import com.craig.scholar.happy.controller.FreePolyController;
 import com.craig.scholar.happy.model.FreePolyDto;
 import com.craig.scholar.happy.model.FreePolyState;
+import com.rabbitmq.client.Delivery;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,14 +38,16 @@ public class FreePolyRabbitService {
 
   public Mono<Boolean> savePolys(FreePolyDto freePolyDto, String sessionId) {
     return Flux.fromIterable(freePolyDto.getFreePolys())
-        .map(poly -> FreePolyDto.builder()
-            .polysId(freePolyDto.getPolysId())
-            .freePolys(List.of(poly))
+        .buffer(FreePolyController.POLY_BATCH_SIZE)
+        .doOnNext(l -> log.info("Sender Size: {}", l.size()))
+        .map(polys -> FreePolyDto.builder()
+            .freePolys(polys)
             .numberOfPolys(freePolyDto.getNumberOfPolys())
             .numberOfBlocks(freePolyDto.getNumberOfBlocks())
+            .polysId(freePolyDto.getPolysId())
             .build())
-        .transform(dtoFlux -> Flux.concat(dtoFlux,
-            Flux.just(getFreePoly(freePolyDto, FreePolyState.FINISH))))
+        .transform(
+            dtoFlux -> dtoFlux.concatWithValues(getFreePoly(freePolyDto, FreePolyState.FINISH)))
         .map(dto -> getMessage(sessionId, dto))
         .transform(sender::sendWithTypedPublishConfirms)
         .all(OutboundMessageResult::isAck);
@@ -74,24 +78,27 @@ public class FreePolyRabbitService {
 
   public Flux<FreePolyDto> getPolys(String sessionId) {
     ConsumeOptions consumeOptions = new ConsumeOptions();
-    return receiver.consumeAutoAck(sessionId, consumeOptions)
+    consumeOptions.qos(12);
+    return receiver.consumeNoAck(sessionId, consumeOptions)
         .delaySubscription(sender.declareQueue(QueueSpecification.queue(sessionId)
                 .autoDelete(true)
-                .exclusive(true))
+                .exclusive(false))
             .then(sender.bindQueue(
                 BindingSpecification.queueBinding(EXCHANGE, sessionId, sessionId))))
-        .map(delivery -> {
-          try {
-            ByteArrayInputStream bi = new ByteArrayInputStream(delivery.getBody());
-            ObjectInputStream objectInputStream = new ObjectInputStream(bi);
-            FreePolyDto freePolyDto = (FreePolyDto) objectInputStream.readObject();
-            bi.close();
-            objectInputStream.close();
-            return freePolyDto;
-          } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
-          }
-        });
+        .map(this::getFreePolyDto);
+  }
+
+  private FreePolyDto getFreePolyDto(Delivery delivery) {
+    try {
+      ByteArrayInputStream bi = new ByteArrayInputStream(delivery.getBody());
+      ObjectInputStream objectInputStream = new ObjectInputStream(bi);
+      FreePolyDto freePolyDto = (FreePolyDto) objectInputStream.readObject();
+      bi.close();
+      objectInputStream.close();
+      return freePolyDto;
+    } catch (IOException | ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 

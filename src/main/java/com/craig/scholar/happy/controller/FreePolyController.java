@@ -27,7 +27,7 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class FreePolyController {
 
-  public static final int POLY_BATCH_SIZE = 500000;
+  public static final int POLY_BATCH_SIZE = 200000;
   @NonNull
   private final EnumerateFreePolyServiceAsync enumerateFreePolyServiceAsync;
 
@@ -46,6 +46,29 @@ public class FreePolyController {
       @PathVariable String sessionId) {
     log.info("Streaming events to session: {}", sessionId);
     return freePolyRabbitService.getPolys(sessionId)
+//        .limitRate(5)
+//        .groupBy(FreePolyDto::getPolysId)
+//        .flatMap(groupedFlux -> groupedFlux.window(5)
+//            .flatMap(v -> v.collectList().map(l -> {
+//              log.info("Collection Size: {}", l.size());
+//              FreePolyDto freePolyDto = l.get(0);
+//              List<int[]> c = l.stream()
+//                  .map(FreePolyDto::getFreePolys)
+//                  .flatMap(Collection::stream)
+//                  .toList();
+//              return FreePolyominoesResponse.builder()
+//                  .polysId(freePolyDto.getPolysId())
+//                  .polys(EnumerateFreePolyUtil.getMatrices(c))
+//                  .numberOfPolys(freePolyDto.getNumberOfPolys())
+//                  .numberOfBlocks(freePolyDto.getNumberOfBlocks())
+//                  .build();
+//            })))
+//        .collectMultimap(FreePolyDto::getPolysId, freePolyDto -> FreePolyominoesResponse.builder()
+//            .build())
+//        .map(map -> map.entrySet().stream()
+//            .map(Entry::getValue)
+//            .map(l -> l.stream()
+//                .reduce()))
         .map(freePolyDto -> FreePolyominoesResponse.builder()
             .freePolys(EnumerateFreePolyUtil.getMatrices(freePolyDto.getFreePolys()))
             .polysId(freePolyDto.getPolysId())
