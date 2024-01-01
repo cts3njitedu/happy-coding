@@ -36,6 +36,6 @@ public class Poly {
   private PolyHead polyHead;
 
   @Column(name = "poly")
-  @JdbcTypeCode(SqlTypes.JAVA_OBJECT)
+  @JdbcTypeCode(SqlTypes.JSON)
   private int[][] poly;
 }

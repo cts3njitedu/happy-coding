@@ -6,12 +6,9 @@ import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.redis.core.RedisHash;
 
 @RequiredArgsConstructor
 @Builder
-@RedisHash
 @Getter
 public class FreePolyDto implements Serializable {
 
@@ -19,13 +16,18 @@ public class FreePolyDto implements Serializable {
 
   private final Collection<?> polys;
 
-  private final Collection<int[]> freePolys;
+  private final Collection<int[]> freePolysOld;
+
+  private final Collection<int[][]> freePolys;
+
+  private final int[][] freePoly;
 
   private final int numberOfBlocks;
 
   private final int numberOfPolys;
 
-  @Id
+  private final String sessionId;
+
   private final UUID polysId;
 
   private final FreePolyState freePolyState;
