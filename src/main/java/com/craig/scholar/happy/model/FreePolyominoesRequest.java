@@ -4,7 +4,6 @@ import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.jackson.Jacksonized;
@@ -16,10 +15,13 @@ import lombok.extern.jackson.Jacksonized;
 @Jacksonized
 public class FreePolyominoesRequest {
 
-    @NonNull
     Integer numberOfBlocks;
 
     UUID polysId;
 
     String sessionId;
+
+    Integer polysPerPage;
+
+    Integer page;
 }

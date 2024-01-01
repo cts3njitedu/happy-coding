@@ -57,10 +57,10 @@ public class FreePolyController {
     enumerateFreePolyServiceAsync.enumerateSql(request.getNumberOfBlocks(), request.getSessionId());
   }
 
-  @PostMapping("/v2/getFreePolys")
-  public FreePolyominoesResponse getPolys(@RequestBody FreePolyominoesRequest request) {
-    FreePolyDto freePolyDto = freePolySqlService.findByPolyGroupId(
-        request.getPolysId().toString());
+  @PostMapping("/getFreePolys")
+  public FreePolyominoesResponse getFreePolys(@RequestBody FreePolyominoesRequest request) {
+    FreePolyDto freePolyDto = freePolySqlService.findByPolyHeadId(
+        request.getPolysId().toString(), request.getPolysPerPage(), request.getPage());
     return FreePolyominoesResponse.builder()
         .freePolys(freePolyDto.getFreePolys())
         .numberOfBlocks(freePolyDto.getNumberOfBlocks())

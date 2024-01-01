@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PolyHeadRepository extends JpaRepository<PolyHead, UUID> {
 
+  void deleteBySessionId(String sessionId);
 }

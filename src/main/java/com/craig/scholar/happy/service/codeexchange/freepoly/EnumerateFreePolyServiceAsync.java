@@ -4,6 +4,7 @@ import static com.craig.scholar.happy.controller.FreePolyController.POLY_BATCH_S
 
 import com.craig.scholar.happy.model.FreePolyDto;
 import com.craig.scholar.happy.model.FreePolyominoesResponse;
+import com.craig.scholar.happy.model.PolyHead;
 import com.craig.scholar.happy.service.codeexchange.freepoly.util.EnumerateFreePolyUtil;
 import com.craig.scholar.happy.service.storage.FreePolyRabbitService;
 import com.craig.scholar.happy.service.storage.FreePolySqlService;
@@ -63,17 +64,18 @@ public class EnumerateFreePolyServiceAsync {
         .block();
   }
 
-  public void enumerateSql(int n, String sessionId) {
+  public PolyHead enumerateSql(int n, String sessionId) {
     UUID polyGroupId = UUID.randomUUID();
     List<int[]> polys = enumerateFreePolyService.enumerate(n).stream()
         .toList();
     log.info("Sending data for session: {}. Number of Blocks: {}", sessionId, n);
-    freePolySqlService.savePolys(FreePolyDto.builder()
+    PolyHead polyHead = freePolySqlService.savePolys(FreePolyDto.builder()
         .polysId(polyGroupId)
         .freePolysOld(polys)
         .numberOfBlocks(n)
         .numberOfPolys(polys.size())
         .sessionId(sessionId)
         .build());
+    return polyHead;
   }
 }
