@@ -1,11 +1,13 @@
 package com.craig.scholar.happy.controller;
 
+import com.craig.scholar.happy.model.FreePolyDto;
 import com.craig.scholar.happy.model.FreePolyState;
 import com.craig.scholar.happy.model.FreePolyominoesRequest;
 import com.craig.scholar.happy.model.FreePolyominoesResponse;
 import com.craig.scholar.happy.service.codeexchange.freepoly.EnumerateFreePolyServiceAsync;
 import com.craig.scholar.happy.service.codeexchange.freepoly.util.EnumerateFreePolyUtil;
 import com.craig.scholar.happy.service.storage.FreePolyRabbitService;
+import com.craig.scholar.happy.service.storage.FreePolySqlService;
 import java.util.List;
 import java.util.UUID;
 import lombok.NonNull;
@@ -34,6 +36,9 @@ public class FreePolyController {
   @NonNull
   private final FreePolyRabbitService freePolyRabbitService;
 
+  @NonNull
+  private final FreePolySqlService freePolySqlService;
+
 
   @PostMapping("/enumerate")
   public void enumerate(
@@ -41,6 +46,24 @@ public class FreePolyController {
     enumerateFreePolyServiceAsync.enumerate(request.getNumberOfBlocks(), request.getSessionId());
   }
 
+  @PostMapping("/v2/enumerate")
+  public void enumerateV2(
+      @RequestBody FreePolyominoesRequest request) {
+    enumerateFreePolyServiceAsync.enumerateSql(request.getNumberOfBlocks(), request.getSessionId());
+  }
+
+  @PostMapping("/v2/getFreePolys")
+  public FreePolyominoesResponse getPolys(@RequestBody FreePolyominoesRequest request) {
+    FreePolyDto freePolyDto = freePolySqlService.findByPolyGroupId(
+        request.getPolysId().toString());
+    return FreePolyominoesResponse.builder()
+        .freePolys(freePolyDto.getFreePolys())
+        .numberOfBlocks(freePolyDto.getNumberOfBlocks())
+        .numberOfPolys(freePolyDto.getNumberOfPolys())
+        .polysId(freePolyDto.getPolysId())
+        .sessionId(freePolyDto.getSessionId())
+        .build();
+  }
   @GetMapping(path = "/queue/enumerate/{sessionId}", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
   public @ResponseBody Flux<FreePolyominoesResponse> getEnumerateFlux(
       @PathVariable String sessionId) {
@@ -70,7 +93,7 @@ public class FreePolyController {
 //            .map(l -> l.stream()
 //                .reduce()))
         .map(freePolyDto -> FreePolyominoesResponse.builder()
-            .freePolys(EnumerateFreePolyUtil.getMatrices(freePolyDto.getFreePolys()))
+            .freePolys(EnumerateFreePolyUtil.getMatrices(freePolyDto.getFreePolysOld()))
             .polysId(freePolyDto.getPolysId())
             .numberOfPolys(freePolyDto.getNumberOfPolys())
             .numberOfBlocks(freePolyDto.getNumberOfBlocks())
