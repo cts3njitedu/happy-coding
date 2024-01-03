@@ -27,7 +27,5 @@ public class FreePolyominoesResponse {
     @NonNull
     UUID polysId;
 
-    FreePolyState freePolyState;
-
     String sessionId;
 }

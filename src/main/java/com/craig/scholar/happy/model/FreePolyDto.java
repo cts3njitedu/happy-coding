@@ -12,15 +12,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public class FreePolyDto implements Serializable {
 
-  private final String poly;
-
-  private final Collection<?> polys;
-
-  private final Collection<int[]> freePolysOld;
-
   private final Collection<int[][]> freePolys;
-
-  private final int[][] freePoly;
 
   private final int numberOfBlocks;
 
@@ -29,6 +21,4 @@ public class FreePolyDto implements Serializable {
   private final String sessionId;
 
   private final UUID polysId;
-
-  private final FreePolyState freePolyState;
 }

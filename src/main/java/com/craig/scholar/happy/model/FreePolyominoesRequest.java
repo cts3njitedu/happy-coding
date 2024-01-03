@@ -20,8 +20,4 @@ public class FreePolyominoesRequest {
     UUID polysId;
 
     String sessionId;
-
-    Integer polysPerPage;
-
-    Integer page;
 }
