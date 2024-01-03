@@ -4,6 +4,7 @@ import { TbFlipHorizontal, TbFlipVertical } from "react-icons/tb";
 import './Polys.scss'
 import { FixedSizeList as List } from 'react-window';
 import ndjsonStream from "can-ndjson-stream";
+import { HiArrowSmDown, HiArrowSmLeft, HiArrowSmRight, HiArrowSmUp } from "react-icons/hi";
 
 type State = {
     freePolys: number[][][];
@@ -74,7 +75,7 @@ function Polys() {
             inputDisabled: false
         }))
     }
-    const changeBlockSize = (newBlockSize: string) : void => {
+    const changeBlockSize = (newBlockSize: string): void => {
         setPolyState({
             ...polyState,
             blockSize: newBlockSize
@@ -200,22 +201,96 @@ const enrichFreePolys = (polys: number[][][]): any[] => {
     ))
 }
 
+enum PolyBodyButtonState {
+    RIGHT = 0,
+    LEFT,
+    UP,
+    DOWN
+}
 function PolyBody(props: any) {
     const svgWidth = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
     const svgHeight = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
-    const widthMultiplier: number = props.numberOfBlocks >= 4 ? 5 : 1;
+    const [widthMultiplier, setWidthMultiplier] = useState(() => props.numberOfBlocks >= 4 ? 5 : 1)
+    const [heightMultiplier, setHeightMultiplier] = useState(1);
     const freePolys = props.freePolys;
+    const [isHorizontal, setIsHorizontal] = useState(true);
+    const [buttonGroupInfos, setButtonGroupInfos] = useState([
+        {
+            direction: PolyBodyButtonState.RIGHT,
+            style: {
+                backgroundColor: "blue"
+            },
+            icon: <HiArrowSmRight />
+        },
+        {
+            direction: PolyBodyButtonState.DOWN,
+            style: {
+                backgroundColor: "white"
+            },
+            icon: <HiArrowSmDown />
+        },
+    ])
+    const handleDirectionChange = (e: FormEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        let buttonId = parseInt(e.currentTarget.id);
+        console.log("Button id:", buttonId);
+        setButtonGroupInfos(() => buttonGroupInfos.map(buttonInfo => {
+            let newButtonInfo = {
+                ...buttonInfo
+            }
+            if (buttonInfo.direction === buttonId) {
+                if (PolyBodyButtonState.RIGHT === buttonId) {
+                    setWidthMultiplier(props.numberOfBlocks >= 4 ? 5 : 1);
+                    setHeightMultiplier(1);
+                    setIsHorizontal(true); 
+                } else {
+                    setHeightMultiplier(props.numberOfBlocks >= 4 ? 5 : 1);
+                    setWidthMultiplier(1);
+                    setIsHorizontal(false); 
+                }
+                newButtonInfo = {
+                    ...newButtonInfo,
+                    style: {
+                        ...newButtonInfo.style,
+                        backgroundColor: "blue"
+                    }
+                }
+            } else {
+                newButtonInfo = {
+                    ...newButtonInfo,
+                    style: {
+                        ...newButtonInfo.style,
+                        backgroundColor: "white"
+                    }
+                }
+            }
+            return newButtonInfo;
+        }));
+    }
     return (
         <>
+            <div className="virtualListButtonClass">
+                {
+                    buttonGroupInfos.map(buttonInfo => {
+                        return <button
+                            key={PolyBodyButtonState[buttonInfo.direction]}
+                            id={buttonInfo.direction.toString()}
+                            style={buttonInfo.style}
+                            onClick={handleDirectionChange}>{buttonInfo.icon}
+                        </button>
+                    })
+                }
+            </div>
             <div className="bodyClass">
                 {
                     <List
-                        height={svgHeight}
+                        height={heightMultiplier*svgHeight}
                         itemCount={props.numberOfPolys}
                         itemSize={svgWidth}
-                        layout="horizontal"
+
+                        layout={isHorizontal ? "horizontal" : "vertical"}
                         className="virtualListClass"
-                        width={widthMultiplier*svgWidth}
+                        width={widthMultiplier * svgWidth}
                         itemData={{
                             freePolys: props.freePolys,
                             blockSize: props.blockSize,

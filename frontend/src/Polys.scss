@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    background-color: aqua;
     width: 100vw;
     height: 100vh;
 }
@@ -92,17 +91,19 @@
 
 .bodyClass {
     display: flex;
-    flex-basis: 95%;
+    flex-basis: 90%;
     flex-flow: row wrap;
     justify-content: center;
 }
 
-// .virtualListClass {
-//     display: flex;
-//     flex-direction: row;
-//     justify-content: center;
-//     border: 1px solid black; 
-// }
+.virtualListButtonClass {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-basis: 5%;
+    width: 100%;
+    align-items: center;
+}
 
 .svgClass {
     font-size: larger;
