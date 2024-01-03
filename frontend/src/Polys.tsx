@@ -4,7 +4,7 @@ import { TbFlipHorizontal, TbFlipVertical } from "react-icons/tb";
 import './Polys.scss'
 import { FixedSizeList as List } from 'react-window';
 import ndjsonStream from "can-ndjson-stream";
-import { HiArrowSmDown, HiArrowSmLeft, HiArrowSmRight, HiArrowSmUp } from "react-icons/hi";
+import { HiArrowSmDown, HiArrowSmRight } from "react-icons/hi";
 
 type State = {
     freePolys: number[][][];
