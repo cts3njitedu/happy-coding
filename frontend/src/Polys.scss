@@ -83,6 +83,8 @@
     flex-direction: row;
     justify-content: center;
     flex-basis: 5%;
+    flex-grow: 0;
+    border: 1px solid black;
     background-color: rgb(55, 55, 217);
     width: 100%;
 }
@@ -237,6 +239,8 @@
 .subHeaderClass {
     display: flex;
     flex-direction: row;
+    flex-basis: 5%;
+    flex-grow: 0;
     width: 100%;
     align-items: center;
     justify-content: space-evenly;
