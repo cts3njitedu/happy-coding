@@ -1,4 +1,4 @@
-import { MouseEvent, FormEvent, useState, useRef, Suspense } from "react";
+import { MouseEvent, FormEvent, useState, useRef } from "react";
 import { GrRotateRight } from "react-icons/gr";
 import { TbFlipHorizontal, TbFlipVertical } from "react-icons/tb";
 import './Polys.scss'
@@ -12,32 +12,31 @@ type State = {
     blockSize: string;
     inputDisabled: boolean;
     polysId: any;
-    isFinishEnumerating: boolean
 };
 
 const POLY_ENDPOINT_ENUMERATE: string = '/api/poly/enumerate';
 
+const DEFAULT_BLOCK_SIZE = "50";
+
 function Polys() {
     const [polyState, setPolyState] = useState<State>({
         freePolys: [],
-        blockSize: "50",
+        blockSize: DEFAULT_BLOCK_SIZE,
         numberOfBlocks: "",
         numberOfPolys: "",
         inputDisabled: false,
-        polysId: "",
-        isFinishEnumerating: false
+        polysId: ""
     })
     const [sessionId] = useState(() => crypto.randomUUID());
     const handleClick = (numberOfBlocks: number): void => {
         setPolyState({
             ...polyState,
             freePolys: [],
-            blockSize: "50",
+            blockSize: DEFAULT_BLOCK_SIZE,
             numberOfBlocks: "",
             numberOfPolys: "",
             inputDisabled: true,
-            polysId: "",
-            isFinishEnumerating: false
+            polysId: ""
         })
         if (numberOfBlocks < 16) {
             callEnumerateApi(POLY_ENDPOINT_ENUMERATE, { numberOfBlocks, sessionId }, {
@@ -93,7 +92,6 @@ function Polys() {
                             polysId={polyState.polysId}
                             enableInput={enableInput}
                             inputDisabled={polyState.inputDisabled}
-                            isFinishEnumerating={polyState.isFinishEnumerating}
                         />
 
                     </>}
@@ -177,7 +175,7 @@ const svgKey = (divKey: string) => {
 }
 
 const enrichFreePolys = (polys: number[][][]): any[] => {
-    return polys.map((poly: number[][], index: number) => (
+    return polys.map((poly: number[][]) => (
         {
             id: crypto.randomUUID(),
             matrix: poly
