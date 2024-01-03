@@ -82,23 +82,19 @@ function Polys() {
                 <PolyHead handleClick={handleClick} inputDisabled={polyState.inputDisabled} />
                 {polyState.numberOfPolys.length != 0 &&
                     <>
-                        <Suspense fallback={<Loading />}>
-                            <PolySubHead
-                                numberOfBlocks={polyState.numberOfBlocks}
-                                numberOfPolys={polyState.numberOfPolys}/>
-                        </Suspense>
-                        <Suspense fallback={<Loading />}>
-                            {!polyState.inputDisabled && <PolyBody
-                                blockSize={polyState.blockSize}
-                                freePolys={polyState.freePolys}
-                                numberOfBlocks={polyState.numberOfBlocks}
-                                numberOfPolys={polyState.numberOfPolys}
-                                polysId={polyState.polysId}
-                                enableInput={enableInput}
-                                inputDisabled={polyState.inputDisabled}
-                                isFinishEnumerating={polyState.isFinishEnumerating}
-                            />}
-                        </Suspense>
+                        <PolySubHead
+                            numberOfBlocks={polyState.numberOfBlocks}
+                            numberOfPolys={polyState.numberOfPolys} />
+                        <PolyBody
+                            blockSize={polyState.blockSize}
+                            freePolys={polyState.freePolys}
+                            numberOfBlocks={polyState.numberOfBlocks}
+                            numberOfPolys={polyState.numberOfPolys}
+                            polysId={polyState.polysId}
+                            enableInput={enableInput}
+                            inputDisabled={polyState.inputDisabled}
+                            isFinishEnumerating={polyState.isFinishEnumerating}
+                        />
 
                     </>}
             </div>
@@ -190,8 +186,8 @@ const enrichFreePolys = (polys: number[][][]): any[] => {
 }
 
 function PolyBody(props: any) {
-    const svgWidth = 2* parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
-    const svgHeight = 2*parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
+    const svgWidth = 1.5 * parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
+    const svgHeight = 1.5 * parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
     const freePolys = props.freePolys;
     return (
         <>
@@ -231,7 +227,7 @@ function Poly(props: any) {
     }
     const freePoly = props.data.freePolys[props.index];
     const poly: number[][] = freePoly.matrix;
-    const index:number = freePoly.id;
+    const index: number = freePoly.id;
     const [fill, setFill] = useState(genHexString());
     const [svgRotate, setSvgRotate] = useState("rotate(0), scale(1,1)");
     const [degree, setDegree] = useState(0);
@@ -321,10 +317,6 @@ const genHexString = () => {
         output += hex.charAt(Math.floor(Math.random() * hex.length));
     }
     return output;
-}
-
-function Loading() {
-    return <div className="bodyClass" style={{width:'100vh', height: '100vh', fontSize:'xx-large', border:'1px solid black'}}> Loading...</div>;
 }
 
 export default Polys;
