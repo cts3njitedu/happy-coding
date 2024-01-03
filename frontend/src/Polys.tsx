@@ -186,8 +186,9 @@ const enrichFreePolys = (polys: number[][][]): any[] => {
 }
 
 function PolyBody(props: any) {
-    const svgWidth = 1.5 * parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
-    const svgHeight = 1.5 * parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
+    const svgWidth = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
+    const svgHeight = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
+    const widthMultiplier: number = 5;
     const freePolys = props.freePolys;
     return (
         <>
@@ -198,7 +199,7 @@ function PolyBody(props: any) {
                         itemCount={props.numberOfPolys}
                         itemSize={svgWidth}
                         layout="horizontal"
-                        width={svgWidth}
+                        width={widthMultiplier*svgWidth}
                         itemData={{
                             freePolys: props.freePolys,
                             blockSize: props.blockSize,
