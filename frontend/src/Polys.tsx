@@ -74,6 +74,12 @@ function Polys() {
             inputDisabled: false
         }))
     }
+    const changeBlockSize = (newBlockSize: string) : void => {
+        setPolyState({
+            ...polyState,
+            blockSize: newBlockSize
+        })
+    }
     return (
         <>
             <div className="polyClass">
@@ -83,7 +89,9 @@ function Polys() {
                     <>
                         <PolySubHead
                             numberOfBlocks={polyState.numberOfBlocks}
-                            numberOfPolys={polyState.numberOfPolys} />
+                            numberOfPolys={polyState.numberOfPolys}
+                            blockSize={polyState.blockSize}
+                            changeBlockSize={changeBlockSize} />
                         <PolyBody
                             blockSize={polyState.blockSize}
                             freePolys={polyState.freePolys}
@@ -142,11 +150,20 @@ const callEnumerateApi = (uri: string, req: any, headers: any) => {
 
 function PolySubHead(props: any) {
     const isDisplay = props.numberOfBlocks && props.numberOfPolys;
+    const changeBlockSize = (e: FormEvent<HTMLInputElement>): void => {
+        if (e.code == 'Enter') {
+            props.changeBlockSize(e.currentTarget.value);
+        }
+    }
     return (
         <>
             {isDisplay && <div className="subHeaderClass">
                 <p>Number Of Blocks: {props.numberOfBlocks}</p>
                 <p>Number Of Free Polyominoes: {props.numberOfPolys}</p>
+                <label>
+                    Block Size:
+                    <input type="text" defaultValue={props.blockSize} onKeyDown={changeBlockSize}></input>
+                </label>
             </div>}
         </>
     )
@@ -186,7 +203,7 @@ const enrichFreePolys = (polys: number[][][]): any[] => {
 function PolyBody(props: any) {
     const svgWidth = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
     const svgHeight = parseInt(props.blockSize) * (parseInt(props.numberOfBlocks) + 1);
-    const widthMultiplier: number = 5;
+    const widthMultiplier: number = props.numberOfBlocks >= 4 ? 5 : 1;
     const freePolys = props.freePolys;
     return (
         <>
@@ -197,6 +214,7 @@ function PolyBody(props: any) {
                         itemCount={props.numberOfPolys}
                         itemSize={svgWidth}
                         layout="horizontal"
+                        className="virtualListClass"
                         width={widthMultiplier*svgWidth}
                         itemData={{
                             freePolys: props.freePolys,
