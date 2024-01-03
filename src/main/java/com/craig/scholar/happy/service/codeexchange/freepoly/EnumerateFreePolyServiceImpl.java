@@ -14,6 +14,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class EnumerateFreePolyServiceImpl implements EnumerateFreePolyService<int[]> {
 
+
+  /*
+    1. Initialize a poly of one block
+    2. Iterate from 2 until n
+    3. For each i between 2 and n expand matrix up, right, down and left
+    4. For each new matrix get all transformations (matrix must be the smallest matrix that contains all rows and columns)
+    5. If no transformation exist in cache then new poly else poly already accounted for.
+   */
   @Override
   public Collection<int[]> enumerate(int n) {
     if (n < 0 || n > 15) {
