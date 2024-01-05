@@ -1,7 +1,5 @@
 package com.craig.scholar.happy.service.codeexchange.freepoly;
 
-import static com.craig.scholar.happy.controller.FreePolyController.POLY_BATCH_SIZE;
-
 import com.craig.scholar.happy.model.FreePolyominoesResponse;
 import com.craig.scholar.happy.service.codeexchange.freepoly.util.EnumerateFreePolyUtil;
 import java.util.List;
@@ -17,6 +15,8 @@ import reactor.core.publisher.Flux;
 @Slf4j
 public class EnumerateFreePolyServiceAsync {
 
+  public static final int POLY_BATCH_SIZE = 500000;
+
   @NonNull
   private final EnumerateFreePolyServiceImpl enumerateFreePolyService;
 
@@ -27,6 +27,7 @@ public class EnumerateFreePolyServiceAsync {
         .toList();
     log.info("Sending data");
     return Flux.fromIterable(polys)
+        .limitRate(POLY_BATCH_SIZE, POLY_BATCH_SIZE / 2)
         .buffer(POLY_BATCH_SIZE)
         .doOnNext(polyList -> log.info("Number of polys: {}", polyList.size()))
         .map(polyList -> FreePolyominoesResponse.builder()

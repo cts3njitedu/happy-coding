@@ -19,7 +19,6 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 public class FreePolyController {
 
-  public static final int POLY_BATCH_SIZE = 500000;
   @NonNull
   private final EnumerateFreePolyServiceAsync enumerateFreePolyServiceAsync;
 
