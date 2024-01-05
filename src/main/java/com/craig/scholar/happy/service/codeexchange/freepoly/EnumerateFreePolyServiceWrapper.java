@@ -13,7 +13,7 @@ import reactor.core.publisher.Flux;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class EnumerateFreePolyServiceAsync {
+public class EnumerateFreePolyServiceWrapper {
 
   public static final int POLY_BATCH_SIZE = 500000;
 

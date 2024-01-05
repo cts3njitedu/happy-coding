@@ -2,7 +2,7 @@ package com.craig.scholar.happy.controller;
 
 import com.craig.scholar.happy.model.FreePolyominoesRequest;
 import com.craig.scholar.happy.model.FreePolyominoesResponse;
-import com.craig.scholar.happy.service.codeexchange.freepoly.EnumerateFreePolyServiceAsync;
+import com.craig.scholar.happy.service.codeexchange.freepoly.EnumerateFreePolyServiceWrapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +20,12 @@ import reactor.core.publisher.Flux;
 public class FreePolyController {
 
   @NonNull
-  private final EnumerateFreePolyServiceAsync enumerateFreePolyServiceAsync;
+  private final EnumerateFreePolyServiceWrapper enumerateFreePolyServiceWrapper;
 
   @PostMapping(path = "/enumerate", produces = MediaType.APPLICATION_NDJSON_VALUE)
   public Flux<FreePolyominoesResponse> enumerate(
       @RequestBody FreePolyominoesRequest request) {
-    return enumerateFreePolyServiceAsync.enumerate(request.getNumberOfBlocks(),
+    return enumerateFreePolyServiceWrapper.enumerate(request.getNumberOfBlocks(),
         request.getSessionId());
   }
 
