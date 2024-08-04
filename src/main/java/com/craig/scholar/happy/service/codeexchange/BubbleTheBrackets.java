@@ -23,24 +23,6 @@ public class BubbleTheBrackets {
             '{', '}'
     );
 
-    public Set<String> getBubbleBrackets(String brackets) {
-        Node node = new Node();
-        Stack<Node> s = new Stack<>();
-        s.push(node);
-        for (int i = 0; i < brackets.length(); i++) {
-            if (BRACKETS.containsKey(brackets.charAt(i))) {
-                Node child = new Node();
-                child.openBracket += brackets.charAt(i);
-                child.closeBracket += BRACKETS.get(brackets.charAt(i));
-                s.peek().children.add(child);
-                s.push(child);
-            } else {
-                s.pop();
-            }
-        }
-        return new HashSet<>(getBubbleBrackets(node));
-    }
-
     public Set<String> getBubbleBracketsV2(String brackets) {
         if (brackets == null) return Set.of();
         Map<Integer, List<Set<String>>> m = new HashMap<>();
@@ -63,6 +45,23 @@ public class BubbleTheBrackets {
         return getBubbles(m.get(1), "");
     }
 
+    public Set<String> getBubbleBrackets(String brackets) {
+        Node node = new Node();
+        Stack<Node> s = new Stack<>();
+        s.push(node);
+        for (int i = 0; i < brackets.length(); i++) {
+            if (BRACKETS.containsKey(brackets.charAt(i))) {
+                Node child = new Node();
+                child.openBracket += brackets.charAt(i);
+                child.closeBracket += BRACKETS.get(brackets.charAt(i));
+                s.peek().children.add(child);
+                s.push(child);
+            } else {
+                s.pop();
+            }
+        }
+        return new HashSet<>(getBubbleBrackets(node));
+    }
 
     private Set<String> getBubbleBrackets(Node node) {
         if (node.children.isEmpty()) return Set.of(node.openBracket + node.closeBracket);
