@@ -1,6 +1,7 @@
 package com.craig.scholar.happy.service.codeexchange;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,25 +41,46 @@ public class BubbleTheBrackets {
         return new HashSet<>(getBubbleBrackets(node));
     }
 
-    private List<String> getBubbleBrackets(Node node) {
-        if (node.children.isEmpty()) return List.of(node.openBracket + node.closeBracket);
-        List<List<String>> childBubbles = node.children.stream()
+    public Set<String> getBubbleBracketsV2(String brackets) {
+        Map<Integer, List<Set<String>>> m = new HashMap<>();
+        Stack<Character> s = new Stack<>();
+        int c = 0;
+        for (int i = 0; i < brackets.length(); i++) {
+            char bc = brackets.charAt(i);
+            if (BRACKETS.containsKey(bc)) {
+                m.computeIfAbsent(++c, k -> new ArrayList<>());
+                s.push(bc);
+            } else {
+                List<Set<String>> cb = m.remove(c + 1);
+                char cc = s.pop();
+                m.get(c--).add(getBubbles(cb, "")
+                        .stream()
+                        .map(b -> cc + b + BRACKETS.get(cc))
+                        .collect(Collectors.toSet()));
+            }
+        }
+        return getBubbles(m.get(1), "");
+    }
+
+
+    private Set<String> getBubbleBrackets(Node node) {
+        if (node.children.isEmpty()) return Set.of(node.openBracket + node.closeBracket);
+        List<Set<String>> childBubbles = node.children.stream()
                 .map(this::getBubbleBrackets)
                 .collect(Collectors.toList());
         return getBubbles(childBubbles, "")
                 .stream()
                 .map(b -> node.openBracket + b + node.closeBracket)
-                .distinct()
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
-    private List<String> getBubbles(List<List<String>> childBubbles, String s) {
-        if (childBubbles.isEmpty()) return List.of(s);
-        List<String> mergedBubbles = new ArrayList<>();
+    private Set<String> getBubbles(List<Set<String>> childBubbles, String s) {
+        if (childBubbles == null || childBubbles.isEmpty()) return Set.of(s);
+        Set<String> mergedBubbles = new HashSet<>();
         for (int i = 0; i < childBubbles.size(); i++) {
-            List<String> b = childBubbles.get(i);
+            Set<String> b = childBubbles.get(i);
             for (String string : b) {
-                List<List<String>> temp = new ArrayList<>();
+                List<Set<String>> temp = new ArrayList<>();
                 temp.addAll(childBubbles.subList(0, i));
                 temp.addAll(childBubbles.subList(i + 1, childBubbles.size()));
                 mergedBubbles.addAll(getBubbles(temp, s + string));

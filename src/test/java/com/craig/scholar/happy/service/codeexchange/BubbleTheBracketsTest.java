@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class BubbleTheBracketsTest {
 
@@ -43,6 +43,13 @@ class BubbleTheBracketsTest {
     @MethodSource("bubbleCases")
     void getBubbleBrackets(String brackets, Set<String> expected) {
         assertThat(bubbleTheBrackets.getBubbleBrackets(brackets))
+                .containsOnlyOnceElementsOf(expected);
+    }
+
+    @ParameterizedTest
+    @MethodSource("bubbleCases")
+    void getBubbleBracketsV2(String brackets, Set<String> expected) {
+        assertThat(bubbleTheBrackets.getBubbleBracketsV2(brackets))
                 .containsOnlyOnceElementsOf(expected);
     }
 }
