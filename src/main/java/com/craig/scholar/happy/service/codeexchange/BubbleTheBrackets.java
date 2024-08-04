@@ -42,6 +42,7 @@ public class BubbleTheBrackets {
     }
 
     public Set<String> getBubbleBracketsV2(String brackets) {
+        if (brackets == null) return Set.of();
         Map<Integer, List<Set<String>>> m = new HashMap<>();
         Stack<Character> s = new Stack<>();
         int c = 0;

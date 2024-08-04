@@ -16,6 +16,14 @@ class BubbleTheBracketsTest {
     private static Stream<Arguments> bubbleCases() {
         return Stream.of(
                 Arguments.of(
+                        null,
+                        Set.of()
+                ),
+                Arguments.of(
+                        "()()",
+                        Set.of("()()")
+                ),
+                Arguments.of(
                         "()(())",
                         Set.of("(())()", "()(())")
                 ),
