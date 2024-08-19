@@ -54,8 +54,6 @@ public class MaximumSummedSubsequenceWithNonAdjacentItems implements
     }
     MaxSubsequence m = l.stream()
         .max(Comparator.comparing(MaxSubsequence::sum))
-        .stream()
-        .findFirst()
         .map(max -> l.stream()
             .filter(maxSubsequence -> maxSubsequence.sum == max.sum)
             .reduce(new MaxSubsequence(max.sum, new ArrayList<>()), (all, maxSubsequence) -> {
