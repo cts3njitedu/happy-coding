@@ -1,6 +1,5 @@
 package com.craig.scholar.happy.service.codeexchange;
 
-import com.craig.scholar.happy.model.HappyArray;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -8,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MaximumSummedSubsequenceWithNonAdjacentItems implements
     HappyCodingV2<int[], List<List<List<Integer>>>> {
@@ -15,17 +15,15 @@ public class MaximumSummedSubsequenceWithNonAdjacentItems implements
   @Override
   public List<List<List<Integer>>> execute(int[] arr) {
     Map<Integer, MaxSubsequence> mem = new HashMap<>();
-    for (int i = 0; i<arr.length; i++) {
-      execute(arr, i, mem);
-    }
-    int max = mem.values()
+    return IntStream.range(0, arr.length)
+        .mapToObj(i -> execute(arr, i, mem))
+        .collect(Collectors.groupingBy(MaxSubsequence::sum))
+        .entrySet()
         .stream()
-        .map(MaxSubsequence::sum)
-        .max(Comparator.comparingInt(i -> i))
-        .orElse(Integer.MIN_VALUE);
-    return mem.values()
+        .max(Entry.comparingByKey())
+        .map(Entry::getValue)
+        .orElse(List.of())
         .stream()
-        .filter(m -> m.sum == max)
         .map(MaxSubsequence::sequences)
         .reduce(new ArrayList<>(), (total, l) -> {
           total.addAll(l);
