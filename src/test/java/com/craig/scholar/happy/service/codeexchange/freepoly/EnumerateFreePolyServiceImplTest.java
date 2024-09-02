@@ -14,11 +14,16 @@ class EnumerateFreePolyServiceImplTest extends EnumerateFreePolyServiceTest {
   }
 
   @Test
+  void enumerate_individual() {
+    System.out.println(enumerateFreePolyService.enumerate(10).size());
+  }
+
+  @Test
   void enumerateFreePolyominoes_NumberGreaterThan15_Exception() {
-    assertThatThrownBy(() -> enumerateFreePolyService.enumerate(16))
+    assertThatThrownBy(() -> enumerateFreePolyService.enumerate(17))
         .isInstanceOf(IllegalArgumentException.class)
         .hasMessageContaining("Please pass in positive number less than or equal")
-        .hasMessageContaining("16");
+        .hasMessageContaining("17");
   }
 
   @Test

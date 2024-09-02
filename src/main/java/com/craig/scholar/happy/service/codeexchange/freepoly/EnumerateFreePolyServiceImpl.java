@@ -24,7 +24,7 @@ public class EnumerateFreePolyServiceImpl implements EnumerateFreePolyService<in
    */
   @Override
   public Collection<int[]> enumerate(int n) {
-    if (n < 0 || n > 15) {
+    if (n < 0 || n > 16) {
       throw new IllegalArgumentException(String.format("Number %d is greater than 15."
           + " Please pass in positive number less than or equal to 15.", n));
     }
