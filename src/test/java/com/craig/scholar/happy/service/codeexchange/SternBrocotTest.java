@@ -143,6 +143,12 @@ class SternBrocotTest {
     assertAndVerify(tree);
   }
 
+  @Test
+  void getTree_BigInteger() {
+    SternBrocotTree<BigFraction, BigInteger> tree = sternBrocot.getTree(BigInteger.valueOf(4));
+    assertAndVerifyBig(tree);
+  }
+
   private void assertAndVerify(SternBrocotTree<Fraction, Integer> tree) {
     assertThat(tree).isNotNull();
     Queue<SternBrocotTree<Fraction, Integer>> q = new LinkedList<>();
@@ -151,6 +157,32 @@ class SternBrocotTest {
     int i = 0;
     while (!q.isEmpty()) {
       SternBrocotTree<Fraction, Integer> n = q.poll();
+      FractionNodeTest fractionNodeTest = fractionNodeTests[i++];
+      assertThat(n.getFraction().n()).isEqualTo(fractionNodeTest.n());
+      assertThat(n.getFraction().d()).isEqualTo(fractionNodeTest.d());
+      assertThat(n.getLevel()).isEqualTo(fractionNodeTest.level());
+      assertThat(n.getPosition()).isEqualTo(fractionNodeTest.position());
+      assertThat(n.getLeftFraction()).isNull();
+      assertThat(n.getRightFraction()).isNull();
+      if (n.getLeft() != null) {
+        q.add(n.getLeft());
+      }
+      if (n.getRight() != null) {
+        q.add(n.getRight());
+      }
+    }
+    assertThat(fractionNodeTests)
+        .hasSize(i);
+  }
+
+  private void assertAndVerifyBig(SternBrocotTree<BigFraction, BigInteger> tree) {
+    assertThat(tree).isNotNull();
+    Queue<SternBrocotTree<BigFraction, BigInteger>> q = new LinkedList<>();
+    q.add(tree);
+    FractionNodeTest[] fractionNodeTests = getFractionNodeTests();
+    int i = 0;
+    while (!q.isEmpty()) {
+      SternBrocotTree<BigFraction, BigInteger> n = q.poll();
       FractionNodeTest fractionNodeTest = fractionNodeTests[i++];
       assertThat(n.getFraction().n()).isEqualTo(fractionNodeTest.n());
       assertThat(n.getFraction().d()).isEqualTo(fractionNodeTest.d());
@@ -186,6 +218,26 @@ class SternBrocotTest {
         new FractionNodeTest(5, 3, 4, 6),
         new FractionNodeTest(5, 2, 4, 7),
         new FractionNodeTest(4, 1, 4, 8)
+    };
+  }
+
+  BigFractionNodeTest[] getBigFractionNodeTests() {
+    return new BigFractionNodeTest[]{
+        new BigFractionNodeTest("1", "1", "1", "1"),
+        new BigFractionNodeTest("1", "2", "2", "1"),
+        new BigFractionNodeTest("2", "1", "2", "2"),
+        new BigFractionNodeTest("1", "3", "3", "1"),
+        new BigFractionNodeTest("2", "3", "3", "2"),
+        new BigFractionNodeTest("3", "2", "3", "3"),
+        new BigFractionNodeTest("3", "1", "3", "4"),
+        new BigFractionNodeTest("1", "4", "4", "1"),
+        new BigFractionNodeTest("2", "5", "4", "2"),
+        new BigFractionNodeTest("3", "5", "4", "3"),
+        new BigFractionNodeTest("3", "4", "4", "4"),
+        new BigFractionNodeTest("4", "3", "4", "5"),
+        new BigFractionNodeTest("5", "3", "4", "6"),
+        new BigFractionNodeTest("5", "2", "4", "7"),
+        new BigFractionNodeTest("4", "1", "4", "8")
     };
   }
 
@@ -246,5 +298,17 @@ class SternBrocotTest {
 
   record BigFractionNodeTest(String n, String d, String level, String position) {
 
+  }
+
+  @Test
+  void findFraction_Single() {
+    SternBrocotTree<BigFraction, BigInteger> tree = sternBrocot.findFractionPath(
+        new BigFraction("5", "3"));
+    System.out.println("Done");
+  }
+
+  @Test
+  void getTree() {
+    sternBrocot.getTree();
   }
 }

@@ -1,6 +1,9 @@
 package com.craig.scholar.happy.service.codeexchange;
 
 
+import static com.craig.scholar.happy.service.codeexchange.SternBrocot.SternBrocotSearch.FRACTION;
+import static com.craig.scholar.happy.service.codeexchange.SternBrocot.SternBrocotSearch.LEVEL;
+import static com.craig.scholar.happy.service.codeexchange.SternBrocot.SternBrocotSearch.PATH;
 import static java.math.BigInteger.ONE;
 import static java.math.BigInteger.TWO;
 import static java.math.BigInteger.ZERO;
@@ -16,6 +19,40 @@ import java.util.Queue;
 
 public class SternBrocot implements HappyCodingV2<Integer, Void> {
 
+  enum SternBrocotSearch {
+    PATH,
+    FRACTION,
+    LEVEL
+  }
+
+  record SternBrocotInput(
+      BigFraction fraction,
+      BigFraction l,
+      BigFraction m,
+      BigFraction r,
+      BigInteger nextLevel,
+      BigInteger position,
+      SternBrocotSearch sternBrocotSearch,
+      BigInteger level
+  ) {
+
+    public SternBrocotInput(BigFraction l, BigFraction r, BigInteger position,
+        BigInteger nextLevel) {
+      this(null, l, null, r, nextLevel, position, null, null);
+    }
+
+    public SternBrocotInput(BigFraction fraction, BigFraction l, BigFraction r,
+        BigInteger nextLevel,
+        BigInteger position, SternBrocotSearch sternBrocotSearch) {
+      this(fraction, l, null, r, nextLevel, position, sternBrocotSearch, null);
+    }
+
+    public SternBrocotInput(BigFraction l, BigFraction r, BigInteger nextLevel, BigInteger position,
+        SternBrocotSearch sternBrocotSearch, BigInteger level) {
+      this(null, l, null, r, nextLevel, position, sternBrocotSearch, level);
+    }
+  }
+
   @Override
   public Void execute(Integer n) {
     sternBrocot(new Fraction[]{new Fraction(0, 1), new Fraction(1, 0)}, n);
@@ -26,29 +63,79 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
     if (ZERO.compareTo(fraction.d()) == 0) {
       throw new IllegalArgumentException(String.format("Denominator is zero for : %s", fraction));
     }
-    return findFraction(fraction, new BigFraction(ZERO, ONE), null, new BigFraction(ONE, ZERO), ONE,
-        ONE);
+    return getTree(new SternBrocotInput(fraction, new BigFraction(ZERO, ONE),
+        new BigFraction(ONE, ZERO), ONE, ONE, FRACTION));
   }
 
-  private SternBrocotTree<BigFraction, BigInteger> findFraction(BigFraction fraction, BigFraction l,
-      BigFraction m,
-      BigFraction r, BigInteger nextLevel, BigInteger position) {
-    SternBrocotTree<BigFraction, BigInteger> tree = new SternBrocotTree<>(l,
-        Objects.requireNonNullElseGet(m, () -> add(l, r)), r,
-        nextLevel, position);
-    if (tree.getFraction().isSame(fraction)) {
-      return new SternBrocotTree<>(null, tree.getFraction(), null, nextLevel, position);
-    } else if (tree.getFraction().isLarger(fraction)) {
-      return findFraction(fraction, tree.getLeftFraction(),
-          add(tree.getLeftFraction(), tree.getFraction()), tree.getFraction(),
-          tree.getLevel().add(ONE),
-          TWO.multiply(position).subtract(ONE));
-    } else if (tree.getFraction().isSmaller(fraction)) {
-      return findFraction(fraction, tree.getFraction(),
-          add(tree.getFraction(), tree.getRightFraction()), tree.getRightFraction(),
-          tree.getLevel().add(ONE), TWO.multiply(position));
+  public SternBrocotTree<BigFraction, BigInteger> findFractionPath(BigFraction fraction) {
+    if (ZERO.compareTo(fraction.d()) == 0) {
+      throw new IllegalArgumentException(String.format("Denominator is zero for : %s", fraction));
     }
-    return null;
+    return getTree(new SternBrocotInput(fraction, new BigFraction(ZERO, ONE),
+        new BigFraction(ONE, ZERO), ONE, ONE, PATH));
+  }
+
+  public SternBrocotTree<BigFraction, BigInteger> getTree(BigInteger level) {
+    return getTree(new SternBrocotInput(new BigFraction(ZERO, ONE),
+        new BigFraction(ONE, ZERO), ONE, ONE, LEVEL, level));
+  }
+
+  public void getTree() {
+    getTree(new SternBrocotInput(new BigFraction(ZERO, ONE),
+        new BigFraction(ONE, ZERO), ONE, ONE));
+  }
+
+  private SternBrocotTree<BigFraction, BigInteger> getTree(SternBrocotInput input) {
+    if (LEVEL.equals(input.sternBrocotSearch)) {
+      if (input.nextLevel.compareTo(input.level) > 0) {
+        return null;
+      }
+    }
+    SternBrocotTree<BigFraction, BigInteger> tree = new SternBrocotTree<>(input.l,
+        Objects.requireNonNullElseGet(input.m, () -> add(input.l, input.r)), input.r,
+        input.nextLevel, input.position);
+    if (input.sternBrocotSearch == null) {
+      System.out.println(tree.getFraction());
+    }
+    if ((PATH.equals(input.sternBrocotSearch) || FRACTION.equals(input.sternBrocotSearch))
+        && tree.getFraction().isSame(input.fraction)) {
+      return new SternBrocotTree<>(null, tree.getFraction(), null, input.nextLevel, input.position);
+    }
+
+    boolean searchNotPathAndFraction =
+        !PATH.equals(input.sternBrocotSearch) && !FRACTION.equals(input.sternBrocotSearch);
+    if (searchNotPathAndFraction
+        || tree.getFraction().isLarger(input.fraction)) {
+      SternBrocotTree<BigFraction, BigInteger> left = getTree(
+          new SternBrocotInput(input.fraction, tree.getLeftFraction(),
+              add(tree.getLeftFraction(), tree.getFraction()),
+              tree.getFraction(), tree.getLevel().add(ONE),
+              TWO.multiply(input.position).subtract(ONE), input.sternBrocotSearch, input.level));
+      if (!FRACTION.equals(input.sternBrocotSearch)) {
+        tree.setLeft(left);
+      } else {
+        return left;
+      }
+    }
+    if (searchNotPathAndFraction
+        || tree.getFraction().isSmaller(input.fraction)) {
+      SternBrocotTree<BigFraction, BigInteger> right = getTree(
+          new SternBrocotInput(input.fraction, tree.getFraction(),
+              add(tree.getFraction(), tree.getRightFraction()),
+              tree.getRightFraction(), tree.getLevel().add(ONE),
+              TWO.multiply(input.position), input.sternBrocotSearch, input.level));
+      if (!FRACTION.equals(input.sternBrocotSearch)) {
+        tree.setRight(right);
+      } else {
+        return right;
+      }
+    }
+    tree.setLeftFraction(null);
+    tree.setRightFraction(null);
+    if (input.sternBrocotSearch == null) {
+      return null;
+    }
+    return tree;
   }
 
   public SternBrocotTree<Fraction, Integer> executeTreeRecursion(int level) {
