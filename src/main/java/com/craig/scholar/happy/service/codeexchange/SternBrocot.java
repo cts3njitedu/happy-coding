@@ -5,10 +5,10 @@ import com.craig.scholar.happy.model.Fraction;
 import com.craig.scholar.happy.model.SternBrocotTree;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
 public class SternBrocot implements HappyCodingV2<Integer, Void> {
-
 
 
   @Override
@@ -17,9 +17,35 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
     return null;
   }
 
+  public SternBrocotTree<Fraction> executeTreeRecursion(int level) {
+    return executeTreeRecursion(new Fraction(0, 1), null,
+        new Fraction(1, 0), 1, level, 1);
+  }
+
+  public SternBrocotTree<Fraction> executeTreeRecursion(Fraction l, Fraction m, Fraction r,
+      int nextLevel, int level, int position) {
+    if (nextLevel > level) {
+      return null;
+    }
+    SternBrocotTree<Fraction> tree = new SternBrocotTree<>(l,
+        Objects.requireNonNullElseGet(m, () -> add(l, r)), r,
+        nextLevel, position);
+    tree.setLeft(executeTreeRecursion(tree.getLeftFraction(),
+        add(tree.getLeftFraction(), tree.getFraction()), tree.getFraction(),
+        tree.getLevel() + 1, level,
+        2 * position - 1));
+    tree.setRight(executeTreeRecursion(tree.getFraction(),
+        add(tree.getFraction(), tree.getRightFraction()), tree.getRightFraction(),
+        tree.getLevel() + 1,
+        level, 2 * position));
+    tree.setLeftFraction(null);
+    tree.setRightFraction(null);
+    return tree;
+  }
+
   public SternBrocotTree<Fraction> executeTree(int level) {
     SternBrocotTree<Fraction> tree = new SternBrocotTree<>(new Fraction(0, 1), new Fraction(1, 1),
-        new Fraction(1, 0));
+        new Fraction(1, 0), 1, 1);
     Queue<SternBrocotTree<Fraction>> queue = new LinkedList<>();
     queue.add(tree);
     while (!queue.isEmpty()) {
@@ -27,10 +53,11 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
       while (size > 0) {
         SternBrocotTree<Fraction> n = queue.poll();
         n.setLeft(new SternBrocotTree<>(n.getLeftFraction(),
-            new Fraction(n.getLeftFraction(), n.getFraction()), n.getFraction()));
+            add(n.getLeftFraction(), n.getFraction()), n.getFraction(),
+            n.getLevel() + 1, 2 * n.getPosition() - 1));
         n.setRight(new SternBrocotTree<>(n.getFraction(),
-            new Fraction(n.getFraction(), n.getRightFraction()),
-            n.getRightFraction()));
+            add(n.getFraction(), n.getRightFraction()),
+            n.getRightFraction(), n.getLevel() + 1, 2 * n.getPosition()));
         if (level > 1) {
           queue.add(n.getLeft());
           queue.add(n.getRight());
@@ -70,9 +97,13 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
       if (i % 2 == 0) {
         nfs[i] = fs[i / 2];
       } else {
-        nfs[i] = new Fraction(fs[i / 2], fs[(i + 1) / 2]);
+        nfs[i] = add(fs[i / 2], fs[(i + 1) / 2]);
       }
     }
     sternBrocot(nfs, order - 1);
+  }
+
+  Fraction add(Fraction f1, Fraction f2) {
+    return new Fraction(f1.n() + f2.n(), f1.d() + f2.d());
   }
 }
