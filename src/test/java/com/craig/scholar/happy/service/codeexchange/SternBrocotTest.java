@@ -7,7 +7,9 @@ import com.craig.scholar.happy.model.BigFraction;
 import com.craig.scholar.happy.model.Fraction;
 import com.craig.scholar.happy.model.SternBrocotTree;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -300,11 +302,78 @@ class SternBrocotTest {
 
   }
 
-  @Test
-  void findFraction_Single() {
+  static Stream<Arguments> findFractionPathCases() {
+    return Stream.of(
+        Arguments.of(
+            new BigFraction("2", "3"), List.of(
+                new BigFraction("1", "1"),
+                new BigFraction("1", "2"),
+                new BigFraction("2", "3")
+            )
+        ),
+        Arguments.of(
+            new BigFraction("5", "3"), List.of(
+                new BigFraction("1", "1"),
+                new BigFraction("2", "1"),
+                new BigFraction("3", "2"),
+                new BigFraction("5", "3")
+            )
+        ),
+        Arguments.of(
+            new BigFraction("1", "5"), List.of(
+                new BigFraction("1", "1"),
+                new BigFraction("1", "2"),
+                new BigFraction("1", "3"),
+                new BigFraction("1", "4"),
+                new BigFraction("1", "5")
+            )
+        ),
+        Arguments.of(
+            new BigFraction("5", "1"), List.of(
+                new BigFraction("1", "1"),
+                new BigFraction("2", "1"),
+                new BigFraction("3", "1"),
+                new BigFraction("4", "1"),
+                new BigFraction("5", "1")
+            )
+        ),
+        Arguments.of(
+            new BigFraction("5", "2"), List.of(
+                new BigFraction("1", "1"),
+                new BigFraction("2", "1"),
+                new BigFraction("3", "1"),
+                new BigFraction("5", "2")
+            )
+        ),
+        Arguments.of(
+            new BigFraction("1", "1"), List.of(
+                new BigFraction("1", "1")
+            )
+        )
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("findFractionPathCases")
+  void findFractionPath(BigFraction fraction, List<BigFraction> expectedFractions) {
     SternBrocotTree<BigFraction, BigInteger> tree = sternBrocot.findFractionPath(
-        new BigFraction("5", "3"));
-    System.out.println("Done");
+        fraction);
+    List<BigFraction> actualFractions = getActualFractions(tree);
+    assertThat(actualFractions).containsExactlyElementsOf(expectedFractions);
+  }
+
+  private List<BigFraction> getActualFractions(SternBrocotTree<BigFraction, BigInteger> tree) {
+    List<BigFraction> fractions = new ArrayList<>();
+    fractions.add(tree.getFraction());
+    if (tree.getLeft() == null && tree.getRight() == null) {
+      return fractions;
+    }
+    if (tree.getLeft() != null) {
+      fractions.addAll(getActualFractions(tree.getLeft()));
+    } else {
+      fractions.addAll(getActualFractions(tree.getRight()));
+    }
+    return fractions;
   }
 
   @Test
