@@ -4,6 +4,10 @@ import java.math.BigInteger;
 
 public record BigFraction(BigInteger n, BigInteger d) {
 
+  public BigFraction(String n, String d) {
+    this(new BigInteger(n), new BigInteger(d));
+  }
+
   @Override
   public String toString() {
     return String.format("%d/%d", n, d);

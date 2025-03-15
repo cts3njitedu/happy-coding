@@ -23,11 +23,14 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
   }
 
   public SternBrocotTree<BigFraction, BigInteger> findFraction(BigFraction fraction) {
+    if (ZERO.compareTo(fraction.d()) == 0) {
+      throw new IllegalArgumentException(String.format("Denominator is zero for : %s", fraction));
+    }
     return findFraction(fraction, new BigFraction(ZERO, ONE), null, new BigFraction(ONE, ZERO), ONE,
         ONE);
   }
 
-  public SternBrocotTree<BigFraction, BigInteger> findFraction(BigFraction fraction, BigFraction l,
+  private SternBrocotTree<BigFraction, BigInteger> findFraction(BigFraction fraction, BigFraction l,
       BigFraction m,
       BigFraction r, BigInteger nextLevel, BigInteger position) {
     SternBrocotTree<BigFraction, BigInteger> tree = new SternBrocotTree<>(l,
@@ -40,12 +43,12 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
           add(tree.getLeftFraction(), tree.getFraction()), tree.getFraction(),
           tree.getLevel().add(ONE),
           TWO.multiply(position).subtract(ONE));
-    } else {
+    } else if (tree.getFraction().isSmaller(fraction)) {
       return findFraction(fraction, tree.getFraction(),
           add(tree.getFraction(), tree.getRightFraction()), tree.getRightFraction(),
           tree.getLevel().add(ONE), TWO.multiply(position));
     }
-
+    return null;
   }
 
   public SternBrocotTree<Fraction, Integer> executeTreeRecursion(int level) {
@@ -85,6 +88,9 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
       int size = queue.size();
       while (size > 0) {
         SternBrocotTree<Fraction, Integer> n = queue.poll();
+        if (n == null) {
+          throw new IllegalArgumentException("Something went horribly wrong");
+        }
         if (level > 1) {
           n.setLeft(new SternBrocotTree<>(n.getLeftFraction(),
               add(n.getLeftFraction(), n.getFraction()), n.getFraction(),

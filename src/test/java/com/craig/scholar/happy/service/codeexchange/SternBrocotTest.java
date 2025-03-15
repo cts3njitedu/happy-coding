@@ -1,6 +1,7 @@
 package com.craig.scholar.happy.service.codeexchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.craig.scholar.happy.model.BigFraction;
 import com.craig.scholar.happy.model.Fraction;
@@ -120,12 +121,6 @@ class SternBrocotTest {
     );
   }
 
-  @Test
-  void findFraction() {
-    System.out.println(sternBrocot.findFraction(
-        new BigFraction(BigInteger.valueOf(200), BigInteger.valueOf(450))));
-  }
-
   record FractionNodeTest(int n, int d, int level, int position) {
 
   }
@@ -192,5 +187,64 @@ class SternBrocotTest {
         new FractionNodeTest(5, 2, 4, 7),
         new FractionNodeTest(4, 1, 4, 8)
     };
+  }
+
+  static Stream<Arguments> findFractionTestCases() {
+    return Stream.of(
+        Arguments.of(
+            new BigFraction("2", "3"),
+            new BigFractionNodeTest("2", "3", "3", "2")
+        ),
+        Arguments.of(
+            new BigFraction("5", "3"),
+            new BigFractionNodeTest("5", "3", "4", "6")
+        ),
+        Arguments.of(
+            new BigFraction("4", "6"),
+            new BigFractionNodeTest("2", "3", "3", "2")
+        ),
+        Arguments.of(
+            new BigFraction("1", "1"),
+            new BigFractionNodeTest("1", "1", "1", "1")
+        ),
+        Arguments.of(
+            new BigFraction("16", "4"),
+            new BigFractionNodeTest("4", "1", "4", "8")
+        ),
+        Arguments.of(
+            new BigFraction("5", "25"),
+            new BigFractionNodeTest("1", "5", "5", "1")
+        ),
+        Arguments.of(
+            new BigFraction("405", "709"),
+            new BigFractionNodeTest("405", "709", "106", "11408855402054064613470328848384")
+        )
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("findFractionTestCases")
+  void findFraction(BigFraction fraction, BigFractionNodeTest fractionNodeTest) {
+    SternBrocotTree<BigFraction, BigInteger> tree = sternBrocot.findFraction(fraction);
+    assertThat(tree.getFraction())
+        .isEqualTo(new BigFraction(new BigInteger(fractionNodeTest.n),
+            new BigInteger(fractionNodeTest.d)));
+    assertThat(tree.getLevel()).isEqualTo(fractionNodeTest.level);
+    assertThat(tree.getPosition()).isEqualTo(fractionNodeTest.position);
+    assertThat(tree.getLeftFraction()).isNull();
+    assertThat(tree.getRightFraction()).isNull();
+    assertThat(tree.getLeft()).isNull();
+    assertThat(tree.getRight()).isNull();
+  }
+
+  @Test
+  void findFraction_ZeroDenominator() {
+    assertThatThrownBy(() -> sternBrocot.findFraction(new BigFraction("1", "0")))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Denominator is zero");
+  }
+
+  record BigFractionNodeTest(String n, String d, String level, String position) {
+
   }
 }
