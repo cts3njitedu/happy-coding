@@ -80,10 +80,11 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
         new BigFraction(ONE, ZERO), ONE, ONE, LEVEL, level));
   }
 
-  public void getTree() {
-    getTree(new SternBrocotInput(new BigFraction(ZERO, ONE),
-        new BigFraction(ONE, ZERO), ONE, ONE));
-  }
+  //pointless as only left side of tree is printed
+//  public void getTree() {
+//    getTree(new SternBrocotInput(new BigFraction(ZERO, ONE),
+//        new BigFraction(ONE, ZERO), ONE, ONE));
+//  }
 
   private SternBrocotTree<BigFraction, BigInteger> getTree(SternBrocotInput input) {
     if (LEVEL.equals(input.sternBrocotSearch)) {
@@ -178,6 +179,7 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
         if (n == null) {
           throw new IllegalArgumentException("Something went horribly wrong");
         }
+        System.out.println(n.getFraction());
         if (level > 1) {
           n.setLeft(new SternBrocotTree<>(n.getLeftFraction(),
               add(n.getLeftFraction(), n.getFraction()), n.getFraction(),
@@ -197,16 +199,38 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
     return tree;
   }
 
+  public void generateTree() {
+    Queue<SternBrocotTree<BigFraction, BigInteger>> queue = new LinkedList<>();
+    queue.add(new SternBrocotTree<>(new BigFraction(ZERO, ONE),
+        new BigFraction(ONE, ONE),
+        new BigFraction(ONE, ZERO), ONE, ONE));
+    while (!queue.isEmpty()) {
+      int size = queue.size();
+      while (size > 0) {
+        SternBrocotTree<BigFraction, BigInteger> n = queue.poll();
+        if (n == null) {
+          throw new IllegalArgumentException("Something went horribly wrong");
+        }
+        System.out.println(n.getFraction());
+        queue.add(new SternBrocotTree<>(n.getLeftFraction(),
+            add(n.getLeftFraction(), n.getFraction()), n.getFraction(),
+            n.getLevel().add(ONE), TWO.multiply(n.getPosition()).subtract(ONE)));
+        queue.add(new SternBrocotTree<>(n.getFraction(),
+            add(n.getFraction(), n.getRightFraction()),
+            n.getRightFraction(), n.getLevel().add(ONE), TWO.multiply(n.getPosition())));
+        n.setLeftFraction(null);
+        n.setRightFraction(null);
+        size--;
+      }
+    }
+  }
+
   public Fraction r_n(int n) {
     int[] s = new int[n + 2];
     s[1] = 1;
     s[2] = 1;
     for (int i = 3; i <= n + 1; i++) {
-      if (i % 2 == 0) {
-        s[i] = s[i / 2];
-      } else {
-        s[i] = s[(i - 1) / 2] + s[(i + 1) / 2];
-      }
+      s[i] = i % 2 == 0 ? s[i / 2] : s[(i - 1) / 2] + s[(i + 1) / 2];
     }
     return new Fraction(s[n], s[n + 1]);
   }

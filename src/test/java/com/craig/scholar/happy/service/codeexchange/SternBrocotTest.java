@@ -123,6 +123,11 @@ class SternBrocotTest {
     );
   }
 
+//  @Test
+//  void generateTree() {
+//    sternBrocot.generateTree();
+//  }
+
   record FractionNodeTest(int n, int d, int level, int position) {
 
   }
@@ -220,26 +225,6 @@ class SternBrocotTest {
         new FractionNodeTest(5, 3, 4, 6),
         new FractionNodeTest(5, 2, 4, 7),
         new FractionNodeTest(4, 1, 4, 8)
-    };
-  }
-
-  BigFractionNodeTest[] getBigFractionNodeTests() {
-    return new BigFractionNodeTest[]{
-        new BigFractionNodeTest("1", "1", "1", "1"),
-        new BigFractionNodeTest("1", "2", "2", "1"),
-        new BigFractionNodeTest("2", "1", "2", "2"),
-        new BigFractionNodeTest("1", "3", "3", "1"),
-        new BigFractionNodeTest("2", "3", "3", "2"),
-        new BigFractionNodeTest("3", "2", "3", "3"),
-        new BigFractionNodeTest("3", "1", "3", "4"),
-        new BigFractionNodeTest("1", "4", "4", "1"),
-        new BigFractionNodeTest("2", "5", "4", "2"),
-        new BigFractionNodeTest("3", "5", "4", "3"),
-        new BigFractionNodeTest("3", "4", "4", "4"),
-        new BigFractionNodeTest("4", "3", "4", "5"),
-        new BigFractionNodeTest("5", "3", "4", "6"),
-        new BigFractionNodeTest("5", "2", "4", "7"),
-        new BigFractionNodeTest("4", "1", "4", "8")
     };
   }
 
@@ -378,6 +363,6 @@ class SternBrocotTest {
 
   @Test
   void getTree() {
-    sternBrocot.getTree();
+    sternBrocot.getTree(BigInteger.valueOf(4));
   }
 }
