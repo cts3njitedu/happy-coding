@@ -2,14 +2,46 @@ package com.craig.scholar.happy.service.codeexchange;
 
 
 import com.craig.scholar.happy.model.Fraction;
+import com.craig.scholar.happy.model.SternBrocotTree;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class SternBrocot implements HappyCodingV2<Void, Void> {
+public class SternBrocot implements HappyCodingV2<Integer, Void> {
+
+
 
   @Override
-  public Void execute(Void unused) {
-    sternBrocot(new Fraction[]{new Fraction(0, 1), new Fraction(1, 0)}, 10);
+  public Void execute(Integer n) {
+    sternBrocot(new Fraction[]{new Fraction(0, 1), new Fraction(1, 0)}, n);
     return null;
+  }
+
+  public SternBrocotTree<Fraction> executeTree(int level) {
+    SternBrocotTree<Fraction> tree = new SternBrocotTree<>(new Fraction(0, 1), new Fraction(1, 1),
+        new Fraction(1, 0));
+    Queue<SternBrocotTree<Fraction>> queue = new LinkedList<>();
+    queue.add(tree);
+    while (!queue.isEmpty()) {
+      int size = queue.size();
+      while (size > 0) {
+        SternBrocotTree<Fraction> n = queue.poll();
+        n.setLeft(new SternBrocotTree<>(n.getLeftFraction(),
+            new Fraction(n.getLeftFraction(), n.getFraction()), n.getFraction()));
+        n.setRight(new SternBrocotTree<>(n.getFraction(),
+            new Fraction(n.getFraction(), n.getRightFraction()),
+            n.getRightFraction()));
+        if (level > 1) {
+          queue.add(n.getLeft());
+          queue.add(n.getRight());
+        }
+        n.setLeftFraction(null);
+        n.setRightFraction(null);
+        size--;
+      }
+      level--;
+    }
+    return tree;
   }
 
   public Fraction r_n(int n) {
@@ -24,7 +56,6 @@ public class SternBrocot implements HappyCodingV2<Void, Void> {
       }
     }
     return new Fraction(s[n], s[n + 1]);
-
   }
 
   private void sternBrocot(Fraction[] fs, int order) {
@@ -32,7 +63,7 @@ public class SternBrocot implements HappyCodingV2<Void, Void> {
       return;
     }
     Arrays.stream(fs)
-        .forEach(f -> System.out.printf("%d/%d ", f.n(), f.d()));
+        .forEach(f -> System.out.printf("%s ", f));
     System.out.println();
     Fraction[] nfs = new Fraction[2 * fs.length - 1];
     for (int i = 0; i < nfs.length; i++) {
