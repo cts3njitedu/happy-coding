@@ -1,8 +1,14 @@
 package com.craig.scholar.happy.service.codeexchange;
 
 
+import static java.math.BigInteger.ONE;
+import static java.math.BigInteger.TWO;
+import static java.math.BigInteger.ZERO;
+
+import com.craig.scholar.happy.model.BigFraction;
 import com.craig.scholar.happy.model.Fraction;
 import com.craig.scholar.happy.model.SternBrocotTree;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -10,24 +16,50 @@ import java.util.Queue;
 
 public class SternBrocot implements HappyCodingV2<Integer, Void> {
 
-
   @Override
   public Void execute(Integer n) {
     sternBrocot(new Fraction[]{new Fraction(0, 1), new Fraction(1, 0)}, n);
     return null;
   }
 
-  public SternBrocotTree<Fraction> executeTreeRecursion(int level) {
+  public SternBrocotTree<BigFraction, BigInteger> findFraction(BigFraction fraction) {
+    return findFraction(fraction, new BigFraction(ZERO, ONE), null, new BigFraction(ONE, ZERO), ONE,
+        ONE);
+  }
+
+  public SternBrocotTree<BigFraction, BigInteger> findFraction(BigFraction fraction, BigFraction l,
+      BigFraction m,
+      BigFraction r, BigInteger nextLevel, BigInteger position) {
+    SternBrocotTree<BigFraction, BigInteger> tree = new SternBrocotTree<>(l,
+        Objects.requireNonNullElseGet(m, () -> add(l, r)), r,
+        nextLevel, position);
+    if (tree.getFraction().isSame(fraction)) {
+      return new SternBrocotTree<>(null, tree.getFraction(), null, nextLevel, position);
+    } else if (tree.getFraction().isLarger(fraction)) {
+      return findFraction(fraction, tree.getLeftFraction(),
+          add(tree.getLeftFraction(), tree.getFraction()), tree.getFraction(),
+          tree.getLevel().add(ONE),
+          TWO.multiply(position).subtract(ONE));
+    } else {
+      return findFraction(fraction, tree.getFraction(),
+          add(tree.getFraction(), tree.getRightFraction()), tree.getRightFraction(),
+          tree.getLevel().add(ONE), TWO.multiply(position));
+    }
+
+  }
+
+  public SternBrocotTree<Fraction, Integer> executeTreeRecursion(int level) {
     return executeTreeRecursion(new Fraction(0, 1), null,
         new Fraction(1, 0), 1, level, 1);
   }
 
-  public SternBrocotTree<Fraction> executeTreeRecursion(Fraction l, Fraction m, Fraction r,
+  private SternBrocotTree<Fraction, Integer> executeTreeRecursion(Fraction l, Fraction m,
+      Fraction r,
       int nextLevel, int level, int position) {
     if (nextLevel > level) {
       return null;
     }
-    SternBrocotTree<Fraction> tree = new SternBrocotTree<>(l,
+    SternBrocotTree<Fraction, Integer> tree = new SternBrocotTree<>(l,
         Objects.requireNonNullElseGet(m, () -> add(l, r)), r,
         nextLevel, position);
     tree.setLeft(executeTreeRecursion(tree.getLeftFraction(),
@@ -43,15 +75,16 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
     return tree;
   }
 
-  public SternBrocotTree<Fraction> executeTree(int level) {
-    SternBrocotTree<Fraction> tree = new SternBrocotTree<>(new Fraction(0, 1), new Fraction(1, 1),
+  public SternBrocotTree<Fraction, Integer> executeTree(int level) {
+    SternBrocotTree<Fraction, Integer> tree = new SternBrocotTree<>(new Fraction(0, 1),
+        new Fraction(1, 1),
         new Fraction(1, 0), 1, 1);
-    Queue<SternBrocotTree<Fraction>> queue = new LinkedList<>();
+    Queue<SternBrocotTree<Fraction, Integer>> queue = new LinkedList<>();
     queue.add(tree);
     while (!queue.isEmpty()) {
       int size = queue.size();
       while (size > 0) {
-        SternBrocotTree<Fraction> n = queue.poll();
+        SternBrocotTree<Fraction, Integer> n = queue.poll();
         if (level > 1) {
           n.setLeft(new SternBrocotTree<>(n.getLeftFraction(),
               add(n.getLeftFraction(), n.getFraction()), n.getFraction(),
@@ -103,7 +136,11 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
     sternBrocot(nfs, order - 1);
   }
 
-  Fraction add(Fraction f1, Fraction f2) {
+  private Fraction add(Fraction f1, Fraction f2) {
     return new Fraction(f1.n() + f2.n(), f1.d() + f2.d());
+  }
+
+  private BigFraction add(BigFraction f1, BigFraction f2) {
+    return new BigFraction(f1.n().add(f2.n()), f1.d().add(f2.d()));
   }
 }

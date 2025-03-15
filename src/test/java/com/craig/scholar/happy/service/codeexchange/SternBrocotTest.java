@@ -2,8 +2,10 @@ package com.craig.scholar.happy.service.codeexchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.craig.scholar.happy.model.BigFraction;
 import com.craig.scholar.happy.model.Fraction;
 import com.craig.scholar.happy.model.SternBrocotTree;
+import java.math.BigInteger;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.stream.Stream;
@@ -118,6 +120,12 @@ class SternBrocotTest {
     );
   }
 
+  @Test
+  void findFraction() {
+    System.out.println(sternBrocot.findFraction(
+        new BigFraction(BigInteger.valueOf(200), BigInteger.valueOf(450))));
+  }
+
   record FractionNodeTest(int n, int d, int level, int position) {
 
   }
@@ -130,24 +138,24 @@ class SternBrocotTest {
 
   @Test
   void executeTree() {
-    SternBrocotTree<Fraction> tree = sternBrocot.executeTree(4);
+    SternBrocotTree<Fraction, Integer> tree = sternBrocot.executeTree(4);
     assertAndVerify(tree);
   }
 
   @Test
   void executeTreeRecursion() {
-    SternBrocotTree<Fraction> tree = sternBrocot.executeTreeRecursion(4);
+    SternBrocotTree<Fraction, Integer> tree = sternBrocot.executeTreeRecursion(4);
     assertAndVerify(tree);
   }
 
-  private void assertAndVerify(SternBrocotTree<Fraction> tree) {
+  private void assertAndVerify(SternBrocotTree<Fraction, Integer> tree) {
     assertThat(tree).isNotNull();
-    Queue<SternBrocotTree<Fraction>> q = new LinkedList<>();
+    Queue<SternBrocotTree<Fraction, Integer>> q = new LinkedList<>();
     q.add(tree);
     FractionNodeTest[] fractionNodeTests = getFractionNodeTests();
     int i = 0;
     while (!q.isEmpty()) {
-      SternBrocotTree<Fraction> n = q.poll();
+      SternBrocotTree<Fraction, Integer> n = q.poll();
       FractionNodeTest fractionNodeTest = fractionNodeTests[i++];
       assertThat(n.getFraction().n()).isEqualTo(fractionNodeTest.n());
       assertThat(n.getFraction().d()).isEqualTo(fractionNodeTest.d());

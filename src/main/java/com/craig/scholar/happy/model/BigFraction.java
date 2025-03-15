@@ -8,4 +8,16 @@ public record BigFraction(BigInteger n, BigInteger d) {
   public String toString() {
     return String.format("%d/%d", n, d);
   }
+
+  public boolean isLarger(BigFraction fraction) {
+    return (n.multiply(fraction.d)).compareTo(fraction.n.multiply(d)) > 0;
+  }
+
+  public boolean isSmaller(BigFraction fraction) {
+    return (n.multiply(fraction.d)).compareTo(fraction.n.multiply(d)) < 0;
+  }
+
+  public boolean isSame(BigFraction fraction) {
+    return (n.multiply(fraction.d)).compareTo(fraction.n.multiply(d)) == 0;
+  }
 }
