@@ -52,13 +52,13 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
       int size = queue.size();
       while (size > 0) {
         SternBrocotTree<Fraction> n = queue.poll();
-        n.setLeft(new SternBrocotTree<>(n.getLeftFraction(),
-            add(n.getLeftFraction(), n.getFraction()), n.getFraction(),
-            n.getLevel() + 1, 2 * n.getPosition() - 1));
-        n.setRight(new SternBrocotTree<>(n.getFraction(),
-            add(n.getFraction(), n.getRightFraction()),
-            n.getRightFraction(), n.getLevel() + 1, 2 * n.getPosition()));
         if (level > 1) {
+          n.setLeft(new SternBrocotTree<>(n.getLeftFraction(),
+              add(n.getLeftFraction(), n.getFraction()), n.getFraction(),
+              n.getLevel() + 1, 2 * n.getPosition() - 1));
+          n.setRight(new SternBrocotTree<>(n.getFraction(),
+              add(n.getFraction(), n.getRightFraction()),
+              n.getRightFraction(), n.getLevel() + 1, 2 * n.getPosition()));
           queue.add(n.getLeft());
           queue.add(n.getRight());
         }

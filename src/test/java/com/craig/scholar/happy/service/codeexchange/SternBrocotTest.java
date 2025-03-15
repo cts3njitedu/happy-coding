@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.craig.scholar.happy.model.Fraction;
 import com.craig.scholar.happy.model.SternBrocotTree;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -19,7 +21,7 @@ class SternBrocotTest {
     sternBrocot.execute(5);
   }
 
-  static Stream<Arguments> testCases() {
+  static Stream<Arguments> rnTestCases() {
     return Stream.of(
         Arguments.of(
             1,
@@ -116,8 +118,12 @@ class SternBrocotTest {
     );
   }
 
+  record FractionNodeTest(int n, int d, int level, int position) {
+
+  }
+
   @ParameterizedTest
-  @MethodSource("testCases")
+  @MethodSource("rnTestCases")
   void r_n(int n, Fraction exectedFraction) {
     assertThat(sternBrocot.r_n(n)).isEqualTo(exectedFraction);
   }
@@ -125,6 +131,58 @@ class SternBrocotTest {
   @Test
   void executeTree() {
     SternBrocotTree<Fraction> tree = sternBrocot.executeTree(4);
+    assertAndVerify(tree);
+  }
+
+  @Test
+  void executeTreeRecursion() {
+    SternBrocotTree<Fraction> tree = sternBrocot.executeTreeRecursion(4);
+    assertAndVerify(tree);
+  }
+
+  private void assertAndVerify(SternBrocotTree<Fraction> tree) {
     assertThat(tree).isNotNull();
+    Queue<SternBrocotTree<Fraction>> q = new LinkedList<>();
+    q.add(tree);
+    FractionNodeTest[] fractionNodeTests = getFractionNodeTests();
+    int i = 0;
+    while (!q.isEmpty()) {
+      SternBrocotTree<Fraction> n = q.poll();
+      FractionNodeTest fractionNodeTest = fractionNodeTests[i++];
+      assertThat(n.getFraction().n()).isEqualTo(fractionNodeTest.n());
+      assertThat(n.getFraction().d()).isEqualTo(fractionNodeTest.d());
+      assertThat(n.getLevel()).isEqualTo(fractionNodeTest.level());
+      assertThat(n.getPosition()).isEqualTo(fractionNodeTest.position());
+      assertThat(n.getLeftFraction()).isNull();
+      assertThat(n.getRightFraction()).isNull();
+      if (n.getLeft() != null) {
+        q.add(n.getLeft());
+      }
+      if (n.getRight() != null) {
+        q.add(n.getRight());
+      }
+    }
+    assertThat(fractionNodeTests)
+        .hasSize(i);
+  }
+
+  FractionNodeTest[] getFractionNodeTests() {
+    return new FractionNodeTest[]{
+        new FractionNodeTest(1, 1, 1, 1),
+        new FractionNodeTest(1, 2, 2, 1),
+        new FractionNodeTest(2, 1, 2, 2),
+        new FractionNodeTest(1, 3, 3, 1),
+        new FractionNodeTest(2, 3, 3, 2),
+        new FractionNodeTest(3, 2, 3, 3),
+        new FractionNodeTest(3, 1, 3, 4),
+        new FractionNodeTest(1, 4, 4, 1),
+        new FractionNodeTest(2, 5, 4, 2),
+        new FractionNodeTest(3, 5, 4, 3),
+        new FractionNodeTest(3, 4, 4, 4),
+        new FractionNodeTest(4, 3, 4, 5),
+        new FractionNodeTest(5, 3, 4, 6),
+        new FractionNodeTest(5, 2, 4, 7),
+        new FractionNodeTest(4, 1, 4, 8)
+    };
   }
 }
