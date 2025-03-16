@@ -67,6 +67,31 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
         new BigFraction(ONE, ZERO), ONE, ONE, FRACTION));
   }
 
+  public SternBrocotTree<BigFraction, BigInteger> findFractionPathV2(BigFraction bigFraction) {
+    SternBrocotTree<BigFraction, BigInteger> tree = new SternBrocotTree<>(
+        new BigFraction(ZERO, ONE), new BigFraction(ONE, ONE), new BigFraction(ONE, ZERO), ONE,
+        ONE);
+    SternBrocotTree<BigFraction, BigInteger> curr = tree;
+    while (curr != null) {
+      if (curr.getFraction().isSame(bigFraction)) {
+        curr = null;
+      } else if (curr.getFraction().isLarger(bigFraction)) {
+        curr.setLeft(new SternBrocotTree<>(
+            curr.getLeftFraction(), add(curr.getLeftFraction(), curr.getFraction()),
+            curr.getFraction(),
+            curr.getLevel().add(ONE), TWO.multiply(curr.getPosition()).subtract(ONE)));
+        curr = curr.getLeft();
+      } else if (curr.getFraction().isSmaller(bigFraction)) {
+        curr.setRight(new SternBrocotTree<>(
+            curr.getFraction(), add(curr.getFraction(), curr.getRightFraction()),
+            curr.getRightFraction(),
+            curr.getLevel().add(ONE), TWO.multiply(curr.getPosition())));
+        curr = curr.getRight();
+      }
+    }
+    return tree;
+  }
+
   public SternBrocotTree<BigFraction, BigInteger> findFractionPath(BigFraction fraction) {
     if (ZERO.compareTo(fraction.d()) == 0) {
       throw new IllegalArgumentException(String.format("Denominator is zero for : %s", fraction));
