@@ -6,6 +6,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.craig.scholar.happy.model.BigFraction;
 import com.craig.scholar.happy.model.Fraction;
 import com.craig.scholar.happy.model.SternBrocotTree;
+import com.craig.scholar.happy.model.SternBrocotTree.Direction;
+import com.craig.scholar.happy.model.SternBrocotTree.PreviousFraction;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -123,10 +125,22 @@ class SternBrocotTest {
     );
   }
 
-//  @Test
-//  void generateTree() {
-//    sternBrocot.generateTree();
-//  }
+  @ParameterizedTest
+  @MethodSource("findFractionPathV2Cases")
+  void findFractionPathV2(BigFraction fraction,
+      List<PreviousFraction<BigFraction>> expectedFractions) {
+    SternBrocotTree<BigFraction, BigInteger> tree = sternBrocot.findFractionPathV2(
+        fraction);
+    assertThat(tree.getPreviousFractions()).containsExactlyElementsOf(expectedFractions);
+  }
+
+  @Test
+  void generateTree() {
+//    new BigFraction("99999999999", "1"))
+    SternBrocotTree<BigFraction, BigInteger> tree = sternBrocot.findFractionPathV2(
+        new BigFraction("2000", "1000"));
+    System.out.println(tree.getPreviousFractions());
+  }
 
   record FractionNodeTest(int n, int d, int level, int position) {
 
@@ -338,6 +352,57 @@ class SternBrocotTest {
     );
   }
 
+  static Stream<Arguments> findFractionPathV2Cases() {
+    return Stream.of(
+        Arguments.of(
+            new BigFraction("2", "3"), List.of(
+                new PreviousFraction<>(new BigFraction("1", "1"), Direction.START),
+                new PreviousFraction<>(new BigFraction("1", "2"), Direction.LEFT),
+                new PreviousFraction<>(new BigFraction("2", "3"), Direction.RIGHT)
+            )
+        ),
+        Arguments.of(
+            new BigFraction("5", "3"), List.of(
+                new PreviousFraction<>(new BigFraction("1", "1"), Direction.START),
+                new PreviousFraction<>(new BigFraction("2", "1"), Direction.RIGHT),
+                new PreviousFraction<>(new BigFraction("3", "2"), Direction.LEFT),
+                new PreviousFraction<>(new BigFraction("5", "3"), Direction.RIGHT)
+            )
+        ),
+        Arguments.of(
+            new BigFraction("1", "5"), List.of(
+                new PreviousFraction<>(new BigFraction("1", "1"), Direction.START),
+                new PreviousFraction<>(new BigFraction("1", "2"), Direction.LEFT),
+                new PreviousFraction<>(new BigFraction("1", "3"), Direction.LEFT),
+                new PreviousFraction<>(new BigFraction("1", "4"), Direction.LEFT),
+                new PreviousFraction<>(new BigFraction("1", "5"), Direction.LEFT)
+            )
+        ),
+        Arguments.of(
+            new BigFraction("5", "1"), List.of(
+                new PreviousFraction<>(new BigFraction("1", "1"), Direction.START),
+                new PreviousFraction<>(new BigFraction("2", "1"), Direction.RIGHT),
+                new PreviousFraction<>(new BigFraction("3", "1"), Direction.RIGHT),
+                new PreviousFraction<>(new BigFraction("4", "1"), Direction.RIGHT),
+                new PreviousFraction<>(new BigFraction("5", "1"), Direction.RIGHT)
+            )
+        ),
+        Arguments.of(
+            new BigFraction("5", "2"), List.of(
+                new PreviousFraction<>(new BigFraction("1", "1"), Direction.START),
+                new PreviousFraction<>(new BigFraction("2", "1"), Direction.RIGHT),
+                new PreviousFraction<>(new BigFraction("3", "1"), Direction.RIGHT),
+                new PreviousFraction<>(new BigFraction("5", "2"), Direction.LEFT)
+            )
+        ),
+        Arguments.of(
+            new BigFraction("1", "1"), List.of(
+                new PreviousFraction<>(new BigFraction("1", "1"), Direction.START)
+            )
+        )
+    );
+  }
+
   @ParameterizedTest
   @MethodSource("findFractionPathCases")
   void findFractionPath(BigFraction fraction, List<BigFraction> expectedFractions) {
@@ -350,19 +415,19 @@ class SternBrocotTest {
   private List<BigFraction> getActualFractions(SternBrocotTree<BigFraction, BigInteger> tree) {
     List<BigFraction> fractions = new ArrayList<>();
     fractions.add(tree.getFraction());
-    if (tree.getLeft() == null && tree.getRight() == null) {
-      return fractions;
-    }
-    if (tree.getLeft() != null) {
-      fractions.addAll(getActualFractions(tree.getLeft()));
-    } else {
-      fractions.addAll(getActualFractions(tree.getRight()));
+    while (tree.getLeft() != null || tree.getRight() != null) {
+      if (tree.getLeft() != null) {
+        tree = tree.getLeft();
+      } else {
+        tree = tree.getRight();
+      }
+      fractions.add(tree.getFraction());
     }
     return fractions;
   }
 
   @Test
   void getTree() {
-    sternBrocot.getTree(BigInteger.valueOf(4));
+    System.out.println(sternBrocot.findFraction(new BigFraction("405", "709")));
   }
 }

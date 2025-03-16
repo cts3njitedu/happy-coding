@@ -11,6 +11,8 @@ import static java.math.BigInteger.ZERO;
 import com.craig.scholar.happy.model.BigFraction;
 import com.craig.scholar.happy.model.Fraction;
 import com.craig.scholar.happy.model.SternBrocotTree;
+import com.craig.scholar.happy.model.SternBrocotTree.Direction;
+import com.craig.scholar.happy.model.SternBrocotTree.PreviousFraction;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -35,11 +37,6 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
       SternBrocotSearch sternBrocotSearch,
       BigInteger level
   ) {
-
-    public SternBrocotInput(BigFraction l, BigFraction r, BigInteger position,
-        BigInteger nextLevel) {
-      this(null, l, null, r, nextLevel, position, null, null);
-    }
 
     public SternBrocotInput(BigFraction fraction, BigFraction l, BigFraction r,
         BigInteger nextLevel,
@@ -71,25 +68,29 @@ public class SternBrocot implements HappyCodingV2<Integer, Void> {
     SternBrocotTree<BigFraction, BigInteger> tree = new SternBrocotTree<>(
         new BigFraction(ZERO, ONE), new BigFraction(ONE, ONE), new BigFraction(ONE, ZERO), ONE,
         ONE);
-    SternBrocotTree<BigFraction, BigInteger> curr = tree;
-    while (curr != null) {
-      if (curr.getFraction().isSame(bigFraction)) {
-        curr = null;
-      } else if (curr.getFraction().isLarger(bigFraction)) {
-        curr.setLeft(new SternBrocotTree<>(
-            curr.getLeftFraction(), add(curr.getLeftFraction(), curr.getFraction()),
-            curr.getFraction(),
-            curr.getLevel().add(ONE), TWO.multiply(curr.getPosition()).subtract(ONE)));
-        curr = curr.getLeft();
-      } else if (curr.getFraction().isSmaller(bigFraction)) {
-        curr.setRight(new SternBrocotTree<>(
-            curr.getFraction(), add(curr.getFraction(), curr.getRightFraction()),
-            curr.getRightFraction(),
-            curr.getLevel().add(ONE), TWO.multiply(curr.getPosition())));
-        curr = curr.getRight();
+    SternBrocotTree.Direction direction = Direction.START;
+    LinkedList<SternBrocotTree.PreviousFraction<BigFraction>> previousFractions = new LinkedList<>();
+    while (true) {
+      previousFractions.add(new PreviousFraction<>(tree.getFraction(), direction));
+      if (tree.getFraction().isSame(bigFraction)) {
+        tree.setPreviousFractions(previousFractions);
+        tree.setLeftFraction(null);
+        tree.setRightFraction(null);
+        return tree;
+      } else if (tree.getFraction().isLarger(bigFraction)) {
+        tree = new SternBrocotTree<>(
+            tree.getLeftFraction(), add(tree.getLeftFraction(), tree.getFraction()),
+            tree.getFraction(),
+            tree.getLevel().add(ONE), TWO.multiply(tree.getPosition()).subtract(ONE));
+        direction = Direction.LEFT;
+      } else if (tree.getFraction().isSmaller(bigFraction)) {
+        tree = new SternBrocotTree<>(
+            tree.getFraction(), add(tree.getFraction(), tree.getRightFraction()),
+            tree.getRightFraction(),
+            tree.getLevel().add(ONE), TWO.multiply(tree.getPosition()));
+        direction = Direction.RIGHT;
       }
     }
-    return tree;
   }
 
   public SternBrocotTree<BigFraction, BigInteger> findFractionPath(BigFraction fraction) {
