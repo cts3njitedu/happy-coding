@@ -131,6 +131,9 @@ class SternBrocotTest {
       List<PreviousFraction<BigFraction>> expectedFractions) {
     SternBrocotTree<BigFraction, BigInteger> tree = sternBrocot.findFractionPathV2(
         fraction);
+    BigInteger gcd = fraction.n().gcd(fraction.d());
+    assertThat(tree.getFraction().n()).isEqualTo(fraction.n().divide(gcd));
+    assertThat(tree.getFraction().d()).isEqualTo(fraction.d().divide(gcd));
     assertThat(tree.getPreviousFractions()).containsExactlyElementsOf(expectedFractions);
   }
 
@@ -138,7 +141,8 @@ class SternBrocotTest {
   void generateTree() {
 //    new BigFraction("99999999999", "1"))
     SternBrocotTree<BigFraction, BigInteger> tree = sternBrocot.findFractionPathV2(
-        new BigFraction("2000", "1000"));
+        new BigFraction("678597", "323442"));
+    System.out.println(new BigInteger("678597").gcd(new BigInteger("323442")));
     System.out.println(tree.getPreviousFractions());
   }
 
@@ -356,6 +360,13 @@ class SternBrocotTest {
     return Stream.of(
         Arguments.of(
             new BigFraction("2", "3"), List.of(
+                new PreviousFraction<>(new BigFraction("1", "1"), Direction.START),
+                new PreviousFraction<>(new BigFraction("1", "2"), Direction.LEFT),
+                new PreviousFraction<>(new BigFraction("2", "3"), Direction.RIGHT)
+            )
+        ),
+        Arguments.of(
+            new BigFraction("4", "6"), List.of(
                 new PreviousFraction<>(new BigFraction("1", "1"), Direction.START),
                 new PreviousFraction<>(new BigFraction("1", "2"), Direction.LEFT),
                 new PreviousFraction<>(new BigFraction("2", "3"), Direction.RIGHT)
