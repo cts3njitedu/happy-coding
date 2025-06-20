@@ -2,22 +2,21 @@ package com.craig.scholar.happy.service.codeexchange;
 
 import com.craig.scholar.happy.model.Point;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-public class SolveStarBattleQueensPuzzle implements HappyCodingV2<int[][], List<Point>> {
+public class SolveStarBattleQueensPuzzle implements HappyCodingV2<int[][], Set<Point>> {
 
 
   @Override
-  public List<Point> execute(int[][] board) {
-    LinkedList<Point> coordinates = new LinkedList<>();
+  public Set<Point> execute(int[][] board) {
+    LinkedHashSet<Point> coordinates = new LinkedHashSet<>();
     execute(board, 0, new HashSet<>(), coordinates);
     return coordinates;
   }
 
   private boolean execute(int[][] board, int i, Set<Integer> colors,
-      LinkedList<Point> coordinates) {
+      LinkedHashSet<Point> coordinates) {
     if (i == board.length) {
       return coordinates.size() == board.length;
     }
@@ -32,13 +31,13 @@ public class SolveStarBattleQueensPuzzle implements HappyCodingV2<int[][], List<
           && (i == board.length - 1 || j == board[0].length - 1
           || !coordinates.contains(new Point(i + 1, j + 1)))
           && (i == board.length - 1 || j == 0 || !coordinates.contains(new Point(i + 1, j - 1)))) {
-        coordinates.add(new Point(i, j));
+        coordinates.addLast(new Point(i, j));
         colors.add(board[i][j]);
         boolean solved = execute(board, i + 1, colors, coordinates);
         if (solved) {
           return solved;
         }
-        coordinates.pollLast();
+        coordinates.removeLast();
         colors.remove(board[i][j]);
       }
     }
