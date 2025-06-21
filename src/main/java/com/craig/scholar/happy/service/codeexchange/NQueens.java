@@ -7,11 +7,14 @@ import java.util.stream.IntStream;
 
 public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
 
+  public static final char EMPTY_CELL = '.';
+  public static final char QUEEN = 'Q';
+
   @Override
   public List<List<String>> execute(Integer n) {
     List<char[]> board = IntStream.range(0, n)
         .mapToObj(i -> new char[n])
-        .peek(row -> Arrays.fill(row, '.'))
+        .peek(row -> Arrays.fill(row, EMPTY_CELL))
         .toList();
     return execute(board, 0);
   }
@@ -28,7 +31,7 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     for (int c = 0; c < row.length; c++) {
       if (isValidCell(board, r, c)) {
         var s = row[c];
-        row[c] = 'Q';
+        row[c] = QUEEN;
         boards.addAll(execute(board, r + 1));
         row[c] = s;
       }
@@ -40,9 +43,9 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     int diagonalC = c;
     int antiDiagonalC = c;
     while (r >= 0) {
-      if (board.get(r)[c] == 'Q'
-          || diagonalC >= 0 && board.get(r)[diagonalC--] == 'Q'
-          || antiDiagonalC < board.size() && board.get(r)[antiDiagonalC++] == 'Q') {
+      if (board.get(r)[c] == QUEEN
+          || diagonalC >= 0 && board.get(r)[diagonalC--] == QUEEN
+          || antiDiagonalC < board.size() && board.get(r)[antiDiagonalC++] == QUEEN) {
         return false;
       }
       r--;
