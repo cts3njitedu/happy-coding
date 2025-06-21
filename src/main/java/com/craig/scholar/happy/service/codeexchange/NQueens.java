@@ -12,16 +12,14 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
 
   @Override
   public List<List<String>> execute(Integer n) {
-    List<char[]> chessBoard = IntStream.range(0, n)
+    return execute(IntStream.range(0, n)
         .mapToObj(i -> new char[n])
         .peek(row -> Arrays.fill(row, EMPTY_CELL))
-        .toList();
-    return execute(chessBoard, 0);
+        .toList(), 0);
   }
 
   public List<List<String>> executeBin(int n) {
-    int[] board = new int[n];
-    return execute(board, 0);
+    return execute(new int[n], 0);
   }
 
   private List<List<String>> execute(int[] board, int r) {
