@@ -26,7 +26,7 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     }
     var row = board.get(r);
     for (int c = 0; c < row.length; c++) {
-      if (isValid(board, r, c)) {
+      if (isValidCell(board, r, c)) {
         var s = row[c];
         row[c] = 'Q';
         boards.addAll(execute(board, r + 1));
@@ -36,16 +36,16 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     return boards;
   }
 
-  private boolean isValid(List<char[]> board, int row, int column) {
-    int diagonalColumn = column;
-    int antiDiagonalColumn = column;
-    while (row >= 0) {
-      if (board.get(row)[column] == 'Q'
-          || diagonalColumn >= 0 && board.get(row)[diagonalColumn--] == 'Q'
-          || antiDiagonalColumn < board.size() && board.get(row)[antiDiagonalColumn++] == 'Q') {
+  private boolean isValidCell(List<char[]> board, int r, int c) {
+    int diagonalC = c;
+    int antiDiagonalC = c;
+    while (r >= 0) {
+      if (board.get(r)[c] == 'Q'
+          || diagonalC >= 0 && board.get(r)[diagonalC--] == 'Q'
+          || antiDiagonalC < board.size() && board.get(r)[antiDiagonalC++] == 'Q') {
         return false;
       }
-      row--;
+      r--;
     }
     return true;
   }
