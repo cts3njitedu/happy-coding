@@ -17,7 +17,7 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
   }
 
   private List<List<String>> execute(List<char[]> board, int r) {
-    List<List<String>> boards = new ArrayList<>();
+    var boards = new ArrayList<List<String>>();
     if (r == board.size()) {
       boards.add(board.stream()
           .map(String::valueOf)
@@ -26,9 +26,7 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     }
     var row = board.get(r);
     for (int c = 0; c < row.length; c++) {
-      if (isColumn(board, r, c)
-          && isDiagonal(board, r, c)
-          && isAntiDiagonal(board, r, c)) {
+      if (isValid(board, r, c)) {
         var s = row[c];
         row[c] = 'Q';
         boards.addAll(execute(board, r + 1));
@@ -38,34 +36,16 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     return boards;
   }
 
-  private boolean isColumn(List<char[]> board, int r, int c) {
-    while (r >= 0) {
-      if (board.get(r)[c] == 'Q') {
+  private boolean isValid(List<char[]> board, int row, int column) {
+    int diagonalColumn = column;
+    int antiDiagonalColumn = column;
+    while (row >= 0) {
+      if (board.get(row)[column] == 'Q'
+          || diagonalColumn >= 0 && board.get(row)[diagonalColumn--] == 'Q'
+          || antiDiagonalColumn < board.size() && board.get(row)[antiDiagonalColumn++] == 'Q') {
         return false;
       }
-      r--;
-    }
-    return true;
-  }
-
-  private boolean isDiagonal(List<char[]> board, int r, int c) {
-    while (r >= 0 && c >= 0) {
-      if (board.get(r)[c] == 'Q') {
-        return false;
-      }
-      r--;
-      c--;
-    }
-    return true;
-  }
-
-  private boolean isAntiDiagonal(List<char[]> board, int r, int c) {
-    while (r >= 0 && c < board.size()) {
-      if (board.get(r)[c] == 'Q') {
-        return false;
-      }
-      r--;
-      c++;
+      row--;
     }
     return true;
   }
