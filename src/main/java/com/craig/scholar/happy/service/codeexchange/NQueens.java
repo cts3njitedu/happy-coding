@@ -41,13 +41,12 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
   private boolean isValidCell(List<char[]> chessBoard, int r, int c) {
     int diagonalC = c;
     int antiDiagonalC = c;
-    while (r >= 0) {
+    for (; r >= 0; r--) {
       if (chessBoard.get(r)[c] == QUEEN
           || diagonalC >= 0 && chessBoard.get(r)[diagonalC--] == QUEEN
           || antiDiagonalC < chessBoard.size() && chessBoard.get(r)[antiDiagonalC++] == QUEEN) {
         return false;
       }
-      r--;
     }
     return true;
   }
