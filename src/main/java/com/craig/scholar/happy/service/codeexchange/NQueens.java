@@ -20,22 +20,22 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
   }
 
   private List<List<String>> execute(List<char[]> chessBoard, int r) {
-    var boards = new ArrayList<List<String>>();
+    var chessBoards = new ArrayList<List<String>>();
     if (r == chessBoard.size()) {
-      boards.add(chessBoard.stream()
+      chessBoards.add(chessBoard.stream()
           .map(String::valueOf)
           .toList());
-      return boards;
+      return chessBoards;
     }
     var row = chessBoard.get(r);
     for (int c = 0; c < row.length; c++) {
       if (isValidCell(chessBoard, r, c)) {
         row[c] = QUEEN;
-        boards.addAll(execute(chessBoard, r + 1));
+        chessBoards.addAll(execute(chessBoard, r + 1));
         row[c] = EMPTY_CELL;
       }
     }
-    return boards;
+    return chessBoards;
   }
 
   private boolean isValidCell(List<char[]> chessBoard, int r, int c) {
