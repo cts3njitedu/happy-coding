@@ -30,10 +30,9 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     var row = board.get(r);
     for (int c = 0; c < row.length; c++) {
       if (isValidCell(board, r, c)) {
-        var s = row[c];
         row[c] = QUEEN;
         boards.addAll(execute(board, r + 1));
-        row[c] = s;
+        row[c] = EMPTY_CELL;
       }
     }
     return boards;
