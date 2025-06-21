@@ -19,6 +19,48 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     return execute(chessBoard, 0);
   }
 
+  public List<List<String>> executeBin(int n) {
+    int[] board = new int[n];
+    return execute(board, 0);
+  }
+
+  private List<List<String>> execute(int[] board, int r) {
+    var boards = new ArrayList<List<String>>();
+    if (r == board.length) {
+      List<String> qb = new ArrayList<>();
+      StringBuilder row = new StringBuilder(" ".repeat(board.length));
+      for (int k : board) {
+        for (int j = 0; j < board.length; j++) {
+          row.setCharAt(j, (k & (1 << j)) != 0 ? QUEEN : EMPTY_CELL);
+        }
+        qb.add(row.toString());
+      }
+      boards.add(qb);
+      return boards;
+    }
+    for (int c = board.length - 1; c >= 0; c--) {
+      if (isValidCell(board, r, c)) {
+        board[r] |= (1 << c);
+        boards.addAll(execute(board, r + 1));
+        board[r] = 0;
+      }
+    }
+    return boards;
+  }
+
+  private boolean isValidCell(int[] board, int r, int c) {
+    int dc = c;
+    int ac = c;
+    for (; r >= 0; r--) {
+      if ((board[r] & (1 << c)) != 0
+          || dc < board.length && (board[r] & (1 << dc++)) != 0
+          || ac >= 0 && (board[r] & (1 << ac--)) != 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private List<List<String>> execute(List<char[]> chessBoard, int r) {
     var chessBoards = new ArrayList<List<String>>();
     if (r == chessBoard.size()) {
