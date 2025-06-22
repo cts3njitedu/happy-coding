@@ -42,17 +42,17 @@ class NQueensTest {
 
   @Test
   void execute_size() {
-    System.out.println(nQueens.execute(15).size());
+    System.out.println(nQueens.execute(12).size());
   }
 
   @Test
   void execute_bin_size() {
-    System.out.println(nQueens.execute(12));
+    System.out.println(nQueens.executeBin(15).size());
   }
 
   @Test
   void execute_bin() {
-    nQueens.executeBin(8)
+    nQueens.executeBin(9)
         .forEach(board -> {
           board
               .forEach(System.out::println);

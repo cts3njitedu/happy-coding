@@ -19,11 +19,12 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
   }
 
   public List<List<String>> executeBin(int n) {
-    return execute(new int[n], 0);
+    List<List<String>> boards = new ArrayList<>();
+    execute(new int[n], 0, boards);
+    return boards;
   }
 
-  private List<List<String>> execute(int[] board, int r) {
-    var boards = new ArrayList<List<String>>();
+  private void execute(int[] board, int r, List<List<String>> boards) {
     if (r == board.length) {
       List<String> qb = new ArrayList<>();
       StringBuilder row = new StringBuilder(" ".repeat(board.length));
@@ -34,16 +35,15 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
         qb.add(row.toString());
       }
       boards.add(qb);
-      return boards;
+      return;
     }
     for (int c = board.length - 1; c >= 0; c--) {
       if (isValidCell(board, r, c)) {
         board[r] |= (1 << c);
-        boards.addAll(execute(board, r + 1));
+        execute(board, r + 1, boards);
         board[r] = 0;
       }
     }
-    return boards;
   }
 
   private boolean isValidCell(int[] board, int r, int c) {
