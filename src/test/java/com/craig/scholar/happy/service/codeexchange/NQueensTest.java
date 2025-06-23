@@ -59,4 +59,9 @@ class NQueensTest {
           System.out.println("*".repeat(25));
         });
   }
+
+  @Test
+  void execute_bin_count() {
+    System.out.println(nQueens.executeBinCount(17));
+  }
 }

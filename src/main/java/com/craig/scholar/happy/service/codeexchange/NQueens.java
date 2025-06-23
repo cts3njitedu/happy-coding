@@ -46,6 +46,25 @@ public class NQueens implements HappyCodingV2<Integer, List<List<String>>> {
     }
   }
 
+  public long executeBinCount(int n) {
+    return execute(new int[n], 0);
+  }
+
+  private long execute(int[] board, int r) {
+    if (r == board.length) {
+      return 1;
+    }
+    long total = 0;
+    for (int c = board.length - 1; c >= 0; c--) {
+      if (isValidCell(board, r, c)) {
+        board[r] |= (1 << c);
+        total += execute(board, r + 1);
+        board[r] = 0;
+      }
+    }
+    return total;
+  }
+
   private boolean isValidCell(int[] board, int r, int c) {
     int dc = c;
     int ac = c;
