@@ -60,8 +60,16 @@ public class Sudoku implements HappyCodingV2<int[][], List<int[][]>> {
   }
 
   private boolean isBlockUnique(int[][] board, int r, int c, int n) {
-    int cBlockSize = (int) Math.ceil(Math.sqrt(board.length));
-    int rBlockSize = (int) Math.floor(Math.sqrt(board.length));
+    int sqrt = (int) Math.sqrt(board.length);
+    int cBlockSize = 0;
+    int rBlockSize = 0;
+    for (int s = sqrt; s >= 1; s--) {
+      if (board.length % s == 0) {
+        rBlockSize = s;
+        cBlockSize = board.length / s;
+        break;
+      }
+    }
     int rBlockStart = (r / rBlockSize) * rBlockSize;
     int rBlockEnd = rBlockStart + rBlockSize;
     int cBlockStart = (c / cBlockSize) * cBlockSize;
