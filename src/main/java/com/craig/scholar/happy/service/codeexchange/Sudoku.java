@@ -9,6 +9,11 @@ public class Sudoku implements HappyCodingV2<int[][], List<int[][]>> {
   public List<int[][]> execute(int[][] board) {
     List<int[][]> solutions = new ArrayList<>();
     execute(board, 0, 0, solutions);
+    if (solutions.size() != 1) {
+      throw new IllegalArgumentException(
+          String.format("Sudoku Puzzle should only have one solution. There are %s solutions",
+              solutions.size()));
+    }
     return solutions;
   }
 
