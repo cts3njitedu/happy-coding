@@ -1,9 +1,11 @@
 package com.craig.scholar.happy.service.codeexchange;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -154,4 +156,15 @@ class SudokuTest {
     }
   }
 
+  @Test
+  void execute_multipleSolutions() {
+    int[][] board = {
+        {1, 0, 0, 0},
+        {0, 0, 0, 0},
+        {0, 0, 0, 0},
+        {0, 0, 0, 0},
+    };
+    assertThatThrownBy(() -> sudoku.execute(board))
+        .isInstanceOf(IllegalArgumentException.class);
+  }
 }
